@@ -1,14 +1,16 @@
-import LoginAdmin from '../pages/LoginAdmin/LoginAdmin'
 import RequestView from '../pages/RequestView'
+import MainAdminLayout from '../layouts/MainAdminLayout'
+import AdminHome from '../pages/AdminHome'
 
+const mainAdminLayout = (children) => <MainAdminLayout>{children}</MainAdminLayout>
 const adminRoutes = [
   {
-    path: '/admin/login',
-    element: <LoginAdmin />
+    path: '/admin/home',
+    element: mainAdminLayout(<AdminHome />)
   },
   {
     path: '/admin/request_view',
-    element: <RequestView />
+    element: mainAdminLayout(<RequestView />)
   }
 ]
 

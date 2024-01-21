@@ -4,20 +4,24 @@ import AddRequest from '../pages/AddRequest'
 import About from '../pages/About'
 import NotFound from '../pages/NotFound'
 import MainClientLayout from '../layouts/MainClientLayout'
+import ListRequest from '../pages/ListRequest'
 
 const mainClientLayout = (children) => <MainClientLayout>{children}</MainClientLayout>
 const clientRoutes = [
   {
     path: '/',
-    element: <Home />
+    element: mainClientLayout(<Home />)
   },
   {
     path: '/client/login',
-
     element: mainClientLayout(<Login></Login>)
   },
   {
-    path: 'client/add_request',
+    path: '/client/request',
+    element: mainClientLayout(<ListRequest></ListRequest>)
+  },
+  {
+    path: 'client/request/add',
     element: mainClientLayout(<AddRequest />)
   },
   {
@@ -26,7 +30,7 @@ const clientRoutes = [
   },
   {
     path: '*',
-    element: <NotFound />
+    element: mainClientLayout(<NotFound />)
   }
 ]
 

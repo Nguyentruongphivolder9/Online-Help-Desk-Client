@@ -1,3 +1,3 @@
 export default function RequestView() {
-  return <div>RequestView</div>
+  return <div className='text-black '>RequestView Page</div>
 }
