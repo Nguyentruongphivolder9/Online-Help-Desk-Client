@@ -6,7 +6,7 @@ const mainAdminLayout = (children) => <MainAdminLayout>{children}</MainAdminLayo
 const adminRoutes = [
   {
     path: '/admin/home',
-    element: mainAdminLayout(<AdminHome />)
+    element: <AdminHome />
   },
   {
     path: '/admin/request_view',

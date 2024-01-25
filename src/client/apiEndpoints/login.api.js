@@ -1,3 +1,3 @@
-// import http from '../utils/http'
-// vi du cho api endpoint
-// export const getStudent = (id) => http.get(`students/${id}`)
+import http from '../utils/http'
+
+export const loginAccount = (formLogin) => http.post('/api/auth/login', formLogin)
