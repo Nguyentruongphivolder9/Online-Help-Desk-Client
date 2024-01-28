@@ -1,27 +1,89 @@
+import { loginAccount } from '@/client/apiEndpoints/login.api';
+import { useState } from 'react';
 import { Link } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
+import removeCookie from '@/hooks/removeCookie';
+import addCookie from '@/hooks/addCookie';
 
 export default function Login() {
+  const [loginForm, setLoginForm] = useState({});
+  const [loginError, setLoginError] = useState(null);
+  const navigate = useNavigate();
+
+  const { mutate } = useMutation({
+    mutationFn: (body) => {
+      return loginAccount(body)
+    }
+  })
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (loginForm.accountId === undefined || loginForm.password === undefined) {
+      setLoginError("Please enter your account password");
+    } else {
+      mutate(loginForm, {
+        onSuccess: (response) => {
+          const result = response.data;
+          if (!result.isSuccess) {
+            setLoginError(result.statusMessage);
+          } else {
+            removeCookie('access_token');
+            removeCookie('refresh_token');
+            addCookie('access_token', result?.data.access_token);
+            addCookie('refresh_token', result?.data.refresh_token);
+
+            if (result.data.enable) {
+              switch (result.data.roleTypeName) {
+                case "End-Users":
+                  navigate('/');
+                  break;
+                case "Facility-Heads":
+                  navigate('/');
+                  break;
+                case "Assignees":
+                  navigate('/');
+                  break;
+                case "Administrator":
+                  navigate('/admin');
+                  break;
+              }
+            } else {
+              navigate('/users/change-password', {
+                state: result.data.accountId
+              });
+            }
+          }
+        }
+      });
+    }
+  }
+
   return (
     <div>
-      <section className='bg-gray-50 dark:bg-gray-900'>
+      <section className='flex bg-gray-50 dark:bg-gray-900 h-screen'>
         <div className='flex flex-col items-center justify-center px-6 py-8 mx-auto'>
           <div className='w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700'>
-            <div className='p-6 space-y-4 md:space-y-6 sm:p-8'>
-              <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white'>
+            <div className='w-96 p-6 space-y-4 md:space-y-6 sm:p-8'>
+              <div className='mb-9 text-3xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white'>
                 Sign in to your account
-              </h1>
-              <form className='space-y-4 md:space-y-6' action='#'>
+              </div>
+              <form className={`space-y-4 md:space-y-6}`}>
+                {loginError && (
+                  <div className='text-red-400 text-sm mb-4'>{loginError}</div>
+                )}
                 <div>
                   <label htmlFor='email' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                    Your email
+                    Your account code
                   </label>
                   <input
-                    type='email'
-                    name='email'
+                    type='text'
                     id='email'
                     className='bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                    placeholder='name@company.com'
-                    required
+                    placeholder='account code'
+                    onChange={(e) => setLoginForm({ ...loginForm, accountId: e.target.value })}
+                    onFocus={() => setLoginError(null)}
                   />
                 </div>
                 <div>
@@ -30,36 +92,20 @@ export default function Login() {
                   </label>
                   <input
                     type='password'
-                    name='password'
                     id='password'
                     placeholder='••••••••'
                     className='bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                    required
+                    onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                    onFocus={() => setLoginError(null)}
                   />
                 </div>
-                <div className='flex items-center justify-between'>
-                  <div className='flex items-start'>
-                    <div className='flex items-center h-5'>
-                      <input
-                        id='remember'
-                        aria-describedby='remember'
-                        type='checkbox'
-                        className='w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800'
-                        required
-                      />
-                    </div>
-                    <div className='ml-3 text-sm'>
-                      <label htmlFor='remember' className='text-gray-500 dark:text-gray-300'>
-                        Remember me
-                      </label>
-                    </div>
-                  </div>
+                <div className='flex items-center justify-end'>
                   <Link to={'?'} className='text-sm font-medium text-primary-600 hover:underline dark:text-primary-500'>
                     Forgot password?
                   </Link>
                 </div>
                 <button
-                  type='submit'
+                  onClick={handleSubmit}
                   className='w-full text-white bg-blue-500 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800'
                 >
                   Sign in
