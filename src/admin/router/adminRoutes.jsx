@@ -1,4 +1,4 @@
-import RequestView from '../pages/RequestView'
+
 import MainAdminLayout from '../layouts/MainAdminLayout'
 import AdminHome from '../pages/AdminHome'
 import CreateAccount from '../pages/CreateAccount'
@@ -17,10 +17,6 @@ const adminRoutes = [
     element: <AdminHome>
       <CreateAccount />
     </AdminHome>
-  },
-  {
-    path: '/admin/request_view',
-    element: mainAdminLayout(<RequestView />)
   }
 ]
 
