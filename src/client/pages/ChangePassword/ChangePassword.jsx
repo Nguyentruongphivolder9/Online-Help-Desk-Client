@@ -2,7 +2,6 @@ import CheckErrorIcon from '@/common/components/CheckErrorIcon/CheckErrorIcon';
 import React, { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import bcrypt from 'bcryptjs';
 import { changePassword } from '@/client/apiEndpoints/changePasword';
 
 export default function ChangePassword() {
@@ -35,30 +34,30 @@ export default function ChangePassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const saltRounds = 10;
-
-    if (!isNewPassword && !isErrorConfirmPassword) {
-      try {
-        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-
-        const valueForm = {
-          accountId: state,
-          newPassword: hashedPassword,
-          confirmPassword: hashedPassword
-        }
-
-        mutate(valueForm, {
-          onSuccess: (response) => {
-            const result = response.data;
-            if (result.isSuccess) {
-              navigate('/login')
-            } else {
-
-            }
+    if (newPassword == '') {
+      setIsNewPassword(true);
+    } else {
+      if (!isNewPassword && !isErrorConfirmPassword) {
+        try {
+          const valueForm = {
+            accountId: state,
+            newPassword: newPassword,
+            confirmPassword: confirmPassword
           }
-        });
-      } catch (error) {
-        console.error('Error hashing password:', error);
+
+          mutate(valueForm, {
+            onSuccess: (response) => {
+              const result = response.data;
+              if (result.isSuccess) {
+                navigate('/login')
+              } else {
+
+              }
+            }
+          });
+        } catch (error) {
+          console.error('Error hashing password:', error);
+        }
       }
     }
   }

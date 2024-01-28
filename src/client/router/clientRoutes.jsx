@@ -17,19 +17,19 @@ const clientRoutes = [
   },
   {
     path: '/login',
-    element: <Login></Login>
+    element: <Login />
   },
   {
     path: '/users/send-mail',
-    element: <VerifySendMail></VerifySendMail>
+    element: <VerifySendMail />
   },
   {
     path: '/users/verify-code',
-    element: <VerifyCode></VerifyCode>
+    element: <VerifyCode />
   },
   {
     path: '/users/change-password',
-    element: <ChangePassword></ChangePassword>
+    element: <ChangePassword />
   },
   {
     path: '/client/request',

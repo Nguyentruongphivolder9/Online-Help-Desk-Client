@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
+import removeCookie from '@/hooks/removeCookie';
+import addCookie from '@/hooks/addCookie';
 
 export default function Login() {
   const [loginForm, setLoginForm] = useState({});
@@ -27,6 +29,11 @@ export default function Login() {
           if (!result.isSuccess) {
             setLoginError(result.statusMessage);
           } else {
+            removeCookie('access_token');
+            removeCookie('refresh_token');
+            addCookie('access_token', result?.data.access_token);
+            addCookie('refresh_token', result?.data.refresh_token);
+
             if (result.data.enable) {
               switch (result.data.roleTypeName) {
                 case "End-Users":
@@ -39,11 +46,13 @@ export default function Login() {
                   navigate('/');
                   break;
                 case "Administrator":
-                  navigate('/admin/home');
+                  navigate('/admin');
                   break;
               }
             } else {
-              console.log(result.data);
+              navigate('/users/change-password', {
+                state: result.data.accountId
+              });
             }
           }
         }
