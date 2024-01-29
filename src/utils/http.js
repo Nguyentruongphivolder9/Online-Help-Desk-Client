@@ -12,12 +12,29 @@ class Http {
       }
     });
 
-    const authToken = Cookie.get('access_token');
-    console.log("authToken: " + authToken);
 
-    if (authToken) {
-      this.instance.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
-    }
+
+    // this.instance.interceptors.request.use(function (config) {
+    //   // Log the config
+    //   const authToken = Cookie.get('access_token');
+
+    //   if (authToken) {
+    //     config.headers.common['Authorization'] = `Bearer ${authToken}`;
+    //   } else {
+    //     delete config.headers.common['Authorization']
+    //   }
+    //   return config;
+    // }, function (error) {
+    //   return Promise.reject(error);
+    // });
+
+    // this.instance.interceptors.response.use(function (response) {
+    //   console.log(response);
+    //   return response;
+    // }, function (error) {
+    //   return Promise.reject(error);
+    // });
+
   }
 }
 

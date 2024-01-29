@@ -1,9 +1,9 @@
 import Cookie from "js-cookie"
 
 const addCookie = (cookieName, token, expiration) => {
-  console.log(token);
+  const expirationDate = new Date(expiration);
   Cookie.set(cookieName, token, {
-    expires: expiration ? expiration : null,
+    expires: expiration ? expirationDate : null,
     secure: true,
     sameSite: "strict",
     path: '/',

@@ -1,7 +1,7 @@
 import { loginAccount } from '@/client/apiEndpoints/login.api';
 import { useState } from 'react';
 import { Link } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import removeCookie from '@/hooks/removeCookie';
 import addCookie from '@/hooks/addCookie';
@@ -10,6 +10,7 @@ export default function Login() {
   const [loginForm, setLoginForm] = useState({});
   const [loginError, setLoginError] = useState(null);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { mutate } = useMutation({
     mutationFn: (body) => {
@@ -29,13 +30,14 @@ export default function Login() {
           if (!result.isSuccess) {
             setLoginError(result.statusMessage);
           } else {
-            removeCookie('access_token');
-            removeCookie('refresh_token');
-            addCookie('access_token', result?.data.access_token);
-            addCookie('refresh_token', result?.data.refresh_token);
-
             if (result.data.enable) {
-              switch (result.data.roleTypeName) {
+              removeCookie('access_token');
+              removeCookie('refresh_token');
+              addCookie('access_token', result?.data.access_token, result?.data.expiration);
+              addCookie('refresh_token', result?.data.refresh_token);
+
+              queryClient.setQueryData('accountId', result?.data.accountId);
+              switch (result?.data.roleTypeName) {
                 case "End-Users":
                   navigate('/');
                   break;
@@ -49,9 +51,10 @@ export default function Login() {
                   navigate('/admin');
                   break;
               }
+
             } else {
               navigate('/users/change-password', {
-                state: result.data.accountId
+                state: result?.data.accountId
               });
             }
           }
