@@ -9,17 +9,12 @@ export default function VerifyCode() {
   const [seconds, setSeconds] = useState(60);
   const [isSubmit, setIsSubmit] = useState(true);
   const [isCounting, setIsCounting] = useState(false);
-  const [isReload, setIsReload] = useState(false);
   const inputRefs = useRef([...Array(7)].map(() => React.createRef()));
   const navigate = useNavigate();
   const { state } = useLocation();
 
   useEffect(() => {
     if (state === null) {
-      navigate("/users/send-mail");
-    }
-
-    if (isReload) {
       navigate("/users/send-mail");
     }
 
