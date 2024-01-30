@@ -1,7 +1,12 @@
 import React from 'react'
 import { Link, NavLink } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 
 export default function AdminHome({ children }) {
+  const queryClient = useQueryClient();
+  // const accountId = queryClient.getQueryData('accountId');
+  // console.log(accountId);
+
   return <div>
     <nav className="bg-white border-b border-gray-200 fixed z-30 w-full">
       <div className="flex items-center px-3 py-3 lg:px-5 lg:pl-3">

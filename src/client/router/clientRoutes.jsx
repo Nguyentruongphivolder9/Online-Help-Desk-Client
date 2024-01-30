@@ -5,9 +5,12 @@ import About from '../pages/About'
 import NotFound from '../pages/NotFound'
 import MainClientLayout from '../layouts/MainClientLayout'
 import ListRequest from '../pages/ListRequest'
+import UpdateRequest from '../pages/UpdateRequest'
+import ArchivedRequests from '../pages/ArchivedRequests'
 import VerifySendMail from '../pages/VerifySendMail'
 import VerifyCode from '../pages/VerifyCode'
 import ChangePassword from '../pages/ChangePassword'
+
 
 const mainClientLayout = (children) => <MainClientLayout>{children}</MainClientLayout>
 const clientRoutes = [
@@ -38,6 +41,14 @@ const clientRoutes = [
   {
     path: 'client/request/add',
     element: mainClientLayout(<AddRequest />)
+  },
+  {
+    path: 'client/request/:id',
+    element: mainClientLayout(<UpdateRequest />)
+  },
+  {
+    path: 'client/request/archived',
+    element: mainClientLayout(<ArchivedRequests />)
   },
   {
     path: 'client/about',
