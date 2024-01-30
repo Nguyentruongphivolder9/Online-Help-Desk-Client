@@ -1,6 +1,7 @@
-import RequestView from '../pages/RequestView'
+import ListRequest from '../pages/ListRequest'
 import MainAdminLayout from '../layouts/MainAdminLayout'
 import AdminHome from '../pages/AdminHome'
+import FacilityHome from '../pages/FacilityHome'
 import CreateAccount from '../pages/CreateAccount'
 import ManagerAccount from '../pages/ManagerAccount'
 
@@ -19,9 +20,13 @@ const adminRoutes = [
     </AdminHome>
   },
   {
-    path: '/admin/request_view',
-    element: mainAdminLayout(<RequestView />)
+    path: '/admin/facility-header',
+    element: <FacilityHome>
+      <ListRequest />
+    </FacilityHome>
   }
-]
 
-export default adminRoutes
+] 
+
+
+export default adminRoutes 
