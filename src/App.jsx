@@ -67,7 +67,7 @@ function App() {
   }, [])
 
   const element = useRouteElement()
-  return <div>{element}</div>
+  return <>{element}</>
 }
 
 export default App
