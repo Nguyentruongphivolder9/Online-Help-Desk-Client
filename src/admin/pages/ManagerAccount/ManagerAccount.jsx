@@ -16,10 +16,6 @@ export default function ManagerAccount() {
   //   navigate('/admin?page=1&limit=2');
   // };
 
-  const navigate = useNavigate();
-  const [activeButton, setActiveButton] = useState('All');
-
-
   const [searchParams] = useSearchParams()
   const searchParamsObject = Object.fromEntries([...searchParams])
   if (searchParamsObject.page === undefined) {
@@ -30,16 +26,16 @@ export default function ManagerAccount() {
     searchParamsObject.limit = 1
   }
 
-  console.log(searchParamsObject);
+  console.log(searchParamsObject)
 
   const { data: accountResponse, isLoading: isLoadingAccount } = useQuery({
     queryKey: ['accounts/get-all'],
     queryFn: async () => {
-      const data = await getAccount(searchParamsObject);
-      return data;
-    },
+      const data = await getAccount(searchParamsObject)
+      return data
+    }
     // enabled: true
-  });
+  })
 
   const { data: roleTypeResponse, isLoading: isLoadingRoleType } = useQuery({
     queryKey: ['roleTypes/get-all'],
@@ -70,22 +66,23 @@ export default function ManagerAccount() {
         {/* <div className="flex flex-col items-center justify-between gap-4 md:flex-row p-[10px]"> */}
         <div className='flex w-full overflow-hidden md:w-max items-center'>
           <button
-            type="button"
-            onClick={() => handleButtonClick("All")}
+            type='button'
+            onClick={() => handleButtonClick('All')}
             className={`${activeButton === 'All' ? 'text-blue-700 z-10 ring-4 ring-gray-200' : 'text-gray-900'} py-2.5 my-2 ml-2 px-5 me-2 text-sm font-medium focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 `}
           >
             All
           </button>
-          {roleTypeResponse && roleTypeResponse?.data?.data.map(item => (
-            <button
-              type="button"
-              key={item.id}
-              onClick={() => handleButtonClick(item.roleTypeName)}
-              className={`${activeButton == item.roleTypeName ? 'text-blue-700 z-10 ring-4 ring-gray-200' : 'text-gray-900'} py-2.5 my-2 px-5 me-2 text-sm font-medium focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700`}
-            >
-              {item.roleTypeName}
-            </button>
-          ))}
+          {roleTypeResponse &&
+            roleTypeResponse?.data?.data.map((item) => (
+              <button
+                type='button'
+                key={item.id}
+                onClick={() => handleButtonClick(item.roleTypeName)}
+                className={`${activeButton == item.roleTypeName ? 'text-blue-700 z-10 ring-4 ring-gray-200' : 'text-gray-900'} py-2.5 my-2 px-5 me-2 text-sm font-medium focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700`}
+              >
+                {item.roleTypeName}
+              </button>
+            ))}
         </div>
         {/* </div> */}
       </div>

@@ -25,6 +25,8 @@ export default function List() {
     }
   })
 
+  console.log(RequestResponse)
+
   return (
     <div className=' container shadow-md sm:rounded-lg bg-white mt-12 mb-12'>
       <table className='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>

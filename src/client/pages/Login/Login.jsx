@@ -1,16 +1,16 @@
-import { loginAccount } from '@/client/apiEndpoints/login.api';
-import { useState } from 'react';
+import { loginAccount } from '@/client/apiEndpoints/login.api'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import removeCookie from '@/hooks/removeCookie';
-import addCookie from '@/hooks/addCookie';
+import removeCookie from '@/hooks/removeCookie'
+import addCookie from '@/hooks/addCookie'
 
 export default function Login() {
-  const [loginForm, setLoginForm] = useState({});
-  const [loginError, setLoginError] = useState(null);
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const [loginForm, setLoginForm] = useState({})
+  const [loginError, setLoginError] = useState(null)
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   const { mutate } = useMutation({
     mutationFn: (body) => {
@@ -19,47 +19,46 @@ export default function Login() {
   })
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (loginForm.accountId === undefined || loginForm.password === undefined) {
-      setLoginError("Please enter your account password");
+      setLoginError('Please enter your account password')
     } else {
       mutate(loginForm, {
         onSuccess: (response) => {
-          const result = response.data;
+          const result = response.data
           if (!result.isSuccess) {
-            setLoginError(result.statusMessage);
+            setLoginError(result.statusMessage)
           } else {
             if (result.data.enable) {
-              removeCookie('access_token');
-              removeCookie('refresh_token');
-              addCookie('access_token', result?.data.access_token, result?.data.expiration);
-              addCookie('refresh_token', result?.data.refresh_token);
+              removeCookie('access_token')
+              removeCookie('refresh_token')
+              addCookie('access_token', result?.data.access_token, result?.data.expiration)
+              addCookie('refresh_token', result?.data.refresh_token)
 
-              queryClient.setQueryData('accountId', result?.data.accountId);
+              queryClient.setQueryData('accountId', result?.data.accountId)
               switch (result?.data.roleTypeName) {
-                case "End-Users":
-                  navigate('/');
-                  break;
-                case "Facility-Heads":
-                  navigate('/');
-                  break;
-                case "Assignees":
-                  navigate('/');
-                  break;
-                case "Administrator":
-                  navigate('/admin');
-                  break;
+                case 'End-Users':
+                  navigate('/')
+                  break
+                case 'Facility-Heads':
+                  navigate('/admin/facility-header')
+                  break
+                case 'Assignees':
+                  navigate('/')
+                  break
+                case 'Administrator':
+                  navigate('/admin')
+                  break
               }
-
             } else {
               navigate('/users/change-password', {
                 state: result?.data.accountId
-              });
+              })
             }
           }
         }
-      });
+      })
     }
   }
 
@@ -73,9 +72,7 @@ export default function Login() {
                 Sign in to your account
               </div>
               <form className={`space-y-4 md:space-y-6}`}>
-                {loginError && (
-                  <div className='text-red-400 text-sm mb-4'>{loginError}</div>
-                )}
+                {loginError && <div className='text-red-400 text-sm mb-4'>{loginError}</div>}
                 <div>
                   <label htmlFor='email' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
                     Your account code
