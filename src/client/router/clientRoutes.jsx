@@ -7,6 +7,10 @@ import MainClientLayout from '../layouts/MainClientLayout'
 import ListRequest from '../pages/ListRequest'
 import UpdateRequest from '../pages/UpdateRequest'
 import ArchivedRequests from '../pages/ArchivedRequests'
+import VerifySendMail from '../pages/VerifySendMail'
+import VerifyCode from '../pages/VerifyCode'
+import ChangePassword from '../pages/ChangePassword'
+
 
 const mainClientLayout = (children) => <MainClientLayout>{children}</MainClientLayout>
 const clientRoutes = [
@@ -15,8 +19,20 @@ const clientRoutes = [
     element: mainClientLayout(<Home />)
   },
   {
-    path: '/client/login',
-    element: mainClientLayout(<Login></Login>)
+    path: '/login',
+    element: <Login />
+  },
+  {
+    path: '/users/send-mail',
+    element: <VerifySendMail />
+  },
+  {
+    path: '/users/verify-code',
+    element: <VerifyCode />
+  },
+  {
+    path: '/users/change-password',
+    element: <ChangePassword />
   },
   {
     path: '/client/request',

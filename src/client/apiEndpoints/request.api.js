@@ -1,4 +1,4 @@
-import http from '../utils/http'
+import http from '../../utils/http';
 
 export const getRequest = (id) => http.get(`/api/request/${id}`)
 export const getRequests = (searchParamsObject) => {
