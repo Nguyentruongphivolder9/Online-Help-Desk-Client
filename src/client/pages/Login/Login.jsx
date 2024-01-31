@@ -1,7 +1,7 @@
 import { loginAccount } from '@/client/apiEndpoints/login.api'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import removeCookie from '@/hooks/removeCookie'
 import addCookie from '@/hooks/addCookie'
@@ -10,7 +10,6 @@ export default function Login() {
   const [loginForm, setLoginForm] = useState({})
   const [loginError, setLoginError] = useState(null)
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
 
   const { mutate } = useMutation({
     mutationFn: (body) => {
@@ -36,7 +35,6 @@ export default function Login() {
               addCookie('access_token', result?.data.access_token, result?.data.expiration)
               addCookie('refresh_token', result?.data.refresh_token)
 
-              queryClient.setQueryData('accountId', result?.data.accountId)
               switch (result?.data.roleTypeName) {
                 case 'End-Users':
                   navigate('/')

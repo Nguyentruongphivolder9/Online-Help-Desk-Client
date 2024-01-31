@@ -3,7 +3,7 @@ import './App.css'
 import useRouteElement from './useRouteElement'
 import getCookie from './hooks/getCookie'
 import { useNavigate } from 'react-router-dom'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { jwtDecode } from 'jwt-decode'
 import { staySignIn } from './client/apiEndpoints/staySignIn'
 import addCookie from './hooks/addCookie'
@@ -11,7 +11,6 @@ import removeCookie from './hooks/removeCookie'
 
 function App() {
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
 
   const { mutate } = useMutation({
     mutationFn: (body) => {
@@ -39,22 +38,20 @@ function App() {
             removeCookie('access_token')
             addCookie('access_token', result?.data.access_token, result?.data.expiration)
 
-            queryClient.setQueryData('accountId', accountId)
-
-            switch (roleTypes) {
-              case 'End-Users':
-                navigate('/')
-                break
-              case 'Facility-Heads':
-                navigate('/admin/facility-header')
-                break
-              case 'Assignees':
-                navigate('/')
-                break
-              case 'Administrator':
-                navigate('/admin')
-                break
-            }
+            // switch (roleTypes) {
+            //   case 'End-Users':
+            //     navigate('/')
+            //     break
+            //   case 'Facility-Heads':
+            //     navigate('/admin/facility-header')
+            //     break
+            //   case 'Assignees':
+            //     navigate('/')
+            //     break
+            //   case 'Administrator':
+            //     navigate('/admin')
+            //     break
+            // }
           } else {
             navigate('/login')
           }
