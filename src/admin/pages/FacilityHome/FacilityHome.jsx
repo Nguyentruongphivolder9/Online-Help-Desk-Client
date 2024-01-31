@@ -20,12 +20,7 @@ export default function FacilityHome({ children }) {
               </Link>
             </div>
             <div className='flex items-center gap-x-3 mr-[30px]'>
-              <span className='text-sm text-gray-700'>Nguyen Phi</span>
-              <img
-                className='w-10 h-10 object-cover rounded-full'
-                alt='User avatar'
-                src='https://avatars3.githubusercontent.com/u/72724639?s=400&u=964a4803693899ad66a9229db55953a3dbaad5c6&v=4'
-              />
+              <span className='text-sm text-gray-700'>Facility -Header Page </span>
             </div>
           </div>
         </div>
