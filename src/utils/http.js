@@ -34,7 +34,6 @@ class Http {
     // }, function (error) {
     //   return Promise.reject(error);
     // });
-
   }
 }
 
