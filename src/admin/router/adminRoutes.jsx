@@ -4,29 +4,42 @@ import AdminHome from '../pages/AdminHome'
 import FacilityHome from '../pages/FacilityHome'
 import CreateAccount from '../pages/CreateAccount'
 import ManagerAccount from '../pages/ManagerAccount'
+import SingleRequestById from '../pages/SingleRequestById'
 
 const mainAdminLayout = (children) => <MainAdminLayout>{children}</MainAdminLayout>
 const adminRoutes = [
   {
     path: '/admin',
-    element: <AdminHome>
-      <ManagerAccount />
-    </AdminHome>
+    element: (
+      <AdminHome>
+        <ManagerAccount />
+      </AdminHome>
+    )
   },
   {
     path: '/admin/create-account',
-    element: <AdminHome>
-      <CreateAccount />
-    </AdminHome>
+    element: (
+      <AdminHome>
+        <CreateAccount />
+      </AdminHome>
+    )
   },
   {
     path: '/admin/facility-header',
-    element: <FacilityHome>
-      <ListRequest />
-    </FacilityHome>
+    element: (
+      <FacilityHome>
+        <ListRequest />
+      </FacilityHome>
+    )
+  },
+  {
+    path: '/admin/facility-header/:id',
+    element: (
+      <FacilityHome>
+        <SingleRequestById />
+      </FacilityHome>
+    )
   }
+]
 
-] 
-
-
-export default adminRoutes 
+export default adminRoutes
