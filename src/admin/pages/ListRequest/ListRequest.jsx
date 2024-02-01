@@ -73,7 +73,7 @@ export default function List() {
   }
 
   if (searchParamsObject.limit === undefined) {
-    searchParamsObject.limit = 1
+    searchParamsObject.limit = 2
   }
 
   const page = Number(searchParamsObject.page) || 1
@@ -164,16 +164,25 @@ export default function List() {
                     {request?.requestStatus?.statusName}
                   </div>
                 </td>
-                <td className=' px-6 py-4'>{request?.processByAssignees[0]?.account?.fullName}</td>
+                <td className='px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis '>
+                  {request?.processByAssignees[0]?.account?.fullName != null
+                    ? request?.processByAssignees[0]?.account?.fullName
+                    : 'N/A'}
+                </td>
                 <td className='max-w-[200px] min-w-[150px]'>
-                  <div className='flex items-center'>
-                    <Link
-                      to={`/admin/facility-header/${request?.id}`}
-                      className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
-                    >
-                      View
-                    </Link>
-                  </div>
+                  {request?.requestStatus?.statusName === 'Open' &&
+                  request?.processByAssignees[0]?.account?.fullName == null ? (
+                    <div className='flex items-center'>
+                      <Link
+                        to={`/admin/facility-header/${request?.id}`}
+                        className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
+                      >
+                        Update
+                      </Link>
+                    </div>
+                  ) : (
+                    <p className=' px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis'>Done</p>
+                  )}
                 </td>
               </tr>
             ))}
