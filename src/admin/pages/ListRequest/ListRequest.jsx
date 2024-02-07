@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useConvertDate } from '@/utils/useConvertDate'
+import { useConvertDate } from '@/hooks/useConvertDate'
 import { Link, useSearchParams } from 'react-router-dom'
 import { getRequest } from '@/admin/apiEndpoints/dataRequest.api'
 import React from 'react'
@@ -189,14 +189,19 @@ export default function List() {
                     : 'N/A'}
                 </td>
                 <td className='max-w-[200px] min-w-[150px]'>
-                  <div className='flex items-center'>
-                    <Link
-                      to={`/admin/facility-header/${request?.id}`}
-                      className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
-                    >
-                      View Detail
-                    </Link>
-                  </div>
+                  {request?.requestStatus?.statusName === 'Open' &&
+                    request?.processByAssignees[0]?.account?.fullName == null ? (
+                    <div className='flex items-center'>
+                      <Link
+                        to={`/admin/facility-header/${request?.id}`}
+                        className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
+                      >
+                        Update
+                      </Link>
+                    </div>
+                  ) : (
+                    <p className=' px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis'>Done</p>
+                  )}
                 </td>
               </tr>
             ))}

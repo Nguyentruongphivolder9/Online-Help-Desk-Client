@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from "react-router-dom"
 import { useMutation } from '@tanstack/react-query'
 import { jwtDecode } from 'jwt-decode'
@@ -6,9 +6,12 @@ import getCookie from '@/hooks/getCookie'
 import { staySignIn } from '@/client/apiEndpoints/staySignIn'
 import removeCookie from '@/hooks/removeCookie'
 import addCookie from '@/hooks/addCookie'
+import LoadingOverlay from '@/common/components/LoadingOverlay'
+LoadingOverlay
 
 export default function Home() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const { mutate } = useMutation({
     mutationFn: (body) => {
@@ -38,13 +41,13 @@ export default function Home() {
 
             switch (roleTypes) {
               case 'End-Users':
-                navigate('/')
+                setIsLoading(true);
                 break
               case 'Facility-Heads':
                 navigate('/admin/facility-header')
                 break
               case 'Assignees':
-                navigate('/')
+                navigate('/admin/assignees')
                 break
               case 'Administrator':
                 navigate('/admin')
@@ -60,5 +63,13 @@ export default function Home() {
     }
   }, [])
 
-  return <div>Home</div>
+  return (
+    <>
+      {!isLoading ? (
+        <LoadingOverlay opacity={1} />
+      ) : (
+        <div>Home</div>
+      )}
+    </>
+  )
 }
