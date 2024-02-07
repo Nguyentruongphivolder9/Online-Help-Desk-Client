@@ -26,8 +26,8 @@ export default function AdminHome({ children }) {
               <div className="w-10 rounded-full" tabIndex={0} role="button">
                 <img src="https://avatars3.githubusercontent.com/u/72724639?s=400&u=964a4803693899ad66a9229db55953a3dbaad5c6&v=4" />
               </div>
-              <div tabIndex={0} className="dropdown-content w-44 px-5 py-3 dark:bg-gray-800 bg-white rounded-lg shadow border dark:border-transparent mt-4">
-                <ul className="space-y-3 dark:text-white">
+              <div tabIndex={0} className="dropdown-content w-44 h-24 px-5 py-3 bg-gray-100 rounded-lg shadow border mt-4">
+                <ul className="space-y-3 text-gray-700">
                   <li className="font-medium">
                     <button className="flex items-center transform transition-colors duration-200 border-r-4 border-transparent ">
                       <div className="mr-3">
@@ -38,7 +38,7 @@ export default function AdminHome({ children }) {
                       Account
                     </button>
                   </li>
-                  <li className="font-medium">
+                  <li className="font-medium ">
                     <button className="flex items-center transform transition-colors duration-200 border-r-4 border-transparent">
                       <div className="mr-3">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
