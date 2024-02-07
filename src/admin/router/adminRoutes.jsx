@@ -5,6 +5,7 @@ import FacilityHome from '../pages/FacilityHome'
 import CreateAccount from '../pages/CreateAccount'
 import ManagerAccount from '../pages/ManagerAccount'
 import SingleRequestById from '../pages/SingleRequestById'
+import AssigneesHome from '../pages/AssigneesHome'
 
 const mainAdminLayout = (children) => <MainAdminLayout>{children}</MainAdminLayout>
 const adminRoutes = [
@@ -22,6 +23,12 @@ const adminRoutes = [
       <AdminHome>
         <CreateAccount />
       </AdminHome>
+    )
+  },
+  {
+    path: '/admin/assignees',
+    element: (
+      <AssigneesHome />
     )
   },
   {

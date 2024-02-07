@@ -43,7 +43,7 @@ export default function Login() {
                   navigate('/admin/facility-header')
                   break
                 case 'Assignees':
-                  navigate('/')
+                  navigate('/admin/assignees')
                   break
                 case 'Administrator':
                   navigate('/admin')

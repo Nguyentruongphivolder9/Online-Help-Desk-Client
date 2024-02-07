@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Button, IconButton } from "@material-tailwind/react";
 
-import { useConvertDate } from '@/utils/useConvertDate';
+import { useConvertDate } from '@/hooks/useConvertDate';
 import { getAccount } from '@/admin/apiEndpoints/account.api';
 import { calculateTotalPages } from '@/utils/calculateTotalPages';
 import { getRoleType } from '@/admin/apiEndpoints/role.api';
