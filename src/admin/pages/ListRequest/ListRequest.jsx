@@ -78,28 +78,27 @@ export default function List() {
 
   const page = Number(searchParamsObject.page) || 1
 
-  console.log(searchParamsObject)
-
   const requestsQuery = useQuery({
     queryKey: ['requests', searchParamsObject],
     queryFn: () => getRequest(searchParamsObject)
   })
 
+  console.log(requestsQuery?.data)
+
   const totalRequestCount = Number(requestsQuery?.data?.data?.data.totalCount) || 0
   const limit = Number(requestsQuery?.data?.data?.data.limit)
   const totalPage = Math.ceil(totalRequestCount / limit)
-  console.log(totalPage)
 
   return (
     <div className='max-w-7xl py-7 mx-auto px-5'>
       <div className='mb-3 py-2 xl:w-96'>
         <div className='relative mb-4 flex w-full flex-wrap items-stretch'>
           <input
-            type='search'
-            className='relative m-0 block flex-auto rounded border border-solid border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:text-neutral-700 focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary'
-            placeholder='Search'
-            aria-label='Search'
-            aria-describedby='button-addon2'
+            type='text'
+            id='table-search'
+            className='block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 '
+            placeholder='Search for items'
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
 
           {/* <!--Search icon--> */}
