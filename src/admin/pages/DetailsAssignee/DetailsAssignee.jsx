@@ -2,7 +2,7 @@ import React from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getTotalRequest, getAssignee } from '@/admin/apiEndpoints/dataAssignee.api'
 import { useParams } from 'react-router-dom'
-import { useConvertDate } from '@/utils/useConvertDate'
+import { useConvertDate } from '@/hooks/useConvertDate'
 
 export default function List() {
   const { id } = useParams()

@@ -1,6 +1,5 @@
 import React from 'react'
-import { Link, NavLink } from 'react-router-dom'
-import { useQueryClient } from '@tanstack/react-query'
+import { NavLink } from 'react-router-dom'
 import useLogout from '@/hooks/useLogout';
 import HeaderAdmin from '@/admin/components/HeaderAdmin';
 
@@ -8,8 +7,8 @@ export default function AdminHome({ children }) {
 
   return <div>
     <HeaderAdmin />
-    <div className="flex overflow-hidden bg-white pt-16">
-      <aside id="sidebar" className="fixed hidden z-20 h-full top-0 left-0 pt-16 flex lg:flex flex-shrink-0 flex-col w-64 transition-width duration-75" aria-label="Sidebar">
+    <div className="flex overflow-hidden bg-white pt-[72px]">
+      <aside id="sidebar" className="fixed z-20 h-full top-0 left-0 pt-16 flex lg:flex flex-shrink-0 flex-col w-64 transition-width duration-75" aria-label="Sidebar">
         <div className="relative flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white pt-0">
           <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
             <div className="flex-1 px-3 bg-white divide-y space-y-1">

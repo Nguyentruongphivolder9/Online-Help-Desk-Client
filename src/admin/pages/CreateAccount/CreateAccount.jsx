@@ -14,6 +14,7 @@ import { DayPicker } from "react-day-picker";
 import FileUpload from '@/admin/components/FileUpload'
 import { postRegister } from '@/admin/apiEndpoints/account.api';
 import { getRole } from '@/admin/apiEndpoints/role.api';
+import { useNavigate } from 'react-router-dom'
 
 const formRequest = {
   roleId: '',
@@ -37,6 +38,7 @@ export default function CreateAccount() {
   const [errorPhoneNumber, setErrorPhoneNumber] = useState(null);
   const [errorAddress, setErrorAddress] = useState(null);
   const [errorRoleId, setErrorRoleId] = useState(null);
+  const navigate = useNavigate();
 
   const specialCharactersRegex = /[!@#$%^&*(),.?":{}|<>]/;
   const whitespaceRegex = /\s/;
@@ -100,10 +102,7 @@ export default function CreateAccount() {
   }
 
   const handleFullName = (value) => {
-    if (whitespaceRegex.test(value)) {
-      formRequest.fullName = '';
-      setErrorFullName("Does not contain spaces");
-    } else if (value.length > 30) {
+    if (value.length > 30) {
       formRequest.fullName = '';
       setErrorFullName("Does not exceed 30 characters");
     } else if (specialCharactersRegex.test(value)) {
@@ -198,7 +197,7 @@ export default function CreateAccount() {
         onSuccess: (response) => {
           const result = response.data
           if (result.isSuccess) {
-            console.log(result.statusMessage);
+            navigate('/admin')
           } else {
             console.log(result.statusMessage);
           }
