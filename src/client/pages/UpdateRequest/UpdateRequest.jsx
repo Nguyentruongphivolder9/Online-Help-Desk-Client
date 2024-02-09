@@ -19,7 +19,7 @@ export default function UpdateRequest() {
   const navigate = useNavigate()
   const [dataSate, setDataSate] = useState(initalState)
   const requestQuery = useQuery({
-    queryKey: ['request', id],
+    queryKey: ['requestupdate', id],
     queryFn: async () => {
       const data = await getRequest(id.toUpperCase())
       console.log(data)
@@ -27,6 +27,8 @@ export default function UpdateRequest() {
     },
     enabled: id !== undefined // có id trên URl thì queryFn mới được gọi
   })
+
+  console.log(requestQuery.data)
 
   useEffect(() => {
     if (requestQuery.data) {

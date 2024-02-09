@@ -1,11 +1,14 @@
 import { addRequest, getDepartments, getRequest } from '@/client/apiEndpoints/request.api'
 import http from '@/client/utils/http'
+import getCookie from '@/hooks/getCookie'
+import useGetInfoFromJWT from '@/hooks/useGetInfoFromJWT'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { jwtDecode } from 'jwt-decode'
 import { useEffect, useState } from 'react'
 import { useMatch, useParams } from 'react-router-dom'
 
 const initialFormState = {
-  accountId: 'ST729729',
+  accountId: '',
   roomId: '',
   description: '',
   severalLevel: '',
@@ -13,14 +16,22 @@ const initialFormState = {
 }
 
 export default function AddRequest() {
+  const { accountId } = useGetInfoFromJWT()
   const [formState, setFormState] = useState(initialFormState || {})
   const [selectedDepartment, setSelectedDepartment] = useState('')
-  const [errorState, setErrorState] = useState([])
-  const [roomError, setRoomError] = useState('')
+  const [errorState, setErrorState] = useState([]) // validation Error
+  const [unProRequestErrorState, setUnProRequestErrorState] = useState('')
   const [departmentError, setDepartmentError] = useState('')
   const addMatch = useMatch('/client/request/add')
   const isAddMode = Boolean(addMatch)
   const { id } = useParams()
+
+  useEffect(() => {
+    if (accountId) {
+      setFormState((prev) => ({ ...prev, accountId: accountId }))
+    }
+  }, [])
+
   const { mutate, data, error, reset } = useMutation({
     mutationFn: (body) => {
       return addRequest(body)
@@ -28,7 +39,7 @@ export default function AddRequest() {
   })
 
   const departmentQuery = useQuery({
-    queryKey: ['department'],
+    queryKey: ['departments'],
     queryFn: async () => {
       const data = await getDepartments()
       console.log('department', data)
@@ -37,43 +48,26 @@ export default function AddRequest() {
     enabled: !Boolean(id) // không có id trên url thì gọi queryFn
   })
 
-  // const requestQuery = useQuery({
-  //   queryKey: ['request', id],
-  //   queryFn: async () => {
-  //     const data = await getRequest(id.toUpperCase())
-  //     console.log(data)
-  //     return data
-  //   },
-  //   enabled: id !== undefined // có id trên URl thì queryFn mới được gọi
-  // })
-
-  // useEffect(() => {
-  //   if (requestQuery.data) {
-  //     setFormState(requestQuery.data?.data?.data)
-  //   }
-  // }, [requestQuery])
-
   // console.log('errorState', errorState)
   // console.log('data', data)
   const handleChange = (name) => (event) => {
     setFormState((prev) => ({ ...prev, [name]: event.target.value }))
-    if (errorState || roomError || departmentError) {
+    if (errorState || departmentError || unProRequestErrorState) {
       setErrorState([])
-      setRoomError('')
       setDepartmentError('')
+      setUnProRequestErrorState('')
     }
   }
-
   const handleDepartmentChange = (event) => {
     const selectedDepartmentId = event.target.value
     const selectedDepartment = departmentQuery.data?.data?.data.find((depart) => depart.id === selectedDepartmentId)
     setSelectedDepartment(selectedDepartment)
-    console.log(selectedDepartment)
+
     // xoá lỗi khi chọn lai department
-    if (errorState || roomError || departmentError) {
+    if (errorState || departmentError || unProRequestErrorState) {
       setErrorState([])
-      setRoomError('')
       setDepartmentError('')
+      setUnProRequestErrorState('')
     }
     if (selectedDepartment == undefined) {
       setFormState((prev) => ({ ...prev, roomId: '' }))
@@ -85,17 +79,17 @@ export default function AddRequest() {
     console.log(formState)
     mutate(formState, {
       onSuccess: (data) => {
-        if (!data?.data.validationsErrors) {
+        console.log(data)
+        if (!data?.data.validationsErrors && !data?.data?.error) {
           setFormState(initialFormState)
           setSelectedDepartment('')
-        }
-        setErrorState(data?.data?.validationsErrors)
-      },
-      onError: () => {
-        if (selectedDepartment) {
-          setRoomError('Please select room!')
-        } else {
-          setDepartmentError('Please select department!')
+        } else if (data?.data.validationsErrors && data?.data?.error.code === 'ValidationError') {
+          if (selectedDepartment == '') {
+            setDepartmentError('Please select department!')
+          }
+          setErrorState(data?.data?.validationsErrors)
+        } else if (data?.data?.error) {
+          setUnProRequestErrorState(data?.data?.error.description)
         }
       }
     })
@@ -103,13 +97,14 @@ export default function AddRequest() {
 
   //{code: 'Description', description: 'Description cannot be left blank.'} code là fieldName vcbìu
   const getErrorForField = (fieldName) => {
-    const errorsForField = errorState.filter((error) => error.code === fieldName)
+    const errorsForField = errorState.filter((error) => error.code.toLowerCase() === fieldName.toLowerCase())
     return errorsForField.map((error) => error.description)
   }
 
   return (
-    <section className='bg-white dark:bg-gray-900'>
+    <section className=''>
       <div className='py-8 px-4 mx-auto max-w-2xl lg:py-16'>
+        <span className='text-sm text-red-500'>{unProRequestErrorState}</span>
         <h2 className='mb-4 text-xl font-bold text-gray-900 dark:text-white'>
           {isAddMode ? 'Make' : 'Edit'} a Request
         </h2>
@@ -117,12 +112,10 @@ export default function AddRequest() {
           <div className='grid gap-4 sm:grid-cols-2 sm:gap-4 md:gap-4 lg:gap-4'>
             {/* Department */}
             <div>
-              <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                Select Department:{' '}
-              </label>
+              <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>Select Department</label>
               <select
                 onChange={handleDepartmentChange}
-                className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5'
+                className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 transition delay-100 outline-none focus:border-blue-300'
                 value={selectedDepartment ? selectedDepartment.id : ''}
               >
                 <option value=''>Select Department</option>
@@ -143,7 +136,7 @@ export default function AddRequest() {
               </label>
               <select
                 id='roomId'
-                className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
+                className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 transition delay-100 outline-none focus:border-blue-300'
                 value={formState.roomId}
                 onChange={handleChange('roomId')}
               >
@@ -155,36 +148,28 @@ export default function AddRequest() {
                     </option>
                   ))}
               </select>
-              <div className='text-red-500 text-sm'>{roomError}</div>
+              <div className='text-red-500 text-sm'>
+                {errorState &&
+                  getErrorForField('RoomId').map((error, index) => (
+                    <div key={index} className='text-red-500 text-sm/[1.25rem]'>
+                      {error}
+                    </div>
+                  ))}
+              </div>
             </div>
-
-            {/* <div className='sm:col-span-2'>
-              <label htmlFor='roomId' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                RoomId
-              </label>
-              <input
-                type='text'
-                name='roomId'
-                id='roomId'
-                className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
-                placeholder='Room ID'
-                value={formState.roomId}
-                onChange={handleChange('roomId')}
-              />
-            </div> */}
 
             {/* Several Level */}
             <div className='sm:col-span-2'>
               <label htmlFor='severalLevel' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                Several Level
+                Severity Level
               </label>
               <select
                 id='severalLevel'
-                className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
+                className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 transition delay-100 outline-none focus:border-blue-300'
                 value={formState.severalLevel}
                 onChange={handleChange('severalLevel')}
               >
-                <option value=''>Select Several Level</option>
+                <option value=''>Severity Level</option>
                 <option value='Normal'>Normal</option>
                 <option value='Important'>Important</option>
                 <option value='Urgent'>Urgent</option>
@@ -231,7 +216,7 @@ export default function AddRequest() {
               <textarea
                 id='description'
                 rows={8}
-                className='block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
+                className='block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border transition delay-100 outline-none border-gray-300 focus:border-blue-300'
                 placeholder='Your description here'
                 value={formState.description}
                 onChange={handleChange('description')}
@@ -248,7 +233,7 @@ export default function AddRequest() {
           </div>
           <button
             type='submit'
-            className='inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800'
+            className='inline-flex items-center px-5 py-2.5 mt-4 sm:mt-5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200 hover:bg-primary-800'
           >
             Make request
           </button>
