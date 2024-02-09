@@ -12,7 +12,7 @@ import { format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 
 import FileUpload from '@/admin/components/FileUpload'
-import { postRegister } from '@/admin/apiEndpoints/account.api';
+import { checkEmail, checkPhoneNumber, postRegister } from '@/admin/apiEndpoints/account.api';
 import { getRole } from '@/admin/apiEndpoints/role.api';
 import { useNavigate } from 'react-router-dom'
 
@@ -41,7 +41,7 @@ export default function CreateAccount() {
   const navigate = useNavigate();
 
   const specialCharactersRegex = /[!@#$%^&*(),.?":{}|<>]/;
-  const whitespaceRegex = /\s/;
+  // const whitespaceRegex = /\s/;
   const formatEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const phoneNumberRegex = /^(032|033|034|035|036|037|038|039|096|097|098|086|083|084|085|081|082|088|091|094|070|079|077|076|078|090|093|089|056|058|092|059|099)\d{7}$/;
 
@@ -49,15 +49,27 @@ export default function CreateAccount() {
     queryKey: ['roles/get-all'],
     queryFn: async () => {
       const data = await getRole();
-      return data
+      return data;
     }
   });
 
-  const { mutate } = useMutation({
+  const createAccount = useMutation({
     mutationFn: (body) => {
       return postRegister(body)
     }
-  })
+  });
+
+  const checkDuplicateEmail = useMutation({
+    mutationFn: (body) => {
+      return checkEmail(body);
+    }
+  });
+
+  const checkDuplicatePhoneNumber = useMutation({
+    mutationFn: (body) => {
+      return checkPhoneNumber(body);
+    }
+  });
 
   const handleUploadFile = (fileData) => {
     if (fileData === undefined) {
@@ -96,8 +108,18 @@ export default function CreateAccount() {
       formRequest.email = '';
       setErrorEmail("Invalid email format");
     } else {
-      formRequest.email = value;
-      setErrorEmail('');
+      checkDuplicateEmail.mutate(value, {
+        onSuccess: (response) => {
+          const result = response.data
+          if (result.isSuccess) {
+            formRequest.email = value;
+            setErrorEmail('');
+          } else {
+            formRequest.email = '';
+            setErrorEmail(`${result.statusMessage}`);
+          }
+        }
+      });
     }
   }
 
@@ -125,8 +147,18 @@ export default function CreateAccount() {
       formRequest.phoneNumber = '';
       setErrorPhoneNumber("The phone number you entered incorrectly");
     } else {
-      formRequest.phoneNumber = value;
-      setErrorPhoneNumber('');
+      checkDuplicatePhoneNumber.mutate(value, {
+        onSuccess: (response) => {
+          const result = response.data
+          if (result.isSuccess) {
+            formRequest.phoneNumber = value;
+            setErrorPhoneNumber('');
+          } else {
+            formRequest.phoneNumber = value;
+            setErrorPhoneNumber(`${result.statusMessage}`);
+          }
+        }
+      });
     }
   }
 
@@ -193,7 +225,7 @@ export default function CreateAccount() {
     }
 
     if (count == 0) {
-      mutate(formRequest, {
+      createAccount.mutate(formRequest, {
         onSuccess: (response) => {
           const result = response.data
           if (result.isSuccess) {
@@ -278,7 +310,7 @@ export default function CreateAccount() {
                         type="text"
                         name="phone_number"
                         className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                        placeholder="0909 009 009"
+                        placeholder="0909009009"
                         onChange={(e) => handlePhoneNumber(e.target.value)}
                         onKeyDown={(e) => {
                           if (!(e.key >= '0' && e.key <= '9') && e.key !== 'Backspace') {
