@@ -98,7 +98,7 @@ export default function Login() {
                   />
                 </div>
                 <div className='flex items-center justify-end'>
-                  <Link to={'?'} className='text-sm font-medium text-primary-600 hover:underline dark:text-primary-500'>
+                  <Link to='/users/send-mail' className='text-sm font-medium text-primary-600 hover:underline dark:text-primary-500'>
                     Forgot password?
                   </Link>
                 </div>

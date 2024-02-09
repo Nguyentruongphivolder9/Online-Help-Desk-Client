@@ -6,11 +6,8 @@ import FacilityHome from '../pages/FacilityHome'
 import CreateAccount from '../pages/CreateAccount'
 import ManagerAccount from '../pages/ManagerAccount'
 import SingleRequestById from '../pages/SingleRequestById'
-<<<<<<< HEAD
 import AssigneesHome from '../pages/AssigneesHome'
-=======
 import DetailsAssignee from '../pages/DetailsAssignee'
->>>>>>> 8f36d393788638d2edf82bbfeac86d3f04603dd5
 
 const mainAdminLayout = (children) => <MainAdminLayout>{children}</MainAdminLayout>
 const adminRoutes = [

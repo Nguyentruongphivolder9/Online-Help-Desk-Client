@@ -3,17 +3,10 @@ import { useQuery } from '@tanstack/react-query'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Button, IconButton } from '@material-tailwind/react'
 
-<<<<<<< HEAD
 import { useConvertDate } from '@/hooks/useConvertDate';
 import { getAccount } from '@/admin/apiEndpoints/account.api';
 import { calculateTotalPages } from '@/utils/calculateTotalPages';
 import { getRoleType } from '@/admin/apiEndpoints/role.api';
-=======
-import { useConvertDate } from '@/utils/useConvertDate'
-import { getRoleType } from '@/admin/apiEndpoints/dataRoleType.api'
-import { getAccount } from '@/admin/apiEndpoints/dataAccount.api'
-import { calculateTotalPages } from '@/utils/calculateTotalPages'
->>>>>>> 8f36d393788638d2edf82bbfeac86d3f04603dd5
 
 export default function ManagerAccount() {
   const [activeRoleType, setActiveRoleType] = useState('All')

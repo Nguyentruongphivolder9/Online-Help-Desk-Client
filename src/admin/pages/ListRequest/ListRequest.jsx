@@ -1,8 +1,7 @@
+import { getRequests, upateRequest } from '@/client/apiEndpoints/request.api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useConvertDate } from '@/hooks/useConvertDate'
+import React, { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { getRequest } from '@/admin/apiEndpoints/dataRequest.api'
-import React from 'react'
 
 const getColorClass = (statusName) => {
   switch (statusName) {
@@ -57,7 +56,7 @@ const getColorClass = (statusName) => {
   }
 }
 
-export default function List() {
+export default function ListRequest() {
   const queryClient = useQueryClient()
   // const [searchParamsObject, setSearchParamsObject] = useState({})
   const [searchParams, setSearchParams] = useSearchParams()
@@ -75,78 +74,132 @@ export default function List() {
   if (searchParamsObject.limit === undefined) {
     searchParamsObject.limit = 2
   }
-
-  const page = Number(searchParamsObject.page) || 1
-
+  console.log(searchParamsObject)
   const requestsQuery = useQuery({
     queryKey: ['requests', searchParamsObject],
-    queryFn: () => getRequest(searchParamsObject)
+    queryFn: () => getRequests(searchParamsObject)
   })
-
-  console.log(requestsQuery?.data)
-
+  console.log(requestsQuery.data)
   const totalRequestCount = Number(requestsQuery?.data?.data?.data.totalCount) || 0
   const limit = Number(requestsQuery?.data?.data?.data.limit)
   const totalPage = Math.ceil(totalRequestCount / limit)
+  console.log(totalPage)
+
+  const updateRequestMutation = useMutation({
+    mutationFn: (body) => upateRequest(body)
+  })
+
+  const handleUpdateRequest = (objectData) => {
+    updateRequestMutation.mutate(objectData, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['requests'] })
+        console.log('Update successfully')
+      },
+      onError: () => {
+        console.log('Failed')
+      }
+    })
+  }
+
+  // const handleSort = (e) => {
+  //   let sortColumn = searchParams.get('sortColumn')
+  //   let sortOrder = searchParams.get('sortOrder') || 'asc'
+  //   sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'
+  //   setSearchParamsObject((prev) => ({ ...prev, sortColumn: sortColumn, sortOrder: sortOrder }))
+  //   console.log({ ...searchParamsObject, sortColumn, sortOrder })
+  //   console.log(searchParamsObject)
+  //   setSearchParams({ ...searchParamsObject, sortColumn, sortOrder })
+  // }
 
   return (
-    <div className='max-w-7xl py-7 mx-auto px-5'>
-      <div className='mb-3 py-2 xl:w-96'>
-        <div className='relative mb-4 flex w-full flex-wrap items-stretch'>
-          <input
-            type='text'
-            id='table-search'
-            className='block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 '
-            placeholder='Search for items'
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-
-          {/* <!--Search icon--> */}
-          <span
-            className='input-group-text flex items-center whitespace-nowrap rounded px-3 py-1.5 text-center text-base font-normal text-neutral-700 dark:text-neutral-200'
-            id='basic-addon2'
-          >
-            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor' className='h-5 w-5'>
-              <path
-                fillRule='evenodd'
-                d='M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z'
-                clipRule='evenodd'
-              />
-            </svg>
-          </span>
-        </div>
-      </div>
-
+    <div className='max-w-7xl mx-auto px-5'>
+      <Link
+        className='inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
+        to={'/client/request/archived'}
+      >
+        View archived requests
+      </Link>
       <div className='relative shadow-md sm:rounded-lg bg-white my-5'>
         <table className='w-full text-sm text-left rtl:text-right text-gray-500'>
           <thead className='text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700'>
             <tr>
               <th scope='col' className='px-6 py-3 max-w-[300px]'>
-                <span>Department (Room)</span>
+                <Link
+                  to={`/client/request/?sortColumn=department&sortOrder=asc`}
+                  onClick={() => handleSort()}
+                  className='flex justify-between'
+                >
+                  <span>Department (Room)</span>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    strokeWidth={1.5}
+                    stroke='currentColor'
+                    className='w-4 h-4'
+                  >
+                    <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3' />
+                  </svg>
+                </Link>
               </th>
               <th scope='col' className='px-6 py-3 '>
                 <div className='flex justify-between'>
                   <span>Level</span>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    strokeWidth={1.5}
+                    stroke='currentColor'
+                    className='w-4 h-4'
+                  >
+                    <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3' />
+                  </svg>
                 </div>
               </th>
               <th scope='col' className='px-6 py-3 '>
                 <div className='flex justify-between'>
                   <span>Description</span>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    strokeWidth={1.5}
+                    stroke='currentColor'
+                    className='w-4 h-4'
+                  >
+                    <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3' />
+                  </svg>
                 </div>
               </th>
               <th scope='col' className='px-6 py-3 '>
                 <div className='flex justify-between'>
-                  <span>CreateAt</span>
+                  <span>Reason</span>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    strokeWidth={1.5}
+                    stroke='currentColor'
+                    className='w-4 h-4'
+                  >
+                    <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3' />
+                  </svg>
                 </div>
               </th>
               <th scope='col' className='px-6 py-3 '>
                 <div className='flex justify-between'>
                   <span>Status</span>
-                </div>
-              </th>
-              <th scope='col' className='px-6 py-3 '>
-                <div className='flex justify-between'>
-                  <span>Assignee</span>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    strokeWidth={1.5}
+                    stroke='currentColor'
+                    className='w-4 h-4'
+                  >
+                    <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3' />
+                  </svg>
                 </div>
               </th>
               <th scope='col' className='px-6 py-3 '>
@@ -156,66 +209,62 @@ export default function List() {
           </thead>
 
           <tbody>
-            {requestsQuery.data?.data?.data.items.map((request, index) => (
-              <tr
-                key={request.id}
-                className={`border-l-4 ${getColorClass(request?.requestStatus?.statusName).borderColor}  hover:bg-gray-50 dark:hover:bg-gray-600`}
-              >
-                <th
-                  scope='row'
-                  className=' px-6 py-4 font-medium text-gray-900 whitespace-nowrap overflow-hidden overflow-ellipsis uppercase'
+            {requestsQuery.data?.data?.data.items
+              .filter((request) => request.enable)
+              .map((request) => (
+                <tr
+                  key={request.id}
+                  className={`border-l-4 ${getColorClass(request?.requestStatus?.statusName).borderColor}  hover:bg-gray-50 dark:hover:bg-gray-600`}
                 >
-                  {request.room.departments.departmentName} ({request.room.roomNumber})
-                </th>
-                <td className=' px-6 py-4'>{request.severalLevel}</td>
-                <td className=' px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis'>
-                  {request.description}
-                </td>
-                <td className=' px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis'>
-                  {useConvertDate(request.createdAt)}
-                </td>
-                <td>
-                  <div
-                    className={`relative  grid items-center p-1 justify-center font-sans text-xs font-bold 
+                  <th
+                    scope='row'
+                    className=' px-6 py-4 font-medium text-gray-900 whitespace-nowrap overflow-hidden overflow-ellipsis uppercase'
+                  >
+                    {request.room.departments.departmentName} ({request.room.roomNumber})
+                  </th>
+                  <td className=' px-6 py-4'>{request.severalLevel}</td>
+                  <td className=' px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis'>
+                    {request.description}
+                  </td>
+                  <td className=' px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis'>{request.reason}</td>
+                  <td>
+                    <div
+                      className={`relative  grid items-center p-1 justify-center font-sans text-xs font-bold 
                       ${request?.requestStatus?.statusName === 'Assigned' ? 'text-gray-900' : 'text-white'} 
                       ${getColorClass(request?.requestStatus?.statusName).background} uppercase rounded-md select-none whitespace-nowrap `}
-                  >
-                    {request?.requestStatus?.statusName}
-                  </div>
-                </td>
-                <td className='px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis '>
-                  {request?.processByAssignees[0]?.account?.fullName != null
-                    ? request?.processByAssignees[0]?.account?.fullName
-                    : 'N/A'}
-                </td>
-                <td className='max-w-[200px] min-w-[150px]'>
-<<<<<<< HEAD
-                  {request?.requestStatus?.statusName === 'Open' &&
-                    request?.processByAssignees[0]?.account?.fullName == null ? (
+                    >
+                      {request?.requestStatus?.statusName}
+                    </div>
+                  </td>
+                  <td className='max-w-[200px] min-w-[150px]'>
                     <div className='flex items-center'>
                       <Link
-                        to={`/admin/facility-header/${request?.id}`}
+                        to={`/client/request/${request.id}`}
                         className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
                       >
-                        Update
+                        View
                       </Link>
+                      {['Completed', 'Rejected', 'Closed'].includes(request?.requestStatus?.statusName) ? (
+                        <button
+                          onClick={() =>
+                            handleUpdateRequest({
+                              id: request?.id,
+                              accountId: request?.account?.accountId,
+                              requestStatusId: null,
+                              enable: !request?.enable
+                            })
+                          }
+                          className='inline-flex items-center px-2 py-2 ml-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
+                        >
+                          Archive
+                        </button>
+                      ) : (
+                        ''
+                      )}
                     </div>
-                  ) : (
-                    <p className=' px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis'>Done</p>
-                  )}
-=======
-                  <div className='flex items-center'>
-                    <Link
-                      to={`/admin/facility-header/${request?.id}`}
-                      className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
-                    >
-                      View Detail
-                    </Link>
-                  </div>
->>>>>>> 8f36d393788638d2edf82bbfeac86d3f04603dd5
-                </td>
-              </tr>
-            ))}
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
         <nav
@@ -228,18 +277,12 @@ export default function List() {
           </span>
           <ul className='inline-flex -space-x-px rtl:space-x-reverse text-sm h-8'>
             <li>
-              {page === 1 ? (
-                <span className='cursor-not-allowed rounded-l-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '>
-                  Previous
-                </span>
-              ) : (
-                <Link
-                  className='rounded-l-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '
-                  to={`/admin/facility-header?page=${page - 1}&limit=${searchParamsObject.limit}`}
-                >
-                  Previous
-                </Link>
-              )}
+              <a
+                href='#'
+                className='flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700'
+              >
+                Previous
+              </a>
             </li>
             {!requestsQuery.isLoading &&
               Array(totalPage)
@@ -249,27 +292,22 @@ export default function List() {
                   return (
                     <li key={pageNumber}>
                       <Link
-                        to={`/admin/facility-header?page=${pageNumber}&limit=${searchParamsObject.limit}`}
-                        className='rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '
+                        to={`/client/request?page=${pageNumber}&limit=${searchParamsObject.limit}`}
+                        className='flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700'
                       >
                         {pageNumber}
                       </Link>
                     </li>
                   )
                 })}
+
             <li>
-              {page === totalPage ? (
-                <span className='cursor-not-allowed rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '>
-                  Next
-                </span>
-              ) : (
-                <Link
-                  className='rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '
-                  to={`/admin/facility-header?page=${page + 1}&limit=${searchParamsObject.limit}`}
-                >
-                  Next
-                </Link>
-              )}
+              <a
+                href='#'
+                className='flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
+              >
+                Next
+              </a>
             </li>
           </ul>
         </nav>
