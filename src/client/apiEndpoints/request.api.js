@@ -12,6 +12,18 @@ export const getRequests = (searchParamsObject) => {
     }
   })
 }
+
+export const getArchivedRequests = (searchParamsObject) => {
+  const token = getCookie('access_token')
+
+  return http.get('/api/request-archived', {
+    params: searchParamsObject,
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+}
+
 export const addRequest = (request) => {
   const token = getCookie('access_token')
 

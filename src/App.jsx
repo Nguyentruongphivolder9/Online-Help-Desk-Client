@@ -41,20 +41,20 @@ function App() {
 
             queryClient.setQueryData('accountId', accountId)
 
-            switch (roleTypes) {
-              case 'End-Users':
-                navigate('/')
-                break
-              case 'Facility-Heads':
-                navigate('/admin/facility-header')
-                break
-              case 'Assignees':
-                navigate('/')
-                break
-              case 'Administrator':
-                navigate('/admin')
-                break
-            }
+            // switch (roleTypes) {
+            //   case 'End-Users':
+            //     navigate('/')
+            //     break
+            //   case 'Facility-Heads':
+            //     navigate('/admin/facility-header')
+            //     break
+            //   case 'Assignees':
+            //     navigate('/')
+            //     break
+            //   case 'Administrator':
+            //     navigate('/admin')
+            //     break
+            // }
           } else {
             navigate('/login')
           }
