@@ -1,34 +1,14 @@
 import React from 'react'
-import { Link, NavLink } from 'react-router-dom'
-import { useQueryClient } from '@tanstack/react-query'
+import { NavLink } from 'react-router-dom'
+import useLogout from '@/hooks/useLogout';
+import HeaderAdmin from '@/admin/components/HeaderAdmin';
 
 export default function AdminHome({ children }) {
-  const queryClient = useQueryClient();
-  // const accountId = queryClient.getQueryData('accountId');
-  // console.log(accountId);
 
   return <div>
-    <nav className="bg-white border-b border-gray-200 fixed z-30 w-full">
-      <div className="flex items-center px-3 py-3 lg:px-5 lg:pl-3">
-        <div className="w-full flex items-center justify-between">
-          <div className="w-64 items-center justify-start">
-            <Link to='/admin/home' className="flex justify-center cursor-pointer py-1.5 font-sans leading-relaxed antialiased">
-              <img
-                src='https://www.shorttermprograms.com/images/cache/600_by_314/uploads/institution-logos/harvard-university.png'
-                className='sm:h-9'
-                alt='Harvard Logo'
-              />
-            </Link>
-          </div>
-          <div className="flex items-center gap-x-3 mr-[30px]">
-            <span className='text-sm text-gray-700'>Nguyen Phi</span>
-            <img className="w-10 h-10 object-cover rounded-full" alt="User avatar" src="https://avatars3.githubusercontent.com/u/72724639?s=400&u=964a4803693899ad66a9229db55953a3dbaad5c6&v=4" />
-          </div>
-        </div>
-      </div>
-    </nav>
-    <div className="flex overflow-hidden bg-white pt-16">
-      <aside id="sidebar" className="fixed hidden z-20 h-full top-0 left-0 pt-16 flex lg:flex flex-shrink-0 flex-col w-64 transition-width duration-75" aria-label="Sidebar">
+    <HeaderAdmin />
+    <div className="flex overflow-hidden bg-white pt-[72px]">
+      <aside id="sidebar" className="fixed z-20 h-full top-0 left-0 pt-16 flex lg:flex flex-shrink-0 flex-col w-64 transition-width duration-75" aria-label="Sidebar">
         <div className="relative flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white pt-0">
           <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
             <div className="flex-1 px-3 bg-white divide-y space-y-1">
@@ -89,20 +69,19 @@ export default function AdminHome({ children }) {
                   </a>
                 </li>
               </ul>
-              <div className="space-y-2 pt-2">
-
-                <a href="#" target="_blank" className="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 group transition duration-75 flex items-center p-2">
+              <div className="space-y-2 pt-2 w-full">
+                <button onClick={useLogout()} target="_blank" className="w-full text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 group transition duration-75 flex items-center p-2">
                   <svg className="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                     <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
                   </svg>
                   <span className="ml-3">Log Out</span>
-                </a>
+                </button>
               </div>
             </div>
           </div>
         </div>
       </aside>
-      <div id="main-content" className="h-full w-full bg-gray-50 relative overflow-y-auto lg:ml-64 p-[20px]">
+      <div id="main-content" className="min-h-dvh w-full bg-gray-50 relative overflow-y-auto lg:ml-64 p-[20px]">
         {children}
       </div>
     </div>
