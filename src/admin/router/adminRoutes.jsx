@@ -29,15 +29,13 @@ const adminRoutes = [
   },
   {
     path: '/admin/assignees',
-    element: (
-      <AssigneesHome />
-    )
+    element: <AssigneesHome />
   },
   {
     path: '/admin/facility-header',
     element: (
       <FacilityHome>
-        <ListRequest />
+        <FacilityMain />
       </FacilityHome>
     )
   },
@@ -46,6 +44,22 @@ const adminRoutes = [
     element: (
       <FacilityHome>
         <ListAssignee />
+      </FacilityHome>
+    )
+  },
+  {
+    path: '/admin/facility-header/ListRequest',
+    element: (
+      <FacilityHome>
+        <ListRequest />
+      </FacilityHome>
+    )
+  },
+  {
+    path: '/admin/facility-header/ListRequest/:status',
+    element: (
+      <FacilityHome>
+        <ListRequest />
       </FacilityHome>
     )
   },

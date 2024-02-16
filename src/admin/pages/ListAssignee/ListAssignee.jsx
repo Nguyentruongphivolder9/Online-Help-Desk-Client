@@ -1,32 +1,68 @@
-import React from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import React, { useState, useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Link, useSearchParams } from 'react-router-dom'
 import { getListAssignee } from '@/admin/apiEndpoints/dataAssignee.api'
+import { calculateTotalPages } from '@/utils/calculateTotalPages'
 
 export default function List() {
-  // const [searchParamsObject, setSearchParamsObject] = useState({})
-  // const [searchParams, setSearchParams] = useSearchParams()
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(2)
+  const [searchTerm, setSearchTerm] = useState('')
 
-  // const searchParamsObject = Object.fromEntries([...searchParams])
+  const [searchParams, setSearchParams] = useSearchParams()
+  const searchParamsObject = Object.fromEntries([...searchParams])
 
-  // if (searchParamsObject.page === undefined) {
-  //   searchParamsObject.page = 1
-  // }
+  useEffect(() => {
+    searchParams.set('page', page)
+    searchParams.set('limit', limit)
 
-  // if (searchParamsObject.limit === undefined) {
-  //   searchParamsObject.limit = 2
-  // }
+    if (searchTerm) {
+      searchParams.set('searchTerm', searchTerm)
+    } else {
+      searchParams.delete('searchTerm')
+    }
 
-  // const page = Number(searchParamsObject.page) || 1
+    setSearchParams(searchParams)
+  }, [searchTerm, page, limit])
 
-  const { data: accountResponse, isLoading } = useQuery({
-    queryKey: ['request/getAssignee'],
+  const { data: accountResponse, isLoading: isLoadingAccount } = useQuery({
+    queryKey: ['request/listAssignees', searchParamsObject],
     queryFn: async () => {
-      const data = await getListAssignee()
+      const data = await getListAssignee(searchParamsObject)
       return data
     }
   })
-  console.log(accountResponse?.data)
+  console.log(accountResponse)
+  // console.log(searchParamsObject)
+
+  const totalPage = calculateTotalPages(accountResponse?.data?.data.totalCount, limit)
+  const totalPageArray = Array.from({ length: totalPage }, (_, index) => index + 1)
+
+  const nextPage = () => {
+    if (page === 5) return
+
+    setPage(page + 1)
+  }
+
+  const previousPage = () => {
+    if (page === 1) return
+
+    setPage(page - 1)
+  }
+
+  const handleIncrement = () => {
+    setLimit(limit + 5)
+  }
+
+  const handleDecrement = () => {
+    if (limit > 0 && limit - 5 > 0) {
+      setLimit(limit - 5)
+    }
+  }
+
+  // const totalRequestCount = Number(accountResponse?.data?.data?.data?.totalCount) || 0
+  // const limit = Number(accountResponse?.data?.data?.data?.limit)
+  // const totalPage = Math.ceil(totalRequestCount / limit)
 
   return (
     <div className='max-w-7xl py-7 mx-auto px-5'>
@@ -78,7 +114,7 @@ export default function List() {
             </tr>
           </thead>
           <tbody>
-            {accountResponse?.data?.data?.map((assignee, index) => (
+            {accountResponse?.data?.data?.items.map((assignee, index) => (
               <tr key={assignee.accountId} className='hover:bg-gray-50 dark:hover:bg-gray-600'>
                 <th scope='row' className=' px-6 py-4'>
                   {' '}
@@ -105,69 +141,61 @@ export default function List() {
             ))}
           </tbody>
         </table>
-        {/* <div className='flex items-center justify-between p-4 border-t border-blue-gray-50'>
-          <nav
-            className='w-full flex items-center justify-between flex-column flex-wrap md:flex-row pt-4 gap-3'
-            aria-label='Table navigation'
-          >
-            <div className='text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto'>
-              Page
-              <span className='font-semibold text-gray-700 '>
-                {' '}
-                {page}/{totalPage}{' '}
-              </span>
-            </div>
-            <div aria-label='Page navigation example'>
-              {totalPage > 1 && (
-                <div className='flex items-center gap-4'>
-                  <Button
-                    variant='text'
-                    className='flex items-center gap-2'
-                    onClick={previousPage}
-                    disabled={page === 1}
-                  >
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      strokeWidth={1.5}
-                      stroke='currentColor'
-                      className='w-6 h-6'
-                    >
-                      <path strokeLinecap='round' strokeLinejoin='round' d='M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18' />
-                    </svg>
-                    PreviousPage
-                  </Button>
-                  <div className='flex items-center gap-2'>
-                    {totalPageArray.map((page) => (
-                      <IconButton {...getItemProps(page)} className='text-gray-700' key={page}>
-                        {page}
-                      </IconButton>
-                    ))}
-                  </div>
-                  <Button
-                    variant='text'
-                    className='flex items-center gap-2'
-                    onClick={nextPage}
-                    disabled={page === totalPage}
-                  >
-                    NextPage
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      strokeWidth={1.5}
-                      stroke='currentColor'
-                      className='w-6 h-6'
-                    >
-                      <path strokeLinecap='round' strokeLinejoin='round' d='M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3' />
-                    </svg>
-                  </Button>
-                </div>
+        {/* <nav
+          className='flex items-center flex-column flex-wrap md:flex-row justify-between p-4 mt-2'
+          aria-label='Table navigation'
+        >
+          <span className='text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto'>
+            Showing <span className='font-semibold text-gray-900 dark:text-white'>1-10</span> of{' '}
+            <span className='font-semibold text-gray-900 dark:text-white'>1000</span>
+          </span>
+          <ul className='inline-flex -space-x-px rtl:space-x-reverse text-sm h-8'>
+            <li>
+              {page === 1 ? (
+                <span className='cursor-not-allowed rounded-l-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '>
+                  Previous
+                </span>
+              ) : (
+                <Link
+                  className='rounded-l-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '
+                  to={`/admin/facility-header/ListRequest?page=${page - 1}&limit=${searchParamsObject.limit}`}
+                >
+                  Previous
+                </Link>
               )}
-            </div>
-          </nav>
-        </div> */}
+            </li>
+            {!accountResponse &&
+              Array(totalPage)
+                .fill(0)
+                .map((_, index) => {
+                  const pageNumber = index + 1
+                  return (
+                    <li key={pageNumber}>
+                      <Link
+                        to={`/admin/facility-header/ListRequest?page=${pageNumber}&limit=${searchParamsObject.limit}`}
+                        className='rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '
+                      >
+                        {pageNumber}
+                      </Link>
+                    </li>
+                  )
+                })}
+            <li>
+              {page === totalPage ? (
+                <span className='cursor-not-allowed rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '>
+                  Next
+                </span>
+              ) : (
+                <Link
+                  className='rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '
+                  to={`/admin/facility-header/ListRequest?page=${page + 1}&limit=${searchParamsObject.limit}`}
+                >
+                  Next
+                </Link>
+              )}
+            </li>
+          </ul>
+        </nav> */}
       </div>
     </div>
   )

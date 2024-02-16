@@ -61,10 +61,6 @@ export default function ListRequest() {
   // const [searchParamsObject, setSearchParamsObject] = useState({})
   const [searchParams, setSearchParams] = useSearchParams()
 
-  // useEffect(() => {
-  //   setSearchParamsObject(Object.fromEntries([...searchParams]))
-  // }, [searchParams])
-
   const searchParamsObject = Object.fromEntries([...searchParams])
 
   if (searchParamsObject.page === undefined) {
@@ -79,9 +75,11 @@ export default function ListRequest() {
     queryKey: ['requests', searchParamsObject],
     queryFn: () => getRequests(searchParamsObject)
   })
-  console.log(requestsQuery.data)
-  const totalRequestCount = Number(requestsQuery?.data?.data?.data.totalCount) || 0
-  const limit = Number(requestsQuery?.data?.data?.data.limit)
+
+  console.log(requestsQuery?.data)
+
+  const totalRequestCount = Number(requestsQuery?.data?.data?.data?.totalCount) || 0
+  const limit = Number(requestsQuery?.data?.data?.data?.limit)
   const totalPage = Math.ceil(totalRequestCount / limit)
   console.log(totalPage)
 
@@ -232,11 +230,18 @@ export default function ListRequest() {
                       className={`relative  grid items-center p-1 justify-center font-sans text-xs font-bold 
                       ${request?.requestStatus?.statusName === 'Assigned' ? 'text-gray-900' : 'text-white'} 
                       ${getColorClass(request?.requestStatus?.statusName).background} uppercase rounded-md select-none whitespace-nowrap `}
-                    >
-                      {request?.requestStatus?.statusName}
-                    </div>
-                  </td>
-                  <td className='max-w-[200px] min-w-[150px]'>
+                  >
+                    {request?.requestStatus?.statusName}
+                  </div>
+                </td>
+                <td className='px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis '>
+                  {request?.processByAssignees[0]?.account?.fullName != null
+                    ? request?.processByAssignees[0]?.account?.fullName
+                    : 'N/A'}
+                </td>
+                <td className='max-w-[200px] min-w-[150px]'>
+                  {request?.requestStatus?.statusName === 'Open' &&
+                  request?.processByAssignees[0]?.account?.fullName == null ? (
                     <div className='flex items-center'>
                       <Link
                         to={`/client/request/${request.id}`}
@@ -277,12 +282,18 @@ export default function ListRequest() {
           </span>
           <ul className='inline-flex -space-x-px rtl:space-x-reverse text-sm h-8'>
             <li>
-              <a
-                href='#'
-                className='flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700'
-              >
-                Previous
-              </a>
+              {page === 1 ? (
+                <span className='cursor-not-allowed rounded-l-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '>
+                  Previous
+                </span>
+              ) : (
+                <Link
+                  className='rounded-l-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '
+                  to={`/admin/facility-header/ListRequest?page=${page - 1}&limit=${searchParamsObject.limit}`}
+                >
+                  Previous
+                </Link>
+              )}
             </li>
             {!requestsQuery.isLoading &&
               Array(totalPage)
@@ -292,8 +303,8 @@ export default function ListRequest() {
                   return (
                     <li key={pageNumber}>
                       <Link
-                        to={`/client/request?page=${pageNumber}&limit=${searchParamsObject.limit}`}
-                        className='flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700'
+                        to={`/admin/facility-header/ListRequest?page=${pageNumber}&limit=${searchParamsObject.limit}`}
+                        className='rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '
                       >
                         {pageNumber}
                       </Link>
@@ -302,12 +313,18 @@ export default function ListRequest() {
                 })}
 
             <li>
-              <a
-                href='#'
-                className='flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
-              >
-                Next
-              </a>
+              {page === totalPage ? (
+                <span className='cursor-not-allowed rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '>
+                  Next
+                </span>
+              ) : (
+                <Link
+                  className='rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '
+                  to={`/admin/facility-header/ListRequest?page=${page + 1}&limit=${searchParamsObject.limit}`}
+                >
+                  Next
+                </Link>
+              )}
             </li>
           </ul>
         </nav>
