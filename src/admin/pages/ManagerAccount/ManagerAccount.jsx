@@ -15,6 +15,7 @@ export default function ManagerAccount() {
   const [searchTerm, setSearchTerm] = useState('')
   const [sortColumn, setSortColumn] = useState('')
   const [sortOrder, setSortOrder] = useState('')
+  const navigate = useNavigate();
 
   const [searchParams, setSearchParams] = useSearchParams()
   const searchParamsObject = Object.fromEntries([...searchParams])
@@ -69,8 +70,9 @@ export default function ManagerAccount() {
   const totalPage = calculateTotalPages(accountResponse?.data?.data.totalCount, limit)
   const totalPageArray = Array.from({ length: totalPage }, (_, index) => index + 1)
 
-  const handleButtonClick = (roleType) => {
-    setActiveRoleType(roleType)
+  const handleButtonRoleType = (roleType) => {
+    setActiveRoleType(roleType);
+    setPage(1);
   }
 
   const getItemProps = (index) => ({
@@ -132,7 +134,7 @@ export default function ManagerAccount() {
         <div className='flex w-full overflow-hidden md:w-max items-center'>
           <button
             type='button'
-            onClick={() => handleButtonClick('All')}
+            onClick={() => handleButtonRoleType('All')}
             className={`${activeRoleType === 'All' ? 'text-blue-700 z-10 ring-4 ring-gray-200' : 'text-gray-900'} py-2.5 my-2 ml-2 px-5 me-2 text-sm font-medium focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 `}
           >
             All
@@ -142,7 +144,7 @@ export default function ManagerAccount() {
               <button
                 type='button'
                 key={item.id}
-                onClick={() => handleButtonClick(item.roleTypeName)}
+                onClick={() => handleButtonRoleType(item.roleTypeName)}
                 className={`${activeRoleType == item.roleTypeName ? 'text-blue-700 z-10 ring-4 ring-gray-200' : 'text-gray-900'} py-2.5 my-2 px-5 me-2 text-sm font-medium focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700`}
               >
                 {item.roleTypeName}
@@ -203,8 +205,11 @@ export default function ManagerAccount() {
             type='text'
             id='table-search'
             className='block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 '
-            placeholder='Search for items'
-            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder='Search accountId, email and name'
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1);
+            }}
           />
         </div>
       </div>
@@ -339,11 +344,19 @@ export default function ManagerAccount() {
                 <tr key={item.accountId}>
                   <td className='p-4 border-b border-blue-gray-50'>
                     <div className='flex items-center gap-3'>
-                      <img
-                        src='https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-3.jpg'
-                        alt='John Michael'
-                        className='relative inline-block h-9 w-9 !rounded-full object-cover object-center'
-                      />
+                      {item.avatarPhoto != null ? (
+                        <img
+                          src={`https://storeimageohd.blob.core.windows.net/images/${item.avatarPhoto}`}
+                          alt='John Michael'
+                          className='relative inline-block h-9 w-9 !rounded-full object-cover object-center'
+                        />
+                      ) : (
+                        <div className="relative flex h-9 w-9 bg-gray-200 rounded-full object-cover object-center shadow justify-center items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-gray-400">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                          </svg>
+                        </div>
+                      )}
                       <div className='flex flex-col'>
                         <p className='block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900'>
                           {item.fullName}
@@ -380,6 +393,7 @@ export default function ManagerAccount() {
                     <button
                       className='relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-gray-900 transition-all hover:bg-gray-900/10 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none'
                       type='button'
+                      onClick={() => navigate(`/admin/create-account/${item.accountId}`)}
                     >
                       <span className='absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2'>
                         <svg

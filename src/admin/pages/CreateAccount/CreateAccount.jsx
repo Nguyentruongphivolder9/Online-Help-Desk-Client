@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Input,
   Popover,
@@ -12,9 +12,9 @@ import { format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 
 import FileUpload from '@/admin/components/FileUpload'
-import { checkEmail, checkPhoneNumber, postRegister } from '@/admin/apiEndpoints/account.api';
+import { checkEmail, checkPhoneNumber, getAccountById, postRegister } from '@/admin/apiEndpoints/account.api';
 import { getRole } from '@/admin/apiEndpoints/role.api';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const formRequest = {
   roleId: '',
@@ -28,9 +28,13 @@ const formRequest = {
 }
 
 export default function CreateAccount() {
-  const [date, setDate] = useState();
+  const specialCharactersRegex = /[!@#$%^&*(),.?":{}|<>]/;
+  // const whitespaceRegex = /\s/;
+  const formatEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const phoneNumberRegex = /^(032|033|034|035|036|037|038|039|096|097|098|086|083|084|085|081|082|088|091|094|070|079|077|076|078|090|093|089|056|058|092|059|099)\d{7}$/;
+
+  const [formAccountState, setFormAccountState] = useState(formRequest || {});
   const [errorDate, setErrorDate] = useState(null);
-  const [gender, setGender] = useState(null);
   const [errorGender, setErrorGender] = useState(null);
   const [errorUploadFile, setErrorUploadFile] = useState(null);
   const [errorFullName, setErrorFullName] = useState(null);
@@ -39,11 +43,15 @@ export default function CreateAccount() {
   const [errorAddress, setErrorAddress] = useState(null);
   const [errorRoleId, setErrorRoleId] = useState(null);
   const navigate = useNavigate();
+  const { accountId } = useParams();
 
-  const specialCharactersRegex = /[!@#$%^&*(),.?":{}|<>]/;
-  // const whitespaceRegex = /\s/;
-  const formatEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  const phoneNumberRegex = /^(032|033|034|035|036|037|038|039|096|097|098|086|083|084|085|081|082|088|091|094|070|079|077|076|078|090|093|089|056|058|092|059|099)\d{7}$/;
+  const { data: accountEdit, isLoading: isLoadingAccountEdit } = useQuery({
+    queryKey: ['account/get-by-id', accountId],
+    queryFn: async () => {
+      const data = await getAccountById(accountId);
+      return data;
+    }
+  });
 
   const { data: roleTypeResponse, isLoading: isLoadingRoleType } = useQuery({
     queryKey: ['roles/get-all'],
@@ -71,127 +79,117 @@ export default function CreateAccount() {
     }
   });
 
-  const handleUploadFile = (fileData) => {
-    if (fileData === undefined) {
-      formRequest.imageFile = '';
-      setErrorUploadFile("Profile picture can't blank");
-    } else {
-      formRequest.imageFile = fileData;
-      setErrorUploadFile('');
-    }
-  }
+  useEffect(() => {
+    console.log(accountEdit?.data);
+  }, [accountEdit]);
 
-  const handleGenderChange = (e) => {
-    setGender(e.target.value);
-    setErrorGender('');
-    formRequest.gender = e.target.value;
-  }
-
-  const handleRoleName = (value) => {
-    if (value === '') {
-      formRequest.roleId = '';
-      setErrorRoleId("Role account is required");
-    } else {
-      formRequest.roleId = value;
-      setErrorRoleId('');
-    }
-  }
-
-  const handleEmail = (value) => {
-    if (value === '') {
-      formRequest.email = '';
-      setErrorEmail("Phone number is required");
-    } else if (value.length > 200) {
-      formRequest.email = '';
-      setErrorEmail("Does not exceed 200 characters");
-    } else if (!formatEmailRegex.test(value)) {
-      formRequest.email = '';
-      setErrorEmail("Invalid email format");
-    } else {
-      checkDuplicateEmail.mutate(value, {
-        onSuccess: (response) => {
-          const result = response.data
-          if (result.isSuccess) {
-            formRequest.email = value;
-            setErrorEmail('');
-          } else {
-            formRequest.email = '';
-            setErrorEmail(`${result.statusMessage}`);
-          }
+  const handleChange = (field) => (e) => {
+    let value = '';
+    switch (field) {
+      case 'roleId':
+        value = e;
+        if (value === null) {
+          setErrorRoleId("Role account is required");
+        } else {
+          setErrorRoleId('');
         }
-      });
-    }
-  }
-
-  const handleFullName = (value) => {
-    if (value.length > 30) {
-      formRequest.fullName = '';
-      setErrorFullName("Does not exceed 30 characters");
-    } else if (specialCharactersRegex.test(value)) {
-      formRequest.fullName = '';
-      setErrorFullName("Does not contain special characters");
-    } else if (value === '') {
-      formRequest.fullName = '';
-      setErrorFullName("Full name is required");
-    } else {
-      formRequest.fullName = value;
-      setErrorFullName('');
-    }
-  }
-
-  const handlePhoneNumber = (value) => {
-    if (value === '') {
-      formRequest.phoneNumber = '';
-      setErrorPhoneNumber("Phone number is required");
-    } else if (!phoneNumberRegex.test(value)) {
-      formRequest.phoneNumber = '';
-      setErrorPhoneNumber("The phone number you entered incorrectly");
-    } else {
-      checkDuplicatePhoneNumber.mutate(value, {
-        onSuccess: (response) => {
-          const result = response.data
-          if (result.isSuccess) {
-            formRequest.phoneNumber = value;
-            setErrorPhoneNumber('');
-          } else {
-            formRequest.phoneNumber = value;
-            setErrorPhoneNumber(`${result.statusMessage}`);
-          }
+        break;
+      case 'fullName':
+        value = e.target.value;
+        if (value.length > 30) {
+          setErrorFullName("Does not exceed 30 characters");
+        } else if (specialCharactersRegex.test(value)) {
+          setErrorFullName("Does not contain special characters");
+        } else if (value === '') {
+          setErrorFullName("Full name is required");
+        } else {
+          setErrorFullName('');
         }
-      });
-    }
-  }
+        break;
+      case 'email':
+        value = e.target.value;
+        if (value === '') {
+          setErrorEmail("Phone number is required");
+        } else if (value.length > 200) {
+          setErrorEmail("Does not exceed 200 characters");
+        } else if (!formatEmailRegex.test(value)) {
+          setErrorEmail("Invalid email format");
+        } else {
+          checkDuplicateEmail.mutate(value, {
+            onSuccess: (response) => {
+              const result = response.data
+              if (result.isSuccess) {
+                setErrorEmail('');
+              } else {
+                setErrorEmail(`${result.statusMessage}`);
+              }
+            }
+          });
+        }
+        break;
+      case 'imageFile':
+        value = e.target.files[0];
+        if (value === null) {
+          setErrorUploadFile("Profile picture can't blank");
+        } else {
+          setErrorUploadFile('');
+        }
+        break;
+      case 'address':
+        value = e.target.value;
+        if (value.length > 200) {
+          setErrorAddress("does not exceed 200 characters");
+        } else {
+          setErrorAddress('');
+        }
+        break;
+      case 'phoneNumber':
+        value = e.target.value;
+        if (value === '') {
+          setErrorPhoneNumber("Phone number is required");
+        } else if (!phoneNumberRegex.test(value)) {
+          setErrorPhoneNumber("The phone number you entered incorrectly");
+        } else {
+          checkDuplicatePhoneNumber.mutate(value, {
+            onSuccess: (response) => {
+              const result = response.data
+              if (result.isSuccess) {
+                setErrorPhoneNumber('');
+              } else {
+                setErrorPhoneNumber(`${result.statusMessage}`);
+              }
+            }
+          });
+        }
+        break;
+      case 'gender':
+        value = e.target.value;
+        setErrorGender('');
+        break;
+      case 'birthday':
+        value = format(e, "dd/MM/yyyy");
+        const inputDate = new Date(value);
+        const currentDate = new Date();
 
-  const handleAddress = (value) => {
-    if (value.length > 200) {
-      formRequest.address = '';
-      setErrorAddress("does not exceed 200 characters");
-    } else {
-      formRequest.address = value;
-      setErrorAddress('');
+        if (inputDate >= currentDate) {
+          setErrorDate('Birthday must be in the past');
+        } else {
+          setErrorDate('');
+        }
+        break;
+      default:
+        break;
     }
-  }
-
-  const handleBirthday = (value) => {
-    setDate(value);
-    const inputDate = new Date(value);
-    const currentDate = new Date();
-
-    if (inputDate >= currentDate) {
-      formRequest.birthday = '';
-      setErrorDate('Birthday must be in the past');
-    } else {
-      formRequest.birthday = format(value, "dd/MM/yyyy");
-      setErrorDate('');
-    }
+    console.log(value);
+    setFormAccountState((prev) => ({ ...prev, [field]: value }))
   }
 
   const handlerSubmit = (e) => {
     e.preventDefault();
     let count = 0;
 
-    for (const key in formRequest) {
-      if (formRequest[key] === null || formRequest[key] === '' || formRequest[key] === undefined) {
+    for (const key in formAccountState) {
+      if (formAccountState[key] === null || formAccountState[key] === '' || formAccountState[key] === undefined) {
         count += 1;
         switch (key) {
           case 'roleId':
@@ -248,7 +246,7 @@ export default function CreateAccount() {
             <div className="bg-white rounded shadow-lg p-4 px-4 md:p-8 mb-6">
               <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 lg:grid-cols-3">
                 <div className="text-gray-600">
-                  <FileUpload onFileChange={handleUploadFile} />
+                  <FileUpload onFileChange={handleChange} fileData={formAccountState.imageFile} />
                   {errorUploadFile &&
                     <label className='text-xs text-red-500'>
                       {errorUploadFile}
@@ -264,7 +262,8 @@ export default function CreateAccount() {
                         name="full_name"
                         placeholder="Mason Mount"
                         className={`h-10 border mt-1 rounded px-4 w-full bg-gray-50`}
-                        onChange={(e) => handleFullName(e.target.value)}
+                        value={formAccountState.fullName}
+                        onChange={handleChange("fullName")}
                       />
                       {errorFullName &&
                         <label className='text-xs text-red-500'>
@@ -274,7 +273,7 @@ export default function CreateAccount() {
                     </div>
                     <div className='md:col-span-2'>
                       <label htmlFor="role">Role</label>
-                      <Select className='items-center flex w-full mt-1 order-1 border rounded' arrow="" onChange={handleRoleName} >
+                      <Select className='items-center flex w-full mt-1 order-1 border rounded' arrow="" onChange={handleChange("roleId")} >
                         {roleTypeResponse ? (
                           roleTypeResponse?.data?.data.map(item => (
                             <Option key={item.id} value={`${item.id}`} className='hover:bg-slate-400'>{item.roleName}</Option>
@@ -296,7 +295,8 @@ export default function CreateAccount() {
                         name="email"
                         className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                         placeholder="email@domain.com"
-                        onChange={(e) => handleEmail(e.target.value)}
+                        value={formAccountState.email}
+                        onChange={handleChange("email")}
                       />
                       {errorEmail &&
                         <label className='text-xs text-red-500'>
@@ -311,7 +311,8 @@ export default function CreateAccount() {
                         name="phone_number"
                         className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                         placeholder="0909009009"
-                        onChange={(e) => handlePhoneNumber(e.target.value)}
+                        value={formAccountState.phoneNumber}
+                        onChange={handleChange("phoneNumber")}
                         onKeyDown={(e) => {
                           if (!(e.key >= '0' && e.key <= '9') && e.key !== 'Backspace') {
                             e.preventDefault();
@@ -326,13 +327,14 @@ export default function CreateAccount() {
                       }
                     </div>
                     <div className="md:col-span-5">
-                      <label htmlFor="phone_number">Residential Address</label>
+                      <label htmlFor="address">Residential Address</label>
                       <input
                         type="text"
                         name="address"
                         className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                         placeholder=""
-                        onChange={(e) => handleAddress(e.target.value)}
+                        value={formAccountState.address}
+                        onChange={handleChange("address")}
                       />
                       {errorAddress &&
                         <label className='text-xs text-red-500'>
@@ -349,8 +351,8 @@ export default function CreateAccount() {
                             type="radio"
                             value="Male"
                             className="form-radio h-5 w-5 text-gray-600"
-                            checked={gender === 'Male'}
-                            onChange={handleGenderChange}
+                            checked={formAccountState.gender === 'Male'}
+                            onChange={handleChange("gender")}
                           />
                           <span className="ml-2 text-gray-700">Male</span>
                         </label>
@@ -360,8 +362,8 @@ export default function CreateAccount() {
                             type="radio"
                             value="Female"
                             className="form-radio h-5 w-5 text-red-600"
-                            checked={gender === 'Female'}
-                            onChange={handleGenderChange}
+                            checked={formAccountState.gender === 'Female'}
+                            onChange={handleChange("gender")}
                           />
                           <span className="ml-2 text-gray-700">Female</span>
                         </label>
@@ -371,8 +373,8 @@ export default function CreateAccount() {
                             type="radio"
                             value="Other"
                             className="form-radio h-5 w-5 text-orange-600"
-                            checked={gender === 'Other'}
-                            onChange={handleGenderChange}
+                            checked={formAccountState.gender === 'Other'}
+                            onChange={handleChange("gender")}
                           />
                           <span className="ml-2 text-gray-700">Other</span>
                         </label>
@@ -391,15 +393,15 @@ export default function CreateAccount() {
                             <PopoverHandler>
                               <Input
                                 onChange={() => null}
-                                value={date ? format(date, "dd/MM/yyyy") : ""}
+                                value={formAccountState.birthday ? formAccountState.birthday : ""}
                                 placeholder='01/01/2003'
                               />
                             </PopoverHandler>
                             <PopoverContent>
                               <DayPicker
                                 mode="single"
-                                selected={date}
-                                onSelect={handleBirthday}
+                                selected={new Date(formAccountState.birthday)}
+                                onSelect={handleChange("birthday")}
                                 showOutsideDays
                                 className="border-0"
                                 classNames={{
