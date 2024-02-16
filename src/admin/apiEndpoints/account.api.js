@@ -28,3 +28,22 @@ export const postRegister = (formRequest) => {
   })
 };
 
+export const checkEmail = (email) => {
+  const token = getCookie("access_token");
+
+  return http.get(`/api/accounts/checkEmail/${email}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+};
+
+export const checkPhoneNumber = (phoneNumber) => {
+  const token = getCookie("access_token");
+
+  return http.get(`/api/accounts/phoneNumber/${phoneNumber}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+};
