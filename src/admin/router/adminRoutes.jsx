@@ -7,6 +7,8 @@ import CreateAccount from '../pages/CreateAccount'
 import ManagerAccount from '../pages/ManagerAccount'
 import SingleRequestById from '../pages/SingleRequestById'
 import AssigneesHome from '../pages/AssigneesHome'
+import DetailsAssignee from '../pages/DetailsAssignee'
+import FacilityMain from '../pages/FacilityMain'
 
 const mainAdminLayout = (children) => <MainAdminLayout>{children}</MainAdminLayout>
 const adminRoutes = [
@@ -28,15 +30,13 @@ const adminRoutes = [
   },
   {
     path: '/admin/assignees',
-    element: (
-      <AssigneesHome />
-    )
+    element: <AssigneesHome />
   },
   {
     path: '/admin/facility-header',
     element: (
       <FacilityHome>
-        <ListRequest />
+        <FacilityMain />
       </FacilityHome>
     )
   },
@@ -45,6 +45,22 @@ const adminRoutes = [
     element: (
       <FacilityHome>
         <ListAssignee />
+      </FacilityHome>
+    )
+  },
+  {
+    path: '/admin/facility-header/ListRequest',
+    element: (
+      <FacilityHome>
+        <ListRequest />
+      </FacilityHome>
+    )
+  },
+  {
+    path: '/admin/facility-header/ListRequest/:status',
+    element: (
+      <FacilityHome>
+        <ListRequest />
       </FacilityHome>
     )
   },

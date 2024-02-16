@@ -1,6 +1,6 @@
 import Footer from '@/common/components/Footer'
 import Header from '@/common/components/Header'
-import Navbar from '../components/Navbar'
+import Navbar from '@/common/components/Navbar'
 import React from 'react'
 
 export default function MainAdminLayout({ children }) {

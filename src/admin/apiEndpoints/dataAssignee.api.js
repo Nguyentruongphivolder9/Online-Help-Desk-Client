@@ -4,11 +4,12 @@ import getCookie from '@/hooks/getCookie'
 export const getTotalRequest = (id) => http.get(`/api/Assignees/GetTotalRequest/${id}`)
 export const getAssignee = (id) => http.get(`/api/Assignees/${id}`)
 
-export const getListAssignee = () => {
+export const getListAssignee = (searchParamsObject) => {
   const token = getCookie('access_token')
+  console.log(searchParamsObject)
   return http.get('/api/Assignees/GetListAssignees', {
     headers: {
-      // params: searchParamsObject,
+      params: searchParamsObject,
       Authorization: `Bearer ${token}`
     }
   })

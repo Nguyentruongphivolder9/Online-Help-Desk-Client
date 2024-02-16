@@ -62,10 +62,6 @@ export default function List() {
   // const [searchParamsObject, setSearchParamsObject] = useState({})
   const [searchParams, setSearchParams] = useSearchParams()
 
-  // useEffect(() => {
-  //   setSearchParamsObject(Object.fromEntries([...searchParams]))
-  // }, [searchParams])
-
   const searchParamsObject = Object.fromEntries([...searchParams])
 
   if (searchParamsObject.page === undefined) {
@@ -85,8 +81,8 @@ export default function List() {
 
   console.log(requestsQuery?.data)
 
-  const totalRequestCount = Number(requestsQuery?.data?.data?.data.totalCount) || 0
-  const limit = Number(requestsQuery?.data?.data?.data.limit)
+  const totalRequestCount = Number(requestsQuery?.data?.data?.data?.totalCount) || 0
+  const limit = Number(requestsQuery?.data?.data?.data?.limit)
   const totalPage = Math.ceil(totalRequestCount / limit)
 
   return (
@@ -190,7 +186,7 @@ export default function List() {
                 </td>
                 <td className='max-w-[200px] min-w-[150px]'>
                   {request?.requestStatus?.statusName === 'Open' &&
-                    request?.processByAssignees[0]?.account?.fullName == null ? (
+                  request?.processByAssignees[0]?.account?.fullName == null ? (
                     <div className='flex items-center'>
                       <Link
                         to={`/admin/facility-header/${request?.id}`}
@@ -224,7 +220,7 @@ export default function List() {
               ) : (
                 <Link
                   className='rounded-l-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '
-                  to={`/admin/facility-header?page=${page - 1}&limit=${searchParamsObject.limit}`}
+                  to={`/admin/facility-header/ListRequest?page=${page - 1}&limit=${searchParamsObject.limit}`}
                 >
                   Previous
                 </Link>
@@ -238,7 +234,7 @@ export default function List() {
                   return (
                     <li key={pageNumber}>
                       <Link
-                        to={`/admin/facility-header?page=${pageNumber}&limit=${searchParamsObject.limit}`}
+                        to={`/admin/facility-header/ListRequest?page=${pageNumber}&limit=${searchParamsObject.limit}`}
                         className='rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '
                       >
                         {pageNumber}
@@ -254,7 +250,7 @@ export default function List() {
               ) : (
                 <Link
                   className='rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '
-                  to={`/admin/facility-header?page=${page + 1}&limit=${searchParamsObject.limit}`}
+                  to={`/admin/facility-header/ListRequest?page=${page + 1}&limit=${searchParamsObject.limit}`}
                 >
                   Next
                 </Link>
