@@ -47,3 +47,13 @@ export const checkPhoneNumber = (phoneNumber) => {
     },
   })
 };
+
+export const getAccountById = (accountId) => {
+  const token = getCookie("access_token");
+
+  return http.get(`/api/account/getAccountById/${accountId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+};

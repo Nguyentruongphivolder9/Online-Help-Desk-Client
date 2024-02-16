@@ -28,6 +28,14 @@ const adminRoutes = [
     )
   },
   {
+    path: '/admin/create-account/:accountId',
+    element: (
+      <AdminHome>
+        <CreateAccount />
+      </AdminHome>
+    )
+  },
+  {
     path: '/admin/assignees',
     element: <AssigneesHome />
   },
