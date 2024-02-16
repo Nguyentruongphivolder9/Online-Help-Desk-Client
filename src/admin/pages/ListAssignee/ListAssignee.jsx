@@ -90,7 +90,7 @@ export default function List() {
 
       <div className='relative shadow-md sm:rounded-lg bg-white my-5'>
         <table className='w-full text-sm text-left rtl:text-right text-gray-500'>
-          <thead className='text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700'>
+          <thead className='text-xs text-gray-700 uppercase bg-gray-200'>
             <tr>
               <th scope='col' className='px-6 py-3 '>
                 <span>STT</span>

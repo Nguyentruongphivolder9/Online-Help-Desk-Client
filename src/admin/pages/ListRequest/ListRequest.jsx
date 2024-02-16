@@ -230,43 +230,46 @@ export default function ListRequest() {
                       className={`relative  grid items-center p-1 justify-center font-sans text-xs font-bold 
                       ${request?.requestStatus?.statusName === 'Assigned' ? 'text-gray-900' : 'text-white'} 
                       ${getColorClass(request?.requestStatus?.statusName).background} uppercase rounded-md select-none whitespace-nowrap `}
-                  >
-                    {request?.requestStatus?.statusName}
-                  </div>
-                </td>
-                <td className='px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis '>
-                  {request?.processByAssignees[0]?.account?.fullName != null
-                    ? request?.processByAssignees[0]?.account?.fullName
-                    : 'N/A'}
-                </td>
-                <td className='max-w-[200px] min-w-[150px]'>
-                  {request?.requestStatus?.statusName === 'Open' &&
-                  request?.processByAssignees[0]?.account?.fullName == null ? (
-                    <div className='flex items-center'>
-                      <Link
-                        to={`/client/request/${request.id}`}
-                        className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
-                      >
-                        View
-                      </Link>
-                      {['Completed', 'Rejected', 'Closed'].includes(request?.requestStatus?.statusName) ? (
-                        <button
-                          onClick={() =>
-                            handleUpdateRequest({
-                              id: request?.id,
-                              accountId: request?.account?.accountId,
-                              requestStatusId: null,
-                              enable: !request?.enable
-                            })
-                          }
-                          className='inline-flex items-center px-2 py-2 ml-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
-                        >
-                          Archive
-                        </button>
-                      ) : (
-                        ''
-                      )}
+                    >
+                      {request?.requestStatus?.statusName}
                     </div>
+                  </td>
+                  <td className='px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis '>
+                    {request?.processByAssignees[0]?.account?.fullName != null
+                      ? request?.processByAssignees[0]?.account?.fullName
+                      : 'N/A'}
+                  </td>
+                  <td className='max-w-[200px] min-w-[150px]'>
+                    {request?.requestStatus?.statusName === 'Open' &&
+                      request?.processByAssignees[0]?.account?.fullName == null ? (
+                      <div className='flex items-center'>
+                        <Link
+                          to={`/client/request/${request.id}`}
+                          className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
+                        >
+                          View
+                        </Link>
+                        {['Completed', 'Rejected', 'Closed'].includes(request?.requestStatus?.statusName) ? (
+                          <button
+                            onClick={() =>
+                              handleUpdateRequest({
+                                id: request?.id,
+                                accountId: request?.account?.accountId,
+                                requestStatusId: null,
+                                enable: !request?.enable
+                              })
+                            }
+                            className='inline-flex items-center px-2 py-2 ml-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
+                          >
+                            Archive
+                          </button>
+                        ) : (
+                          ''
+                        )}
+                      </div>
+                    ) : (
+                      ''
+                    )}
                   </td>
                 </tr>
               ))}

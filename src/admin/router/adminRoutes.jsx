@@ -8,6 +8,7 @@ import ManagerAccount from '../pages/ManagerAccount'
 import SingleRequestById from '../pages/SingleRequestById'
 import AssigneesHome from '../pages/AssigneesHome'
 import DetailsAssignee from '../pages/DetailsAssignee'
+import FacilityMain from '../pages/FacilityMain'
 
 const mainAdminLayout = (children) => <MainAdminLayout>{children}</MainAdminLayout>
 const adminRoutes = [

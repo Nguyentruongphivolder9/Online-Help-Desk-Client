@@ -5,11 +5,11 @@ export const getTotalRequest = (id) => http.get(`/api/Assignees/GetTotalRequest/
 export const getAssignee = (id) => http.get(`/api/Assignees/${id}`)
 
 export const getListAssignee = (searchParamsObject) => {
-  const token = getCookie('access_token')
-  console.log(searchParamsObject)
+  const token = getCookie('access_token');
+
   return http.get('/api/Assignees/GetListAssignees', {
+    params: searchParamsObject,
     headers: {
-      params: searchParamsObject,
       Authorization: `Bearer ${token}`
     }
   })
