@@ -1,109 +1,11 @@
 import React from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
-import { getCountAllRequest } from '@/admin/apiEndpoints/dataRequest.api'
 
-export default function facilityMain() {
-  const { data: totalRequest } = useQuery({
-    queryKey: ['request/getCountRequest'],
-    queryFn: async () => {
-      const data = await getCountAllRequest()
-      return data
-    }
-  })
-  console.log(totalRequest)
-
+export default function ListRequestOfAssigneesId() {
   return (
     <div>
-      {/* so lieu request */}
-      <div className='max-w-7xl mx-auto px-2 sm:px-2 lg:py-10 lg:px-2'>
-        <div className='grid grid-cols-1 gap-5 sm:grid-cols-4 mt-2'>
-          <div className='bg-white overflow-hidden shadow sm:rounded-lg'>
-            <div className='px-4 py-5 sm:p-6'>
-              <dl>
-                <dt className='text-sm leading-5 font-medium text-gray-500 truncate'>Total Request </dt>
-                <dd className='mt-1 text-3xl leading-9 font-semibold text-indigo-600'>
-                  {totalRequest?.data?.data?.all}
-                </dd>
-              </dl>
-            </div>
-          </div>
-          <div className='bg-white overflow-hidden shadow sm:rounded-lg'>
-            <div className='px-4 py-5 sm:p-6'>
-              <dl>
-                <dt className='text-sm leading-5 font-medium text-gray-500 truncate'>Open Request</dt>
-                <dd className='mt-1 text-3xl leading-9 font-semibold text-indigo-600'>
-                  {totalRequest?.data?.data?.open}
-                </dd>
-              </dl>
-            </div>
-          </div>
-          <div className='bg-white overflow-hidden shadow sm:rounded-lg'>
-            <div className='px-4 py-5 sm:p-6'>
-              <dl>
-                <dt className='text-sm leading-5 font-medium text-gray-500 truncate'>Assigned Request</dt>
-                <dd className='mt-1 text-3xl leading-9 font-semibold text-indigo-600'>
-                  {totalRequest?.data?.data?.assigned}
-                </dd>
-              </dl>
-            </div>
-          </div>
-          <div className='bg-white overflow-hidden shadow sm:rounded-lg'>
-            <div className='px-4 py-5 sm:p-6'>
-              <dl>
-                <dt className='text-sm leading-5 font-medium text-gray-500 truncate'>Work in progress</dt>
-                <dd className='mt-1 text-3xl leading-9 font-semibold text-indigo-600'>
-                  {totalRequest?.data?.data?.workInProgress}
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-
-        <div className='grid grid-cols-1 gap-5 sm:grid-cols-4 mt-4'>
-          <div className='bg-white overflow-hidden shadow sm:rounded-lg'>
-            <div className='px-4 py-5 sm:p-6'>
-              <dl>
-                <dt className='text-sm leading-5 font-medium text-gray-500 truncate'>Rejected </dt>
-                <dd className='mt-1 text-3xl leading-9 font-semibold text-indigo-600'>
-                  {totalRequest?.data?.data?.rejected}
-                </dd>
-              </dl>
-            </div>
-          </div>
-          <div className='bg-white overflow-hidden shadow sm:rounded-lg'>
-            <div className='px-4 py-5 sm:p-6'>
-              <dl>
-                <dt className='text-sm leading-5 font-medium text-gray-500 truncate'>Completed</dt>
-                <dd className='mt-1 text-3xl leading-9 font-semibold text-indigo-600'>
-                  {totalRequest?.data?.data?.complete}
-                </dd>
-              </dl>
-            </div>
-          </div>
-          <div className='bg-white overflow-hidden shadow sm:rounded-lg'>
-            <div className='px-4 py-5 sm:p-6'>
-              <dl>
-                <dt className='text-sm leading-5 font-medium text-gray-500 truncate'>Need more info</dt>
-                <dd className='mt-1 text-3xl leading-9 font-semibold text-indigo-600'>
-                  {' '}
-                  {totalRequest?.data?.data?.needMoreInfo}
-                </dd>
-              </dl>
-            </div>
-          </div>
-          <div className='bg-white overflow-hidden shadow sm:rounded-lg'>
-            <div className='px-4 py-5 sm:p-6'>
-              <dl>
-                <dt className='text-sm leading-5 font-medium text-rose-600 truncate'>Pending Request</dt>
-                <dd className='mt-1 text-3xl leading-9 font-semibold text-rose-600'>
-                  {totalRequest?.data?.data?.pending}
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-      </div>
+      <h2 className='text-l font-extrabold tracking-tight text-gray-900 sm:text-2xl px-24 py-7'>
+        All Request Of the Assignee :
+      </h2>
       {/* search input */}
       <div className='mb-3 py-2 xl:w-96'>
         <div className='relative'>
@@ -126,7 +28,7 @@ export default function facilityMain() {
             type='text'
             id='table-search'
             className='block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 '
-            placeholder='Search Assignee Name'
+            placeholder='Search accountId, email and name'
             onChange={(e) => {
               setSearchTerm(e.target.value)
               setPage(1)

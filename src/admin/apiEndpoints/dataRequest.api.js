@@ -13,6 +13,6 @@ export const getRequest = (searchParamsObject) => {
   })
 }
 
-export const createProcessByAssignees = (request) => http.post('/api/request/update_request', request)
+export const createProcessByAssignees = (request) => http.post('/api/request/CreateProcessForAssignees', request)
 
-export const getRequestByStatusOfFacility = () => http.get(`api/request/requestStatus`)
+export const getCountAllRequest = () => http.get(`/api/Request/GetTotalRequest`)
