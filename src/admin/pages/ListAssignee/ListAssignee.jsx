@@ -3,10 +3,11 @@ import { useQuery } from '@tanstack/react-query'
 import { Link, useSearchParams } from 'react-router-dom'
 import { getListAssignee } from '@/admin/apiEndpoints/dataAssignee.api'
 import { calculateTotalPages } from '@/utils/calculateTotalPages'
+import { Button, IconButton } from '@material-tailwind/react'
 
 export default function List() {
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(2)
+  const [limit, setLimit] = useState(5)
   const [searchTerm, setSearchTerm] = useState('')
 
   const [searchParams, setSearchParams] = useSearchParams()
@@ -25,7 +26,7 @@ export default function List() {
     setSearchParams(searchParams)
   }, [searchTerm, page, limit])
 
-  const { data: accountResponse, isLoading: isLoadingAccount } = useQuery({
+  const { data: accountResponse, isLoading: isLoading } = useQuery({
     queryKey: ['request/listAssignees', searchParamsObject],
     queryFn: async () => {
       const data = await getListAssignee(searchParamsObject)
@@ -50,41 +51,50 @@ export default function List() {
     setPage(page - 1)
   }
 
-  const handleIncrement = () => {
-    setLimit(limit + 5)
-  }
+  // const handleIncrement = () => {
+  //   setLimit(limit + 5)
+  // }
 
-  const handleDecrement = () => {
-    if (limit > 0 && limit - 5 > 0) {
-      setLimit(limit - 5)
-    }
-  }
-
-  // const totalRequestCount = Number(accountResponse?.data?.data?.data?.totalCount) || 0
-  // const limit = Number(accountResponse?.data?.data?.data?.limit)
-  // const totalPage = Math.ceil(totalRequestCount / limit)
+  // const handleDecrement = () => {
+  //   if (limit > 0 && limit - 5 > 0) {
+  //     setLimit(limit - 5)
+  //   }
+  // }
+  const getItemProps = (index) => ({
+    variant: page === index ? 'gradient' : 'outlined',
+    color: 'gray',
+    onClick: () => setPage(index)
+  })
 
   return (
     <div className='max-w-7xl py-7 mx-auto px-5'>
       <div className='mb-3 py-2 xl:w-96'>
-        <div className='relative mb-4 flex w-full flex-wrap items-stretch'>
-          <input
-            className='block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 '
-            placeholder='Search here'
-            type='text'
-          />
-          <span
-            className='input-group-text flex items-center whitespace-nowrap rounded px-3 py-1.5 text-center text-base font-normal text-neutral-700 dark:text-neutral-200'
-            id='basic-addon2'
-          >
-            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor' className='h-5 w-5'>
+        <div className='relative'>
+          <div className='absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none'>
+            <svg
+              className='w-5 h-5 text-gray-500 dark:text-gray-400'
+              aria-hidden='true'
+              fill='currentColor'
+              viewBox='0 0 20 20'
+              xmlns='http://www.w3.org/2000/svg'
+            >
               <path
                 fillRule='evenodd'
-                d='M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z'
+                d='M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z'
                 clipRule='evenodd'
               />
             </svg>
-          </span>
+          </div>
+          <input
+            type='text'
+            id='table-search'
+            className='block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 '
+            placeholder='Search accountId, email and name'
+            onChange={(e) => {
+              setSearchTerm(e.target.value)
+              setPage(1)
+            }}
+          />
         </div>
       </div>
 
@@ -93,7 +103,7 @@ export default function List() {
           <thead className='text-xs text-gray-700 uppercase bg-gray-200'>
             <tr>
               <th scope='col' className='px-6 py-3 '>
-                <span>STT</span>
+                <span>AccountId</span>
               </th>
               <th scope='col' className='px-6 py-3 '>
                 <span>FullName</span>
@@ -118,7 +128,7 @@ export default function List() {
               <tr key={assignee.accountId} className='hover:bg-gray-50 dark:hover:bg-gray-600'>
                 <th scope='row' className=' px-6 py-4'>
                   {' '}
-                  {index + 1}
+                  {assignee.accountId}
                 </th>
                 <th scope='row' className=' px-6 py-4 '>
                   {assignee.fullName}
@@ -141,61 +151,69 @@ export default function List() {
             ))}
           </tbody>
         </table>
-        {/* <nav
-          className='flex items-center flex-column flex-wrap md:flex-row justify-between p-4 mt-2'
-          aria-label='Table navigation'
-        >
-          <span className='text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto'>
-            Showing <span className='font-semibold text-gray-900 dark:text-white'>1-10</span> of{' '}
-            <span className='font-semibold text-gray-900 dark:text-white'>1000</span>
-          </span>
-          <ul className='inline-flex -space-x-px rtl:space-x-reverse text-sm h-8'>
-            <li>
-              {page === 1 ? (
-                <span className='cursor-not-allowed rounded-l-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '>
-                  Previous
-                </span>
-              ) : (
-                <Link
-                  className='rounded-l-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '
-                  to={`/admin/facility-header/ListRequest?page=${page - 1}&limit=${searchParamsObject.limit}`}
-                >
-                  Previous
-                </Link>
+        <div className='flex items-center justify-between p-4 border-t border-blue-gray-50'>
+          <nav
+            className='w-full flex items-center justify-between flex-column flex-wrap md:flex-row pt-4 gap-3'
+            aria-label='Table navigation'
+          >
+            <div className='text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto'>
+              Page
+              <span className='font-semibold text-gray-700 '>
+                {' '}
+                {page}/{totalPage}{' '}
+              </span>
+            </div>
+            <div aria-label='Page navigation example'>
+              {totalPage > 1 && (
+                <div className='flex items-center gap-4'>
+                  <Button
+                    variant='text'
+                    className='flex items-center gap-2'
+                    onClick={previousPage}
+                    disabled={page === 1}
+                  >
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      strokeWidth={1.5}
+                      stroke='currentColor'
+                      className='w-6 h-6'
+                    >
+                      <path strokeLinecap='round' strokeLinejoin='round' d='M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18' />
+                    </svg>
+                    PreviousPage
+                  </Button>
+                  <div className='flex items-center gap-2'>
+                    {totalPageArray.map((page) => (
+                      <IconButton {...getItemProps(page)} className='text-gray-700' key={page}>
+                        {page}
+                      </IconButton>
+                    ))}
+                  </div>
+                  <Button
+                    variant='text'
+                    className='flex items-center gap-2'
+                    onClick={nextPage}
+                    disabled={page === totalPage}
+                  >
+                    NextPage
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      strokeWidth={1.5}
+                      stroke='currentColor'
+                      className='w-6 h-6'
+                    >
+                      <path strokeLinecap='round' strokeLinejoin='round' d='M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3' />
+                    </svg>
+                  </Button>
+                </div>
               )}
-            </li>
-            {!accountResponse &&
-              Array(totalPage)
-                .fill(0)
-                .map((_, index) => {
-                  const pageNumber = index + 1
-                  return (
-                    <li key={pageNumber}>
-                      <Link
-                        to={`/admin/facility-header/ListRequest?page=${pageNumber}&limit=${searchParamsObject.limit}`}
-                        className='rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '
-                      >
-                        {pageNumber}
-                      </Link>
-                    </li>
-                  )
-                })}
-            <li>
-              {page === totalPage ? (
-                <span className='cursor-not-allowed rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '>
-                  Next
-                </span>
-              ) : (
-                <Link
-                  className='rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 '
-                  to={`/admin/facility-header/ListRequest?page=${page + 1}&limit=${searchParamsObject.limit}`}
-                >
-                  Next
-                </Link>
-              )}
-            </li>
-          </ul>
-        </nav> */}
+            </div>
+          </nav>
+        </div>
       </div>
     </div>
   )

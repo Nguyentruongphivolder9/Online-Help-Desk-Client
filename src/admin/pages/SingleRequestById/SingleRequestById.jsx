@@ -7,6 +7,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 export default function SingleRequestById() {
   const { id } = useParams()
   const [data, setData] = useState(null)
+  const [error, setError] = useState(null)
 
   const requestQuery = useQuery({
     queryKey: ['request', id],
@@ -21,8 +22,25 @@ export default function SingleRequestById() {
     setData(requestQuery.data?.data?.data)
   })
 
+  const handleCreateProcess = async () => {
+    if (!data) return
+    const { id, requestStatus, processByAssignees } = data
+    const requestId = id
+    const accountId = processByAssignees[0]?.accountId || '' // Extracting Assignee's AccountId
+    const requestStatusId = requestStatus?.id || 0 // Extracting Request Status Id
+
+    try {
+      await createProcessByAssignees({ requestId, accountId, requestStatusId })
+      // Handle success
+    } catch (error) {
+      // Handle error
+      console.error('Error creating process:', error)
+    }
+  }
+
   return (
     <>
+      {error && <h2 className='text-3xl font-medium leading-6 text-gray-900'>Error: {error}</h2>}
       {data && (
         <div className='max-w-7xl py-7 mx-auto px-5'>
           <div className=''>

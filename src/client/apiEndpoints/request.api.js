@@ -6,7 +6,7 @@ export const getRequest = (id) => http.get(`/api/request/${id}`)
 export const getRequests = (searchParamsObject) => {
   const token = getCookie('access_token')
 
-  return http.get('/api/request', {
+  return http.get('/api/request/getAll', {
     params: searchParamsObject,
     headers: {
       Authorization: `Bearer ${token}`
