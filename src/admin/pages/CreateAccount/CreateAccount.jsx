@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import {
-  Input,
-  Popover,
-  PopoverHandler,
-  PopoverContent,
-  Select,
-  Option
-} from "@material-tailwind/react";
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { format } from "date-fns";
-import { DayPicker } from "react-day-picker";
 
 import FileUpload from '@/admin/components/FileUpload'
-import { checkEmail, checkPhoneNumber, getAccountById, postRegister } from '@/admin/apiEndpoints/account.api';
+import { checkEmail, checkPhoneNumber, getAccountById, accountRegister, updateAccount, checkPhoneNumberEdit, checkEmailEdit } from '@/admin/apiEndpoints/account.api';
 import { getRole } from '@/admin/apiEndpoints/role.api';
 import { useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'react-toastify';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const formRequest = {
   roleId: '',
@@ -23,8 +17,8 @@ const formRequest = {
   imageFile: '',
   address: '',
   phoneNumber: '',
-  gender: '',
-  birthday: ''
+  gender: "Male",
+  birthday: "2001/01/01"
 }
 
 export default function CreateAccount() {
@@ -34,6 +28,7 @@ export default function CreateAccount() {
   const phoneNumberRegex = /^(032|033|034|035|036|037|038|039|096|097|098|086|083|084|085|081|082|088|091|094|070|079|077|076|078|090|093|089|056|058|092|059|099)\d{7}$/;
 
   const [formAccountState, setFormAccountState] = useState(formRequest || {});
+  const [fileUpdate, setFileUpdate] = useState(null);
   const [errorDate, setErrorDate] = useState(null);
   const [errorGender, setErrorGender] = useState(null);
   const [errorUploadFile, setErrorUploadFile] = useState(null);
@@ -50,7 +45,8 @@ export default function CreateAccount() {
     queryFn: async () => {
       const data = await getAccountById(accountId);
       return data;
-    }
+    },
+    enabled: accountId != null || accountId != undefined
   });
 
   const { data: roleTypeResponse, isLoading: isLoadingRoleType } = useQuery({
@@ -61,9 +57,15 @@ export default function CreateAccount() {
     }
   });
 
-  const createAccount = useMutation({
+  const createAccountApi = useMutation({
     mutationFn: (body) => {
-      return postRegister(body)
+      return accountRegister(body)
+    }
+  });
+
+  const updateAccountApi = useMutation({
+    mutationFn: (body) => {
+      return updateAccount(body)
     }
   });
 
@@ -73,21 +75,47 @@ export default function CreateAccount() {
     }
   });
 
+  const checkDuplicateEmailUpdate = useMutation({
+    mutationFn: (body) => {
+      return checkEmailEdit(body);
+    }
+  });
+
   const checkDuplicatePhoneNumber = useMutation({
     mutationFn: (body) => {
       return checkPhoneNumber(body);
     }
   });
 
+  const checkDuplicatePhoneNumberUpdate = useMutation({
+    mutationFn: (body) => {
+      return checkPhoneNumberEdit(body);
+    }
+  });
+
   useEffect(() => {
-    console.log(accountEdit?.data);
+    const result = accountEdit?.data;
+    if (result?.isSuccess) {
+      setFileUpdate(result?.data.avatarPhoto);
+      setFormAccountState((prev) => ({
+        ...prev,
+        accountId: accountId,
+        roleId: result?.data.roleId,
+        fullName: result?.data.fullName,
+        email: result?.data.email,
+        address: result?.data.address,
+        phoneNumber: result?.data.phoneNumber,
+        gender: result?.data.gender,
+        birthday: result?.data.birthday
+      }))
+    }
   }, [accountEdit]);
 
   const handleChange = (field) => (e) => {
     let value = '';
     switch (field) {
       case 'roleId':
-        value = e;
+        value = e.target.value;
         if (value === null) {
           setErrorRoleId("Role account is required");
         } else {
@@ -115,16 +143,33 @@ export default function CreateAccount() {
         } else if (!formatEmailRegex.test(value)) {
           setErrorEmail("Invalid email format");
         } else {
-          checkDuplicateEmail.mutate(value, {
-            onSuccess: (response) => {
-              const result = response.data
-              if (result.isSuccess) {
-                setErrorEmail('');
-              } else {
-                setErrorEmail(`${result.statusMessage}`);
+          if (accountId) {
+            checkDuplicateEmailUpdate.mutate(
+              {
+                accountId: accountId,
+                email: value
+              }, {
+              onSuccess: (response) => {
+                const result = response.data
+                if (result.isSuccess) {
+                  setErrorEmail('');
+                } else {
+                  setErrorEmail(`${result.statusMessage}`);
+                }
               }
-            }
-          });
+            });
+          } else {
+            checkDuplicateEmail.mutate(value, {
+              onSuccess: (response) => {
+                const result = response.data
+                if (result.isSuccess) {
+                  setErrorEmail('');
+                } else {
+                  setErrorEmail(`${result.statusMessage}`);
+                }
+              }
+            });
+          }
         }
         break;
       case 'imageFile':
@@ -150,16 +195,33 @@ export default function CreateAccount() {
         } else if (!phoneNumberRegex.test(value)) {
           setErrorPhoneNumber("The phone number you entered incorrectly");
         } else {
-          checkDuplicatePhoneNumber.mutate(value, {
-            onSuccess: (response) => {
-              const result = response.data
-              if (result.isSuccess) {
-                setErrorPhoneNumber('');
-              } else {
-                setErrorPhoneNumber(`${result.statusMessage}`);
+          if (accountId) {
+            checkDuplicatePhoneNumberUpdate.mutate(
+              {
+                accountId: accountId,
+                phoneNumber: value
+              }, {
+              onSuccess: (response) => {
+                const result = response.data
+                if (result.isSuccess) {
+                  setErrorPhoneNumber('');
+                } else {
+                  setErrorPhoneNumber(`${result.statusMessage}`);
+                }
               }
-            }
-          });
+            });
+          } else {
+            checkDuplicatePhoneNumber.mutate(value, {
+              onSuccess: (response) => {
+                const result = response.data
+                if (result.isSuccess) {
+                  setErrorPhoneNumber('');
+                } else {
+                  setErrorPhoneNumber(`${result.statusMessage}`);
+                }
+              }
+            });
+          }
         }
         break;
       case 'gender':
@@ -167,7 +229,7 @@ export default function CreateAccount() {
         setErrorGender('');
         break;
       case 'birthday':
-        value = format(e, "dd/MM/yyyy");
+        value = format(e, "yyyy/MM/dd");
         const inputDate = new Date(value);
         const currentDate = new Date();
 
@@ -186,11 +248,16 @@ export default function CreateAccount() {
 
   const handlerSubmit = (e) => {
     e.preventDefault();
-    let count = 0;
+    let count = true;
 
     for (const key in formAccountState) {
       if (formAccountState[key] === null || formAccountState[key] === '' || formAccountState[key] === undefined) {
-        count += 1;
+        if (accountId) {
+          if (key === "imageFile") {
+            break;
+          }
+        }
+        count = false;
         switch (key) {
           case 'roleId':
             setErrorRoleId("Role is required");
@@ -222,17 +289,72 @@ export default function CreateAccount() {
       }
     }
 
-    if (count == 0) {
-      createAccount.mutate(formRequest, {
-        onSuccess: (response) => {
-          const result = response.data
-          if (result.isSuccess) {
-            navigate('/admin')
-          } else {
-            console.log(result.statusMessage);
+    console.log(formAccountState);
+
+    if (count) {
+      if (accountId) {
+        updateAccountApi.mutate(formAccountState, {
+          onSuccess: (response) => {
+            const result = response.data
+            if (result.isSuccess) {
+              toast.success(`${result.statusMessage}`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored"
+              });
+              setTimeout(() => {
+                navigate('/admin');
+              }, 5000);
+            } else {
+              toast.error(`${result.statusMessage}`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored"
+              });
+            }
           }
-        }
-      });
+        });
+      } else {
+        createAccountApi.mutate(formAccountState, {
+          onSuccess: (response) => {
+            const result = response.data
+            if (result.isSuccess) {
+              setFormAccountState(formRequest);
+              toast.success(`${result.statusMessage}`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored"
+              });
+            } else {
+              toast.error(`${result.statusMessage}`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored"
+              });
+            }
+          }
+        });
+      }
     }
   }
 
@@ -241,12 +363,12 @@ export default function CreateAccount() {
       <div className="p-6 bg-gray-100 flex items-center justify-center">
         <div className="max-w-screen-lg mx-auto">
           <div>
-            <h2 className="font-semibold text-4xl text-gray-600">Create new account</h2>
-            <p className="text-gray-500 mb-6">Form is mobile responsive. Give it a try.</p>
+            <h2 className="font-semibold text-4xl text-gray-600">{accountId ? "Edit account" : "Create new areccount"}</h2>
+            <p className="text-gray-500 mb-6">When creating a new account, please enter your complete information.</p>
             <div className="bg-white rounded shadow-lg p-4 px-4 md:p-8 mb-6">
               <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 lg:grid-cols-3">
                 <div className="text-gray-600">
-                  <FileUpload onFileChange={handleChange} fileData={formAccountState.imageFile} />
+                  <FileUpload onFileChange={handleChange("imageFile")} fileData={formAccountState.imageFile} fileDataEdit={fileUpdate} setFileDataEdit={setFileUpdate} />
                   {errorUploadFile &&
                     <label className='text-xs text-red-500'>
                       {errorUploadFile}
@@ -273,15 +395,20 @@ export default function CreateAccount() {
                     </div>
                     <div className='md:col-span-2'>
                       <label htmlFor="role">Role</label>
-                      <Select className='items-center flex w-full mt-1 order-1 border rounded' arrow="" onChange={handleChange("roleId")} >
-                        {roleTypeResponse ? (
-                          roleTypeResponse?.data?.data.map(item => (
-                            <Option key={item.id} value={`${item.id}`} className='hover:bg-slate-400'>{item.roleName}</Option>
-                          ))
-                        ) : (
-                          <Option>Not found</Option>
-                        )}
-                      </Select>
+                      <select
+                        id='roomId'
+                        className='bg-gray-50 border mt-1 border-gray-300 text-gray-900 text-sm rounded block w-full p-2.5 transition delay-500 outline-none'
+                        value={`${formAccountState.roleId}`}
+                        onChange={handleChange("roleId")}
+                      >
+                        <option value=''>Select role</option>
+                        {roleTypeResponse &&
+                          roleTypeResponse?.data?.data.map((item) => (
+                            <option key={item.id} value={`${item.id}`} className='hover:bg-slate-400'>
+                              {item.roleName}
+                            </option>
+                          ))}
+                      </select>
                       {errorRoleId &&
                         <label className='text-xs text-red-500'>
                           {errorRoleId}
@@ -386,73 +513,22 @@ export default function CreateAccount() {
                       }
                     </div>
                     <div className="md:col-span-5">
-                      <div className='space-x-2 flex flex-row gap-1 items-center  '>
-                        <label htmlFor="birthday">Birthday: </label>
-                        <div className="p-1 w-32">
-                          <Popover placement="bottom">
-                            <PopoverHandler>
-                              <Input
-                                onChange={() => null}
-                                value={formAccountState.birthday ? formAccountState.birthday : ""}
-                                placeholder='01/01/2003'
-                              />
-                            </PopoverHandler>
-                            <PopoverContent>
-                              <DayPicker
-                                mode="single"
-                                selected={new Date(formAccountState.birthday)}
-                                onSelect={handleChange("birthday")}
-                                showOutsideDays
-                                className="border-0"
-                                classNames={{
-                                  caption: "flex justify-center py-2 mb-4 relative items-center",
-                                  caption_label: "text-sm font-medium text-gray-900",
-                                  nav: "flex items-center",
-                                  nav_button:
-                                    "h-6 w-6 bg-transparent hover:bg-blue-gray-50 p-1 rounded-md transition-colors duration-300",
-                                  nav_button_previous: "absolute left-1.5",
-                                  nav_button_next: "absolute right-1.5",
-                                  table: "w-full border-collapse",
-                                  head_row: "flex font-medium text-gray-900",
-                                  head_cell: "m-0.5 w-9 font-normal text-sm",
-                                  row: "flex w-full mt-2",
-                                  cell: "text-gray-600 rounded-md h-9 w-9 text-center text-sm p-0 m-0.5 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-gray-900/20 [&:has([aria-selected].day-outside)]:text-white [&:has([aria-selected])]:bg-gray-900/50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                                  day: "h-9 w-9 p-0 font-normal",
-                                  day_range_end: "day-range-end",
-                                  day_selected:
-                                    "rounded-md bg-gray-900 text-white hover:bg-gray-900 hover:text-white focus:bg-gray-900 focus:text-white",
-                                  day_today: "rounded-md bg-gray-200 text-gray-900",
-                                  day_outside:
-                                    "day-outside text-gray-500 opacity-50 aria-selected:bg-gray-500 aria-selected:text-gray-900 aria-selected:bg-opacity-10",
-                                  day_disabled: "text-gray-500 opacity-50",
-                                  day_hidden: "invisible",
-                                }}
-                                components={{
-                                  IconLeft: ({ ...props }) => (
-                                    <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4 stroke-2">
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                                    </svg>
-                                  ),
-                                  IconRight: ({ ...props }) => (
-                                    <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4 stroke-2">
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                                    </svg>
-                                  ),
-                                }}
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-                      </div>
+                      <DatePicker
+                        selected={formAccountState.birthday}
+                        onChange={handleChange("birthday")}
+                        className='h-10 border mt-1 rounded px-4 w-full bg-gray-50'
+                        dateFormat="yyyy/MM/dd"
+                        showYearDropdown
+                      />
                       {errorDate &&
-                        <label className='text-xs text-red-500'>
+                        <div className='text-xs text-red-500'>
                           {errorDate}
-                        </label>
+                        </div>
                       }
                     </div>
                     <div className="md:col-span-5 text-right">
                       <div className="inline-flex items-end">
-                        <button type='button' onClick={handlerSubmit} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Submit</button>
+                        <button type='button' onClick={handlerSubmit} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">{accountId ? "Update" : "Submit"}</button>
                       </div>
                     </div>
                   </div>
