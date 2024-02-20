@@ -107,13 +107,19 @@ export default function ManagerAccount() {
   }
 
   const handleIncrement = () => {
+    setPage(1);
     setLimit(limit + 5)
   }
 
   const handleDecrement = () => {
     if (limit > 0 && limit - 5 > 0) {
+      setPage(1);
       setLimit(limit - 5)
     }
+  }
+
+  const getColorClass = () => {
+
   }
 
   return (
