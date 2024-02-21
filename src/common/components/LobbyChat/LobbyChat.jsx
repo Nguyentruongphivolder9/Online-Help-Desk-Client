@@ -1,27 +1,24 @@
 import React from 'react'
 import ItemRequest from '../ItemRequest'
-import ItemRemark from '../ItemRemark'
 import SkeletonLoaderRequest from '../SkeletonLoaderRequest'
 
-export default function LobbyChat({ itemName, dataItem, isLoading }) {
+export default function LobbyChat({ dataItem, isLoading }) {
   return (
-    <div className='w-full h-full overflow-y-scroll hide-scrollbar'>
+    <>
       {/* {isLoading ? (
-        <div className='w-full h-full'>
-          <SkeletonLoaderRequest />
-          <SkeletonLoaderRequest />
-          <SkeletonLoaderRequest />
-          <SkeletonLoaderRequest />
-          <SkeletonLoaderRequest />
-          <SkeletonLoaderRequest />
-        </div>
-      ) : ( */}
-      {itemName === "Request" ? (
+      <div className='w-full h-[565px] overflow-y-scroll hide-scrollbar'>
+        <SkeletonLoaderRequest />
+        <SkeletonLoaderRequest />
+        <SkeletonLoaderRequest />
+        <SkeletonLoaderRequest />
+        <SkeletonLoaderRequest />
+        <SkeletonLoaderRequest />
+      </div>
+    ) : ( */}
+      <div className='w-full h-[565px] overflow-y-scroll hide-scrollbar'>
         <ItemRequest dataItem={dataItem} />
-      ) : (
-        <ItemRemark dataItem={dataItem} />
-      )}
+      </div>
       {/* )} */}
-    </div>
+    </>
   )
 }
