@@ -14,6 +14,16 @@ export const getRequests = (searchParamsObject) => {
   })
 }
 
+export const getRequestsWithoutSsfp = () => {
+  const token = getCookie('access_token')
+
+  return http.get('/api/request_withoutssfp', {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+}
+
 export const getArchivedRequests = (searchParamsObject) => {
   const token = getCookie('access_token')
 
@@ -35,5 +45,13 @@ export const addRequest = (request) => {
   })
 }
 
-export const upateRequest = (request) => http.post('/api/request/update_request', request)
+export const upateRequest = (request) => {
+  const token = getCookie('access_token')
+  return http.post('/api/request/update_request', request, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+}
 export const getDepartments = () => http.get('/api/department/getAll')
+export const getRequestStatus = () => http.get('/api/request/requestStatus')
