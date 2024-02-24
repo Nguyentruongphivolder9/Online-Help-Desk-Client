@@ -128,6 +128,8 @@ export default function CreateAccount() {
           setErrorFullName("Does not exceed 30 characters");
         } else if (specialCharactersRegex.test(value)) {
           setErrorFullName("Does not contain special characters");
+        } else if (/\d/.test(value)) {
+          setErrorFullName("Does not contain digits");
         } else if (value === '') {
           setErrorFullName("Full name is required");
         } else {

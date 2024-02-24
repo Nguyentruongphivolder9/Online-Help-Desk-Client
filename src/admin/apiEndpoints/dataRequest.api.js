@@ -16,3 +16,15 @@ export const getRequest = (searchParamsObject) => {
 export const createProcessByAssignees = (request) => http.post('/api/request/CreateProcessForAssignees', request)
 
 export const getCountAllRequest = () => http.get(`/api/Request/GetTotalRequest`)
+
+export const getAllRequestStatus = () => http.get('api/request/requestStatus')
+
+export const getAllRequestOfAssigneeProcessing = (accountId, searchParamsObject) => {
+  const token = getCookie('access_token')
+  return http.get(`/api/requests/processByAssignees/${accountId}`, {
+    params: searchParamsObject,
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+}
