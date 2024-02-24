@@ -1,61 +1,8 @@
-import { getDepartments, getRequests, upateRequest } from '@/client/apiEndpoints/request.api'
+import { getDepartments, getRequestStatus, getRequests, upateRequest } from '@/client/apiEndpoints/request.api'
 import { useMutation, useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import React, { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-
-const getColorClass = (statusName) => {
-  switch (statusName) {
-    case 'Open':
-      return {
-        background: 'bg-[#3300FF]',
-        text: 'text-[#3300FF]', // Màu chữ trắng khi nền màu xanh
-        borderColor: 'border-[#3300FF]'
-      }
-    case 'Assigned':
-      return {
-        background: 'bg-[#FFFF00]',
-        text: 'text-[#FFFF00]',
-        borderColor: 'border-[#FFFF00]'
-      }
-    case 'Work in progress':
-      return {
-        background: 'bg-[#FF6600]',
-        text: 'text-[#FF6600]',
-        borderColor: 'border-[#FF6600]'
-      }
-    case 'Need more info':
-      return {
-        background: 'bg-[#FF0033]',
-        text: 'text-[#FF0033]',
-        borderColor: 'border-[#FF0033]'
-      }
-    case 'Rejected':
-      return {
-        background: 'bg-[#FF0000]',
-        text: 'text-[#FF0000]',
-        borderColor: 'border-[#FF0000]'
-      }
-    case 'Completed':
-      return {
-        background: 'bg-[#33FF33]',
-        text: 'text-[#33FF33]',
-        borderColor: 'border-[#33FF33]'
-      }
-    case 'Closed':
-      return {
-        background: 'bg-[#FF0000]',
-        text: 'text-[#FF0000]',
-        borderColor: 'border-[#FF0000]'
-      }
-    default:
-      return {
-        background: 'bg-[#808080]',
-        text: 'text-[#808080]',
-        borderColor: 'border-[#808080]'
-      }
-  }
-}
-
+import getColorClass from '@/hooks/useGetColorRequestStatus'
 export default function ListRequest() {
   const queryClient = useQueryClient()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -74,11 +21,22 @@ export default function ListRequest() {
     placeholderData: keepPreviousData
   })
 
+  console.log(requestsQuery?.data?.data?.data)
+
   const departmentQuery = useQuery({
     queryKey: ['departmentClientRequest'],
     queryFn: async () => {
       const data = await getDepartments()
       console.log('department', data)
+      return data
+    }
+  })
+
+  const requestStatusQuery = useQuery({
+    queryKey: ['requestStatusClientQuery'],
+    queryFn: async () => {
+      const data = await getRequestStatus()
+      console.log('status', data)
       return data
     }
   })
@@ -291,11 +249,21 @@ export default function ListRequest() {
                 </div>
               </li>
               <li>
-                <div onClick={() => addParams([{ sCondition: 'Normal' }])}>Normal</div>
+                <div
+                  className='border border-white hover:bg-sky-500 hover:text-white'
+                  onClick={() => addParams([{ sCondition: 'Normal' }])}
+                >
+                  Normal
+                </div>
               </li>
 
               <li>
-                <div onClick={() => addParams([{ sCondition: 'Important' }])}>Important</div>
+                <div
+                  className='border border-white hover:bg-sky-500 hover:text-white'
+                  onClick={() => addParams([{ sCondition: 'Important' }])}
+                >
+                  Important
+                </div>
               </li>
             </ul>
           </div>
@@ -317,13 +285,18 @@ export default function ListRequest() {
                   None
                 </div>
               </li>
-              <li>
-                <div onClick={() => addParams([{ tCondition: 'Open' }])}>Open</div>
-              </li>
 
-              <li>
-                <div onClick={() => addParams([{ tCondition: 'Completed' }])}>Completed</div>
-              </li>
+              {requestStatusQuery?.data &&
+                requestStatusQuery?.data?.data?.data.map((item) => (
+                  <li key={item.id}>
+                    <div
+                      className='border border-white hover:bg-sky-500 hover:text-white'
+                      onClick={() => addParams([{ tCondition: item.statusName }])}
+                    >
+                      {item.statusName}
+                    </div>
+                  </li>
+                ))}
             </ul>
           </div>
         </div>

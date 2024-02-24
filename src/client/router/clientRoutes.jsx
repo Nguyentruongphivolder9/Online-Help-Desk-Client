@@ -10,7 +10,9 @@ import ArchivedRequests from '../pages/ArchivedRequests'
 import VerifySendMail from '../pages/VerifySendMail'
 import VerifyCode from '../pages/VerifyCode'
 import ChangePassword from '../pages/ChangePassword'
-
+import ChatLayout from '../pages/ChatLayout'
+import CheckBox from '@/common/components/ChatBox'
+import { Outlet } from 'react-router-dom'
 
 const mainClientLayout = (children) => <MainClientLayout>{children}</MainClientLayout>
 const clientRoutes = [
@@ -51,8 +53,18 @@ const clientRoutes = [
     element: mainClientLayout(<ArchivedRequests />)
   },
   {
-    path: 'client/about',
-    element: mainClientLayout(<About />)
+    path: 'client/chatRoom',
+    element: mainClientLayout(<ArchivedRequests />)
+  },
+  {
+    path: '/messages',
+    element: <ChatLayout></ChatLayout>,
+    children: [
+      {
+        path: ':id',
+        element: <CheckBox />
+      }
+    ]
   },
   {
     path: '*',

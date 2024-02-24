@@ -90,7 +90,7 @@ export default function UpdateRequest() {
         <p className='text-gray-900'>Reason: {dataSate.reason}</p>
         <p className='text-gray-900'>Several Level: {dataSate.severalLevel}</p>
         <p className='text-gray-900'>Description: {dataSate.description}</p>
-        <p className='text-gray-900'>Description: {dataSate.requestStatusName}</p>
+        <p className='text-gray-900'>Status: {dataSate.requestStatusName}</p>
       </div>
       {['Completed', 'Rejected', 'Closed'].includes(dataSate.requestStatusName) && dataSate.enable ? (
         <button
