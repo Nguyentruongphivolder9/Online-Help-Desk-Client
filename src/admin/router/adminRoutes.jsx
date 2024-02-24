@@ -9,6 +9,7 @@ import AssigneesHome from '../pages/AssigneesHome'
 import DetailsAssignee from '../pages/DetailsAssignee'
 import FacilityMain from '../pages/FacilityMain'
 import ListRequestOfAssigneesID from '../pages/ListRequestOfAssigneesID'
+import ManagerRequestAssignees from '../pages/ManagerRequestAssignees'
 
 const mainAdminLayout = (children) => <MainAdminLayout>{children}</MainAdminLayout>
 const adminRoutes = [
@@ -38,7 +39,11 @@ const adminRoutes = [
   },
   {
     path: '/admin/assignees',
-    element: <AssigneesHome />
+    element: (
+      <AssigneesHome>
+        <ManagerRequestAssignees />
+      </AssigneesHome>
+    )
   },
   {
     path: '/admin/facility-header',
