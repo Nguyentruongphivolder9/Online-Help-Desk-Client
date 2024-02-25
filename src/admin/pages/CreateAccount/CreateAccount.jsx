@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useQuery, useMutation } from '@tanstack/react-query'
-import { format } from "date-fns";
+import { format, getYear, getMonth } from "date-fns";
 
 import FileUpload from '@/admin/components/FileUpload'
 import { checkEmail, checkPhoneNumber, getAccountById, accountRegister, updateAccount, checkPhoneNumberEdit, checkEmailEdit } from '@/admin/apiEndpoints/account.api';
@@ -17,8 +17,19 @@ const formRequest = {
   imageFile: '',
   address: '',
   phoneNumber: '',
-  gender: "Male",
-  birthday: "2001/01/01"
+  gender: "",
+  birthday: ""
+}
+
+const errorsField = {
+  roleId: '',
+  fullName: '',
+  email: '',
+  imageFile: '',
+  address: '',
+  phoneNumber: '',
+  gender: '',
+  birthday: ''
 }
 
 export default function CreateAccount() {
@@ -29,16 +40,28 @@ export default function CreateAccount() {
 
   const [formAccountState, setFormAccountState] = useState(formRequest || {});
   const [fileUpdate, setFileUpdate] = useState(null);
-  const [errorDate, setErrorDate] = useState(null);
-  const [errorGender, setErrorGender] = useState(null);
-  const [errorUploadFile, setErrorUploadFile] = useState(null);
-  const [errorFullName, setErrorFullName] = useState(null);
-  const [errorEmail, setErrorEmail] = useState(null);
-  const [errorPhoneNumber, setErrorPhoneNumber] = useState(null);
-  const [errorAddress, setErrorAddress] = useState(null);
-  const [errorRoleId, setErrorRoleId] = useState(null);
+  const [errorObject, setErrorObject] = useState(errorsField || {});
   const navigate = useNavigate();
   const { accountId } = useParams();
+
+  const range = (start, end) => {
+    return new Array(end - start + 1).fill().map((d, i) => i + start);
+  };
+  const years = range(1960, getYear(new Date()));
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   const { data: accountEdit, isLoading: isLoadingAccountEdit } = useQuery({
     queryKey: ['account/get-by-id', accountId],
@@ -113,89 +136,95 @@ export default function CreateAccount() {
 
   const handleChange = (field) => (e) => {
     let value = '';
+    let error = '';
     switch (field) {
       case 'roleId':
-        value = e.target.value;
+        value = e.target.value.trim();
         if (value === null) {
-          setErrorRoleId("Role account is required");
+          error = 'Role account is required';
         } else {
-          setErrorRoleId('');
+          error = '';
         }
         break;
       case 'fullName':
-        value = e.target.value;
-        if (value.length > 30) {
-          setErrorFullName("Does not exceed 30 characters");
-        } else if (specialCharactersRegex.test(value)) {
-          setErrorFullName("Does not contain special characters");
-        } else if (/\d/.test(value)) {
-          setErrorFullName("Does not contain digits");
-        } else if (value === '') {
-          setErrorFullName("Full name is required");
+        if (e.target.value.trim().length < 1) {
+          value = e.target.value.trim();
         } else {
-          setErrorFullName('');
+          value = e.target.value.replace(/\s\s+/g, ' ');
+        }
+
+        if (value === '') {
+          error = 'Full name is required';
+        } else if (value.length > 30) {
+          error = 'Does not exceed 30 characters';
+        } else if (value.length < 3) {
+          error = 'Can\'t be less than 3 characters';
+        } else if (specialCharactersRegex.test(value)) {
+          error = 'Does not contain special characters';
+        } else if (/\d/.test(value)) {
+          error = 'Does not contain digits';
+        } else {
+          error = '';
         }
         break;
       case 'email':
-        value = e.target.value;
-        if (value === '') {
-          setErrorEmail("Phone number is required");
-        } else if (value.length > 200) {
-          setErrorEmail("Does not exceed 200 characters");
-        } else if (!formatEmailRegex.test(value)) {
-          setErrorEmail("Invalid email format");
+        if (e.target.value.trim().length < 1) {
+          value = e.target.value.trim();
         } else {
-          if (accountId) {
-            checkDuplicateEmailUpdate.mutate(
-              {
-                accountId: accountId,
-                email: value
-              }, {
-              onSuccess: (response) => {
-                const result = response.data
-                if (result.isSuccess) {
-                  setErrorEmail('');
-                } else {
-                  setErrorEmail(`${result.statusMessage}`);
-                }
+          value = e.target.value.replace(/\s\s+/g, ' ');
+        }
+
+        if (value === '') {
+          error = 'Email is required';
+        } else if (value.length > 200) {
+          error = 'Does not exceed 200 characters';
+        } else if (!formatEmailRegex.test(value)) {
+          error = 'Invalid email format';
+        } else {
+          error = '';
+          checkDuplicateEmail.mutate(value, {
+            onSuccess: (response) => {
+              const result = response.data
+              if (result.isSuccess) {
+                setErrorObject((prev) => ({ ...prev, email: '' }))
+              } else {
+                setErrorObject((prev) => ({ ...prev, email: result.statusMessage }))
               }
-            });
-          } else {
-            checkDuplicateEmail.mutate(value, {
-              onSuccess: (response) => {
-                const result = response.data
-                if (result.isSuccess) {
-                  setErrorEmail('');
-                } else {
-                  setErrorEmail(`${result.statusMessage}`);
-                }
-              }
-            });
-          }
+            }
+          });
         }
         break;
       case 'imageFile':
         value = e.target.files[0];
         if (value === null) {
-          setErrorUploadFile("Profile picture can't blank");
+          error = 'Profile picture can\'t blank';
         } else {
-          setErrorUploadFile('');
+          error = '';
         }
         break;
       case 'address':
-        value = e.target.value;
-        if (value.length > 200) {
-          setErrorAddress("does not exceed 200 characters");
+        if (e.target.value.trim().length < 1) {
+          value = e.target.value.trim();
         } else {
-          setErrorAddress('');
+          value = e.target.value.replace(/\s\s+/g, ' ');
+        }
+
+        if (value.trim() === '') {
+          error = 'Address is required';
+        } else if (value.length > 200) {
+          error = 'Does not exceed 200 characters';
+        } else if (value.length < 3) {
+          error = 'Does not exceed 200 characters';
+        } else {
+          error = '';
         }
         break;
       case 'phoneNumber':
         value = e.target.value;
-        if (value === '') {
-          setErrorPhoneNumber("Phone number is required");
+        if (value.trim() === '') {
+          error = 'Phone number is required';
         } else if (!phoneNumberRegex.test(value)) {
-          setErrorPhoneNumber("The phone number you entered incorrectly");
+          error = 'The phone number you entered incorrectly';
         } else {
           if (accountId) {
             checkDuplicatePhoneNumberUpdate.mutate(
@@ -206,9 +235,9 @@ export default function CreateAccount() {
               onSuccess: (response) => {
                 const result = response.data
                 if (result.isSuccess) {
-                  setErrorPhoneNumber('');
+                  setErrorObject((prev) => ({ ...prev, phoneNumber: '' }))
                 } else {
-                  setErrorPhoneNumber(`${result.statusMessage}`);
+                  setErrorObject((prev) => ({ ...prev, phoneNumber: result.statusMessage }))
                 }
               }
             });
@@ -217,9 +246,9 @@ export default function CreateAccount() {
               onSuccess: (response) => {
                 const result = response.data
                 if (result.isSuccess) {
-                  setErrorPhoneNumber('');
+                  setErrorObject((prev) => ({ ...prev, phoneNumber: '' }))
                 } else {
-                  setErrorPhoneNumber(`${result.statusMessage}`);
+                  setErrorObject((prev) => ({ ...prev, phoneNumber: result.statusMessage }))
                 }
               }
             });
@@ -228,29 +257,32 @@ export default function CreateAccount() {
         break;
       case 'gender':
         value = e.target.value;
-        setErrorGender('');
+        error = '';
         break;
       case 'birthday':
         value = format(e, "yyyy/MM/dd");
         const inputDate = new Date(value);
         const currentDate = new Date();
+        const eighteenYearsAgo = new Date();
+        eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
 
-        if (inputDate >= currentDate) {
-          setErrorDate('Birthday must be in the past');
+        if (inputDate > eighteenYearsAgo) {
+          error = 'Must be at least 18 years old';
         } else {
-          setErrorDate('');
+          error = '';
         }
         break;
       default:
         break;
     }
-    console.log(value);
+
+    setErrorObject((prev) => ({ ...prev, [field]: error }))
     setFormAccountState((prev) => ({ ...prev, [field]: value }))
   }
 
   const handlerSubmit = (e) => {
     e.preventDefault();
-    let count = true;
+    let isSubmit = true;
 
     for (const key in formAccountState) {
       if (formAccountState[key] === null || formAccountState[key] === '' || formAccountState[key] === undefined) {
@@ -259,31 +291,31 @@ export default function CreateAccount() {
             break;
           }
         }
-        count = false;
+        isSubmit = false;
         switch (key) {
           case 'roleId':
-            setErrorRoleId("Role is required");
+            setErrorObject((prev) => ({ ...prev, roleId: 'Role is required' }))
             break;
           case 'fullName':
-            setErrorFullName("Full name is required");
+            setErrorObject((prev) => ({ ...prev, fullName: 'Full name is required' }))
             break;
           case 'email':
-            setErrorEmail("Email is required");
+            setErrorObject((prev) => ({ ...prev, email: 'Email is required' }))
             break;
           case 'imageFile':
-            setErrorUploadFile("Profile picture is required");
+            setErrorObject((prev) => ({ ...prev, imageFile: 'Profile picture is required' }))
             break;
           case 'address':
-            setErrorAddress("Address is required");
+            setErrorObject((prev) => ({ ...prev, address: 'Address is required' }))
             break;
           case 'phoneNumber':
-            setErrorPhoneNumber("Phone number is required");
+            setErrorObject((prev) => ({ ...prev, phoneNumber: 'Phone number is required' }))
             break;
           case 'gender':
-            setErrorGender("Gender is required");
+            setErrorObject((prev) => ({ ...prev, gender: 'Gender is required' }))
             break;
           case 'birthday':
-            setErrorDate("Birthday is required");
+            setErrorObject((prev) => ({ ...prev, birthday: 'Birthday is required' }))
             break;
           default:
             break;
@@ -291,9 +323,13 @@ export default function CreateAccount() {
       }
     }
 
-    console.log(formAccountState);
+    for (const key in errorObject) {
+      if (errorObject[key]) {
+        isSubmit = false;
+      }
+    }
 
-    if (count) {
+    if (isSubmit) {
       if (accountId) {
         updateAccountApi.mutate(formAccountState, {
           onSuccess: (response) => {
@@ -301,7 +337,7 @@ export default function CreateAccount() {
             if (result.isSuccess) {
               toast.success(`${result.statusMessage}`, {
                 position: "top-right",
-                autoClose: 5000,
+                autoClose: 3000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
@@ -311,7 +347,7 @@ export default function CreateAccount() {
               });
               setTimeout(() => {
                 navigate('/admin');
-              }, 5000);
+              }, 3000);
             } else {
               toast.error(`${result.statusMessage}`, {
                 position: "top-right",
@@ -371,16 +407,16 @@ export default function CreateAccount() {
               <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 lg:grid-cols-3">
                 <div className="text-gray-600">
                   <FileUpload onFileChange={handleChange("imageFile")} fileData={formAccountState.imageFile} fileDataEdit={fileUpdate} setFileDataEdit={setFileUpdate} />
-                  {errorUploadFile &&
-                    <label className='text-xs text-red-500'>
-                      {errorUploadFile}
-                    </label>
+                  {errorObject.imageFile &&
+                    <p className='text-center text-xs text-red-500'>
+                      {errorObject.imageFile}
+                    </p>
                   }
                 </div>
                 <div className="lg:col-span-2">
                   <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
                     <div className="md:col-span-3">
-                      <label htmlFor="full_name">Full Name</label>
+                      <label htmlFor="full_name">Full Name:</label>
                       <input
                         type="text"
                         name="full_name"
@@ -389,16 +425,16 @@ export default function CreateAccount() {
                         value={formAccountState.fullName}
                         onChange={handleChange("fullName")}
                       />
-                      {errorFullName &&
+                      {errorObject.fullName &&
                         <label className='text-xs text-red-500'>
-                          {errorFullName}
+                          {errorObject.fullName}
                         </label>
                       }
                     </div>
                     <div className='md:col-span-2'>
-                      <label htmlFor="role">Role</label>
+                      <label htmlFor="role">Role:</label>
                       <select
-                        id='roomId'
+                        id='role'
                         className='bg-gray-50 border mt-1 border-gray-300 text-gray-900 text-sm rounded block w-full p-2.5 transition delay-500 outline-none'
                         value={`${formAccountState.roleId}`}
                         onChange={handleChange("roleId")}
@@ -411,14 +447,19 @@ export default function CreateAccount() {
                             </option>
                           ))}
                       </select>
-                      {errorRoleId &&
+                      {errorObject.roleId &&
                         <label className='text-xs text-red-500'>
-                          {errorRoleId}
+                          {errorObject.roleId}
                         </label>
                       }
                     </div>
                     <div className="md:col-span-3">
-                      <label htmlFor="email">Email Address</label>
+                      <div>
+                        <label htmlFor="email">Email Address:</label>
+                        {accountId &&
+                          <label htmlFor="email" className='text-red-500'> can't be edit</label>
+                        }
+                      </div>
                       <input
                         type="text"
                         name="email"
@@ -426,15 +467,16 @@ export default function CreateAccount() {
                         placeholder="email@domain.com"
                         value={formAccountState.email}
                         onChange={handleChange("email")}
+                        readOnly={accountId ? true : false}
                       />
-                      {errorEmail &&
+                      {errorObject.email &&
                         <label className='text-xs text-red-500'>
-                          {errorEmail}
+                          {errorObject.email}
                         </label>
                       }
                     </div>
                     <div className="md:col-span-2">
-                      <label htmlFor="phone_number">Phone Number</label>
+                      <label htmlFor="phone_number">Phone Number:</label>
                       <input
                         type="text"
                         name="phone_number"
@@ -449,14 +491,14 @@ export default function CreateAccount() {
                           }
                         }}
                       />
-                      {errorPhoneNumber &&
+                      {errorObject.phoneNumber &&
                         <label className='text-xs text-red-500'>
-                          {errorPhoneNumber}
+                          {errorObject.phoneNumber}
                         </label>
                       }
                     </div>
                     <div className="md:col-span-5">
-                      <label htmlFor="address">Residential Address</label>
+                      <label htmlFor="address">Residential Address:</label>
                       <input
                         type="text"
                         name="address"
@@ -465,15 +507,15 @@ export default function CreateAccount() {
                         value={formAccountState.address}
                         onChange={handleChange("address")}
                       />
-                      {errorAddress &&
+                      {errorObject.address &&
                         <label className='text-xs text-red-500'>
-                          {errorAddress}
+                          {errorObject.address}
                         </label>
                       }
                     </div>
-                    <div className="md:col-span-5 items-center mt-3 mb-3">
-                      <div className='flex flex-row gap-4'>
-                        <label htmlFor="birthday">Gender: </label>
+                    <div className="md:col-span-5 mt-3 mb-3">
+                      <div className='flex flex-row gap-4 items-center'>
+                        <label htmlFor="gender">Gender: </label>
                         <label className="inline-flex items-center">
                           <input
                             name='gender'
@@ -508,29 +550,77 @@ export default function CreateAccount() {
                           <span className="ml-2 text-gray-700">Other</span>
                         </label>
                       </div>
-                      {errorGender &&
+                      {errorObject.gender &&
                         <label className='text-xs text-red-500'>
-                          {errorGender}
+                          {errorObject.gender}
                         </label>
                       }
                     </div>
                     <div className="md:col-span-5">
-                      <DatePicker
-                        selected={formAccountState.birthday}
-                        onChange={handleChange("birthday")}
-                        className='h-10 border mt-1 rounded px-4 w-full bg-gray-50'
-                        dateFormat="yyyy/MM/dd"
-                        showYearDropdown
-                      />
-                      {errorDate &&
+                      <div className='flex flex-row gap-4 items-center'>
+                        <label htmlFor="birthday">Birthday: </label>
+                        <DatePicker
+                          selected={formAccountState.birthday}
+                          onChange={handleChange("birthday")}
+                          className='h-10 border mt-1 rounded px-4 w-full bg-gray-50'
+                          dateFormat="yyyy/MM/dd"
+                          renderCustomHeader={({
+                            date,
+                            changeYear,
+                            changeMonth,
+                            decreaseMonth,
+                            increaseMonth,
+                            prevMonthButtonDisabled,
+                            nextMonthButtonDisabled,
+                          }) => (
+                            <div
+                              className='m-[10px] flex gap-2 justify-center'
+                            >
+                              <button className='text-lg' onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>
+                                {"<"}
+                              </button>
+                              <select
+                                className='text-gray-700 p-1 rounded-md border border-solid border-gray-300 bg-slate-100'
+                                value={getYear(date)}
+                                onChange={({ target: { value } }) => changeYear(value)}
+                              >
+                                {years.map((option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ))}
+                              </select>
+
+                              <select
+                                className='text-gray-700 p-1 rounded-md border border-solid border-gray-300 bg-slate-100'
+                                value={months[getMonth(date)]}
+                                onChange={({ target: { value } }) =>
+                                  changeMonth(months.indexOf(value))
+                                }
+                              >
+                                {months.map((option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ))}
+                              </select>
+
+                              <button className='text-lg' onClick={increaseMonth} disabled={nextMonthButtonDisabled}>
+                                {">"}
+                              </button>
+                            </div>
+                          )}
+                        />
+                      </div>
+                      {errorObject.birthday &&
                         <div className='text-xs text-red-500'>
-                          {errorDate}
+                          {errorObject.birthday}
                         </div>
                       }
-                    </div>
-                    <div className="md:col-span-5 text-right">
-                      <div className="inline-flex items-end">
-                        <button type='button' onClick={handlerSubmit} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">{accountId ? "Update" : "Submit"}</button>
+                      <div className="md:col-span-5 text-right">
+                        <div className="inline-flex items-end">
+                          <button type='button' onClick={handlerSubmit} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">{accountId ? "Update" : "Submit"}</button>
+                        </div>
                       </div>
                     </div>
                   </div>

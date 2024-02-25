@@ -60,11 +60,13 @@ const adminRoutes = [
   },
   {
     path: '/admin/assignees',
-    element: (
-      <AssigneesHome>
-        <ManagerRequestAssignees />
-      </AssigneesHome>
-    )
+    element: <AssigneesHome></AssigneesHome>,
+    children: [
+      {
+        path: '',
+        element: <ManagerRequestAssignees />
+      }
+    ]
   },
   {
     path: '/admin/facility-header',

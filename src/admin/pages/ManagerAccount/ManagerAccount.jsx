@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, keepPreviousData } from '@tanstack/react-query'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { Button, IconButton } from '@material-tailwind/react'
+import { Button } from '@material-tailwind/react'
+import { toast } from 'react-toastify';
 
 import { useConvertDate } from '@/hooks/useConvertDate';
-import { getAccount } from '@/admin/apiEndpoints/account.api';
+import { deleteAccount, getAccount, banAccount, activeAccount } from '@/admin/apiEndpoints/account.api';
 import { calculateTotalPages } from '@/utils/calculateTotalPages';
 import { getRole } from '@/admin/apiEndpoints/role.api';
 
@@ -12,6 +13,9 @@ export default function ManagerAccount() {
 
   const [searchParams, setSearchParams] = useSearchParams()
   const [searchParamsObjectState, setSearchParamsObjectState] = useState(Object.fromEntries([...searchParams]))
+  const [arrayAccounts, setArrayAccounts] = useState([]);
+  const [reloadArrayAccounts, setReloadArrayAccounts] = useState(null);
+
   const navigate = useNavigate();
 
   if (searchParamsObjectState.page === undefined) {
@@ -22,17 +26,13 @@ export default function ManagerAccount() {
     searchParamsObjectState.limit = 2
   }
 
-  useEffect(() => {
-    const currentSearchParams = Object.fromEntries([...searchParams])
-    setSearchParamsObjectState((prev) => ({ ...prev, ...currentSearchParams }))
-  }, [searchParams])
-
-  const { data: accountResponse, isLoading: isLoadingAccount } = useQuery({
-    queryKey: ['accounts/get-all', searchParamsObjectState],
+  const { data: accountResponse } = useQuery({
+    queryKey: ['accounts/get-all', searchParamsObjectState, reloadArrayAccounts],
     queryFn: async () => {
       const data = await getAccount(searchParamsObjectState)
       return data
-    }
+    },
+    placeholderData: keepPreviousData
   })
 
   const { data: roleResponse, isLoading: isLoadingRoleType } = useQuery({
@@ -40,8 +40,33 @@ export default function ManagerAccount() {
     queryFn: async () => {
       const data = await getRole()
       return data
-    }
+    },
+    placeholderData: keepPreviousData
   })
+
+  const deleteAccountId = useMutation({
+    mutationFn: (body) => {
+      return deleteAccount(body)
+    }
+  });
+
+  const banAccountId = useMutation({
+    mutationFn: (body) => {
+      return banAccount(body)
+    }
+  });
+
+  const activeAccountId = useMutation({
+    mutationFn: (body) => {
+      return activeAccount(body)
+    }
+  });
+
+  useEffect(() => {
+    setArrayAccounts(accountResponse?.data?.data.items);
+    const currentSearchParams = Object.fromEntries([...searchParams])
+    setSearchParamsObjectState((prev) => ({ ...prev, ...currentSearchParams }))
+  }, [searchParams, accountResponse])
 
   const totalRequestCount = Number(accountResponse?.data?.data.totalCount) || 0;
   const limit = Number(accountResponse?.data?.data.limit);
@@ -98,6 +123,120 @@ export default function ManagerAccount() {
       })
       return searchParams
     })
+  }
+
+  const handleDeleteAccount = (accountId, enable) => {
+    if (!enable) {
+      deleteAccountId.mutate(accountId, {
+        onSuccess: (response) => {
+          const result = response.data
+          setReloadArrayAccounts("deleted");
+          if (result.isSuccess) {
+            toast.success(`${result.statusMessage}`, {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored"
+            });
+          } else {
+            toast.error(`${result.statusMessage}`, {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored"
+            });
+          }
+        }
+      });
+    }
+  }
+
+  const handleBanAccount = (accountId, enable, isBanned) => {
+    if (enable) {
+      if (isBanned) {
+        activeAccountId.mutate(accountId, {
+          onSuccess: (response) => {
+            const result = response.data
+            if (result.isSuccess) {
+              setReloadArrayAccounts("active" + accountId);
+              toast.success(`${result.statusMessage}`, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored"
+              });
+            } else {
+              toast.error(`${result.statusMessage}`, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored"
+              });
+            }
+          }
+        });
+      } else {
+        banAccountId.mutate(accountId, {
+          onSuccess: (response) => {
+            const result = response.data
+            if (result.isSuccess) {
+              setReloadArrayAccounts("banner" + accountId);
+              toast.success(`${result.statusMessage}`, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored"
+              });
+            } else {
+              toast.error(`${result.statusMessage}`, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored"
+              });
+            }
+          }
+        });
+      }
+    }
+  }
+
+  const handleColorStatus = (status) => {
+    console.log(status);
+    switch (status) {
+      case "Active":
+        return "bg-green-400"
+      case "Banned":
+        return "bg-orange-400"
+      case "Verifying":
+        return "bg-blue-400"
+      default:
+        return;
+    }
   }
 
   return (
@@ -408,8 +547,8 @@ export default function ManagerAccount() {
             </tr>
           </thead>
           <tbody>
-            {accountResponse &&
-              accountResponse?.data?.data.items.map((item) => (
+            {arrayAccounts &&
+              arrayAccounts.map((item) => (
                 <tr key={item.accountId}>
                   <td className='p-4 border-b border-blue-gray-50'>
                     <div className='flex items-center gap-3'>
@@ -459,7 +598,7 @@ export default function ManagerAccount() {
                   </td>
                   <td className='p-4 border-b border-blue-gray-50'>
                     <div className='w-max'>
-                      <div className='relative grid items-center px-2 py-1 font-sans text-xs font-bold text-green-900 uppercase rounded-md select-none whitespace-nowrap bg-green-500/20'>
+                      <div className={`relative grid items-center px-2 py-1 font-sans text-xs font-bold text-gray-700 uppercase rounded-md select-none whitespace-nowrap ${handleColorStatus(`${item.statusAccount}`)}`}>
                         <span className=''>{item.statusAccount}</span>
                       </div>
                     </div>
@@ -487,6 +626,56 @@ export default function ManagerAccount() {
                         </svg>
                       </span>
                     </button>
+                    <div className='dropdown dropdown-bottom dropdown-end'>
+                      <button
+                        className='relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-gray-900 transition-all hover:bg-gray-900/10 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none'
+                        type='button'
+                        tabIndex={3}
+                      >
+                        <span className='absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2'>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
+                          </svg>
+
+                        </span>
+                      </button>
+                      <div tabIndex={3} className="dropdown-content z-10 p-1 w-36 bg-gray-100 rounded-lg shadow border right-0">
+                        <ul className="space-y-1 text-gray-700">
+                          <li className="font-medium text-sm">
+                            <button
+                              onClick={() => handleDeleteAccount(item.accountId, item.enable)}
+                              className={`${item.enable ? "text-gray-500 opacity-30 bg-red-200" : "bg-red-300 hover:bg-slate-200 hover:text-red-300"} flex items-center w-full p-[5px] rounded-md transform transition-colors duration-200 border-r-4 border-transparent`}
+                            >
+                              <div className="mr-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                              </div>
+                              Delete
+                            </button>
+                          </li>
+                          <li className="font-medium text-sm">
+                            <button
+                              onClick={() => handleBanAccount(item.accountId, item.enable, item.isBanned)}
+                              className={`${item.enable ? "hover:bg-slate-200" : "text-gray-500 opacity-30 bg-red-200"} ${item.isBanned ? "hover:text-green-600 bg-green-400" : "hover:text-orange-400 bg-orange-400"} flex items-center w-full p-[5px] rounded-md transform transition-colors duration-200 border-r-4 border-transparent`}
+                            >
+                              <div className="mr-3">
+                                {item.isBanned ? (
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
+                                  </svg>
+                                ) : (
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M11.412 15.655 9.75 21.75l3.745-4.012M9.257 13.5H3.75l2.659-2.849m2.048-2.194L14.25 2.25 12 10.5h8.25l-4.707 5.043M8.457 8.457 3 3m5.457 5.457 7.086 7.086m0 0L21 21" />
+                                  </svg>
+                                )}
+                              </div>
+                              {item.isBanned ? "Active" : "Banned"}
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
                   </td>
                 </tr>
               ))}

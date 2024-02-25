@@ -7,6 +7,8 @@ import { getAllRequestOfAssigneeProcessing, getAllRequestStatus } from '@/admin/
 import useGetInfoFromJWT from '@/hooks/useGetInfoFromJWT'
 import { calculateTotalPages } from '@/utils/calculateTotalPages'
 import { useConvertDate } from '@/hooks/useConvertDate'
+
+
 export default function ManagerRequestAssignees() {
   const [rooms, setRooms] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams()
@@ -41,8 +43,6 @@ export default function ManagerRequestAssignees() {
       return data
     }
   });
-
-  console.log(requestOfAssignees);
 
   const totalRequestCount = Number(requestOfAssignees?.data?.data.totalCount) || 0;
   const limit = Number(requestOfAssignees?.data?.data.limit);
