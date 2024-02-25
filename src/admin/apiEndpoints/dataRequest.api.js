@@ -18,7 +18,6 @@ export const createProcessByAssignees = (request) => http.post('/api/request/Cre
 
 export const getCountAllRequest = () => http.get(`/api/Request/GetTotalRequest`)
 
-
 export const getRequestStatus = () => http.get(`/api/request/requestStatus`)
 
 export const getListRequestOfAssignee = (searchParamsObject, id) => {
@@ -35,13 +34,18 @@ export const getListRequestOfAssignee = (searchParamsObject, id) => {
 export const getAllPendingRequest = (searchParamsObject) => {
   const token = getCookie('access_token')
   return http.get('/api/request/GetAllPendingRequest', {
+    params: searchParamsObject,
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+}
 
-export const getAllRequestStatus = () => http.get('api/request/requestStatus')
+export const getAllRequestStatus = () => http.get('/api/request/requestStatus')
 
 export const getAllRequestOfAssigneeProcessing = (accountId, searchParamsObject) => {
   const token = getCookie('access_token')
   return http.get(`/api/requests/processByAssignees/${accountId}`, {
-
     params: searchParamsObject,
     headers: {
       Authorization: `Bearer ${token}`
