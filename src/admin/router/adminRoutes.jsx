@@ -13,6 +13,8 @@ import CreateDepartment from '../pages/CreateDepartment'
 import AllPendingRequest from '../pages/AllPendingRequest'
 import AllPendingRequestOfAssignee from '../pages/AllPendingRequestOfAssignee'
 import CreateRoom from '../pages/CreateRoom'
+import ManagerRequestAssignees from '../pages/ManagerRequestAssignees'
+
 
 const mainAdminLayout = (children) => <MainAdminLayout>{children}</MainAdminLayout>
 const adminRoutes = [
@@ -58,7 +60,11 @@ const adminRoutes = [
   },
   {
     path: '/admin/assignees',
-    element: <AssigneesHome />
+    element: (
+      <AssigneesHome>
+        <ManagerRequestAssignees />
+      </AssigneesHome>
+    )
   },
   {
     path: '/admin/facility-header',

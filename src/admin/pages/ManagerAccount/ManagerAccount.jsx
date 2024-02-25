@@ -3,117 +3,101 @@ import { useQuery } from '@tanstack/react-query'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Button, IconButton } from '@material-tailwind/react'
 
-import { useConvertDate } from '@/hooks/useConvertDate'
-import { getAccount } from '@/admin/apiEndpoints/account.api'
-import { calculateTotalPages } from '@/utils/calculateTotalPages'
-import { getRoleType } from '@/admin/apiEndpoints/role.api'
+import { useConvertDate } from '@/hooks/useConvertDate';
+import { getAccount } from '@/admin/apiEndpoints/account.api';
+import { calculateTotalPages } from '@/utils/calculateTotalPages';
+import { getRole } from '@/admin/apiEndpoints/role.api';
 
 export default function ManagerAccount() {
-  const [activeRoleType, setActiveRoleType] = useState('All')
-  const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(2)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [sortColumn, setSortColumn] = useState('')
-  const [sortOrder, setSortOrder] = useState('')
-  const navigate = useNavigate()
 
   const [searchParams, setSearchParams] = useSearchParams()
-  const searchParamsObject = Object.fromEntries([...searchParams])
+  const [searchParamsObjectState, setSearchParamsObjectState] = useState(Object.fromEntries([...searchParams]))
+  const navigate = useNavigate();
+
+  if (searchParamsObjectState.page === undefined) {
+    searchParamsObjectState.page = 1
+  }
+
+  if (searchParamsObjectState.limit === undefined) {
+    searchParamsObjectState.limit = 2
+  }
 
   useEffect(() => {
-    searchParams.set('page', page)
-    searchParams.set('limit', limit)
-
-    if (activeRoleType !== 'All' && activeRoleType) {
-      searchParams.set('roleType', activeRoleType)
-    } else {
-      searchParams.delete('roleType')
-    }
-
-    if (searchTerm) {
-      searchParams.set('searchTerm', searchTerm)
-    } else {
-      searchParams.delete('searchTerm')
-    }
-
-    if (sortColumn) {
-      searchParams.set('sortColumn', sortColumn)
-    } else {
-      searchParams.delete('sortColumn')
-    }
-
-    if (sortOrder) {
-      searchParams.set('sortOrder', sortOrder)
-    } else {
-      searchParams.delete('sortOrder')
-    }
-
-    setSearchParams(searchParams)
-  }, [sortColumn, sortOrder, searchTerm, activeRoleType, page, limit])
+    const currentSearchParams = Object.fromEntries([...searchParams])
+    setSearchParamsObjectState((prev) => ({ ...prev, ...currentSearchParams }))
+  }, [searchParams])
 
   const { data: accountResponse, isLoading: isLoadingAccount } = useQuery({
-    queryKey: ['accounts/get-all', searchParamsObject],
+    queryKey: ['accounts/get-all', searchParamsObjectState],
     queryFn: async () => {
-      const data = await getAccount(searchParamsObject)
+      const data = await getAccount(searchParamsObjectState)
       return data
     }
   })
 
-  const { data: roleTypeResponse, isLoading: isLoadingRoleType } = useQuery({
-    queryKey: ['roleTypes/get-all'],
+  const { data: roleResponse, isLoading: isLoadingRoleType } = useQuery({
+    queryKey: ['role/get-all'],
     queryFn: async () => {
-      const data = await getRoleType()
+      const data = await getRole()
       return data
     }
   })
 
-  const totalPage = calculateTotalPages(accountResponse?.data?.data.totalCount, limit)
-  const totalPageArray = Array.from({ length: totalPage }, (_, index) => index + 1)
+  const totalRequestCount = Number(accountResponse?.data?.data.totalCount) || 0;
+  const limit = Number(accountResponse?.data?.data.limit);
+  const totalPage = calculateTotalPages(totalRequestCount, limit);
 
-  const handleButtonRoleType = (roleType) => {
-    setActiveRoleType(roleType)
-    setPage(1)
-  }
+  const addParams = (arrayObSearchParams) => {
+    setSearchParams((searchParams) => {
+      arrayObSearchParams.forEach((objSearchParam, index) => {
+        let keyCondition = Object.keys(objSearchParam)[0]
+        let valueCondition = Object.values(objSearchParam)[0]
 
-  const getItemProps = (index) => ({
-    variant: page === index ? 'gradient' : 'outlined',
-    color: 'gray',
-    onClick: () => setPage(index)
-  })
 
-  const nextPage = () => {
-    if (page === 5) return
+        if (keyCondition === 'sortOrder') {
+          if (searchParams.get('sortOrder') == null || searchParams.get('sortOrder') == undefined) {
+            searchParams.delete('sortOrder')
+          } else if (searchParams.get('sortOrder') === 'asc') {
+            valueCondition = 'desc'
+          } else {
+            valueCondition = 'asc'
+          }
+        }
 
-    setPage(page + 1)
-  }
+        if (keyCondition === 'searchTerm' && valueCondition === '') {
+          searchParams.delete('searchTerm')
+          setSearchParamsObjectState((prev) => ({ ...prev, searchTerm: '' }))
+          return searchParams
+        }
 
-  const previousPage = () => {
-    if (page === 1) return
+        if (keyCondition === 'sortColumn' && valueCondition === '') {
+          searchParams.delete('sortColumn')
+          setSearchParamsObjectState((prev) => ({ ...prev, sortColumn: '' }))
+          return searchParams
+        }
 
-    setPage(page - 1)
-  }
+        if (keyCondition === 'roleName' && valueCondition === '') {
+          searchParams.delete('roleName')
+          setSearchParamsObjectState((prev) => ({ ...prev, roleName: '' }))
+          return searchParams
+        }
 
-  const handleSortColumn = (column) => {
-    if (sortColumn == column) {
-      if (sortOrder == 'asc') {
-        setSortOrder('desc')
-      } else {
-        setSortOrder('asc')
-      }
-    } else {
-      setSortColumn(column)
-      setSortOrder('asc')
-    }
-  }
+        if (keyCondition === 'accountStatus' && valueCondition === '') {
+          searchParams.delete('accountStatus')
+          setSearchParamsObjectState((prev) => ({ ...prev, accountStatus: '' }))
+          return searchParams
+        }
 
-  const handleIncrement = () => {
-    setLimit(limit + 5)
-  }
+        if (keyCondition == 'page' && valueCondition) {
+          searchParams.set(keyCondition, valueCondition)
+          return searchParams
+        }
 
-  const handleDecrement = () => {
-    if (limit > 0 && limit - 5 > 0) {
-      setLimit(limit - 5)
-    }
+        searchParams.set('page', 1)
+        searchParams.set(keyCondition, valueCondition)
+      })
+      return searchParams
+    })
   }
 
   return (
@@ -130,61 +114,8 @@ export default function ManagerAccount() {
           </div>
           {/* <div className */}
         </div>
-        {/* <div className="flex flex-col items-center justify-between gap-4 md:flex-row p-[10px]"> */}
-        <div className='flex w-full overflow-hidden md:w-max items-center'>
-          <button
-            type='button'
-            onClick={() => handleButtonRoleType('All')}
-            className={`${activeRoleType === 'All' ? 'text-blue-700 z-10 ring-4 ring-gray-200' : 'text-gray-900'} py-2.5 my-2 ml-2 px-5 me-2 text-sm font-medium focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 `}
-          >
-            All
-          </button>
-          {roleTypeResponse &&
-            roleTypeResponse?.data?.data.map((item) => (
-              <button
-                type='button'
-                key={item.id}
-                onClick={() => handleButtonRoleType(item.roleTypeName)}
-                className={`${activeRoleType == item.roleTypeName ? 'text-blue-700 z-10 ring-4 ring-gray-200' : 'text-gray-900'} py-2.5 my-2 px-5 me-2 text-sm font-medium focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700`}
-              >
-                {item.roleTypeName}
-              </button>
-            ))}
-        </div>
-        {/* </div> */}
       </div>
-      <div className='flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between p-4'>
-        <div className='dropdown'>
-          <div className='flex flex-row items-center custom-number-input  h-10 w-36'>
-            <label htmlFor='custom-input-number' className='w-full text-gray-700 text-xs font-semibold'>
-              Items
-            </label>
-            <div className='flex flex-row items-center  h-7 w-24 border-solid border-2 border-sky-500 rounded-l relative bg-transparent mt-1'>
-              <button
-                data-action='decrement'
-                className=' text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-16 cursor-pointer outline-none'
-                onClick={handleDecrement}
-              >
-                <span className='m-auto text-sm font-thin'>−</span>
-              </button>
-              <input
-                type='number'
-                className='focus:outline-none text-center w-full bg-gray-300 font-semibold text-sm hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none'
-                name='custom-input-number'
-                value={limit}
-                readOnly
-              />
-              <button
-                data-action='increment'
-                className=' text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-16 cursor-pointer'
-                onClick={handleIncrement}
-              >
-                <span className='m-auto text-sm font-thin'>+</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
+      <div className='flex justify-end px-4'>
         <div className='relative'>
           <div className='absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none'>
             <svg
@@ -206,11 +137,149 @@ export default function ManagerAccount() {
             id='table-search'
             className='block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 '
             placeholder='Search accountId, email and name'
-            onChange={(e) => {
-              setSearchTerm(e.target.value)
-              setPage(1)
-            }}
+            onChange={(e) => addParams([{ searchTerm: e.target.value }])}
+
           />
+        </div>
+      </div>
+      <div className='flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between p-4'>
+        <div className='dropdown'>
+          <div
+            tabIndex={0}
+            role='button'
+            className={`btn min-h-9 h-9 border border-solid border-gray-300 bg-slate-100 focus:border-gray-800 focus:bg-sky-200 hover:bg-sky-200 text-gray-500 hover:text-gray-700 focus:text-gray-700 `}
+          // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
+          >
+            Show
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              fill='none'
+              viewBox='0 0 24 24'
+              strokeWidth={1.5}
+              stroke='currentColor'
+              className='w-6 h-6'
+            >
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                d='M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75'
+              />
+            </svg>
+          </div>
+          <ul tabIndex={0} className='dropdown-content z-[1] menu p-2 shadow  bg-slate-100 rounded-box w-40 text-black'>
+            <li>
+              <div
+                className='border border-white focus:border-sky-300 hover:bg-sky-200'
+                onClick={() => addParams([{ limit: 5 }])}
+              >
+                5 items
+              </div>
+            </li>
+            <li>
+              <div
+                onClick={() => addParams([{ limit: 7 }])}
+                className='focus:border-sky-300 hover:bg-sky-200'
+              >7 items</div>
+            </li>
+
+            <li>
+              {/* <div onClick={() => addParams([{ limit: 9 }])}>Show 9</div> */}
+              <div onClick={() => addParams([{ limit: 9 }])} className='focus:border-sky-300 hover:bg-sky-200'>9 items</div>
+            </li>
+          </ul>
+        </div>
+
+        <div className='relative flex gap-2'>
+          <div className='dropdown'>
+            <div
+              tabIndex={0}
+              role='button'
+              className={`btn min-h-9 h-9 w-44 flex justify-between border border-solid border-gray-300 bg-slate-100 focus:border-gray-800 focus:bg-sky-200 hover:bg-sky-200 text-gray-500 hover:text-gray-700 focus:text-gray-700 `}
+            // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
+            >
+              {searchParamsObjectState.roleName ? searchParamsObjectState.roleName : "All Role"}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+              </svg>
+            </div>
+            <ul tabIndex={0} className='dropdown-content z-[1] menu p-2 shadow  bg-slate-100 rounded-box w-40 text-black'>
+              <li>
+                <div
+                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.roleName ? '' : 'border-sky-300 bg-sky-200'}`}
+                  onClick={() => addParams([{ roleName: '' }])}
+                >
+                  All Role
+                </div>
+              </li>
+              {roleResponse &&
+                roleResponse?.data?.data.map((item) => (
+                  <li key={item.id}>
+                    <div
+                      className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.roleName === item.roleName ? 'border-sky-300 bg-sky-200' : ''}`}
+                      onClick={() => addParams([{ roleName: item.roleName }])}
+                    >
+                      {item.roleName}
+                    </div>
+                  </li>
+                ))}
+            </ul>
+          </div>
+          <div className='dropdown'>
+            <div
+              tabIndex={0}
+              role='button'
+              className={`btn min-h-9 h-9 w-44 flex justify-between border border-solid border-gray-300 bg-slate-100 focus:border-gray-800 focus:bg-sky-200 hover:bg-sky-200 text-gray-500 hover:text-gray-700 focus:text-gray-700 `}
+            // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
+            >
+              {searchParamsObjectState.accountStatus ? searchParamsObjectState.accountStatus : "All Status"}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+              </svg>
+
+            </div>
+            <ul tabIndex={0} className='dropdown-content z-[1] menu p-2 shadow  bg-slate-100 rounded-box w-40 text-black'>
+              <li>
+                <div
+                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.accountStatus ? '' : 'border-sky-300 bg-sky-200'}`}
+                  onClick={() => addParams([{ accountStatus: '' }])}
+                >
+                  All Status
+                </div>
+              </li>
+              <li>
+                <div
+                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.accountStatus === 'Verifying' ? 'border-sky-300 bg-sky-200' : ''}`}
+                  onClick={() => addParams([{ accountStatus: 'Verifying' }])}
+                >
+                  Verifying
+                </div>
+              </li>
+              <li>
+                <div
+                  onClick={() => addParams([{ accountStatus: 'Active' }])}
+                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.accountStatus === 'Active' ? 'border-sky-300 bg-sky-200' : ''}`}
+                >
+                  Active
+                </div>
+              </li>
+              <li>
+                <div
+                  onClick={() => addParams([{ accountStatus: 'InActive' }])}
+                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.accountStatus === 'InActive' ? 'border-sky-300 bg-sky-200' : ''}`}
+                >
+                  InActive
+                </div>
+              </li>
+              <li>
+                <div
+                  onClick={() => addParams([{ accountStatus: 'Banned' }])}
+                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.accountStatus === 'Banned' ? 'border-sky-300 bg-sky-200' : ''}`}
+                >
+                  Banned
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
 
@@ -223,7 +292,7 @@ export default function ManagerAccount() {
                   <div className='block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70'>
                     Member
                   </div>
-                  <button type='button' onClick={() => handleSortColumn('fullName')}>
+                  <button type='button' onClick={() => addParams([{ sortColumn: 'fullName' }, { sortOrder: 'asc' }])}>
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
                       fill='none'
@@ -246,7 +315,7 @@ export default function ManagerAccount() {
                   <div className='block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70'>
                     Account number
                   </div>
-                  <button type='button' onClick={() => handleSortColumn('accountId')}>
+                  <button type='button' onClick={() => addParams([{ sortColumn: 'accountId' }, { sortOrder: 'asc' }])}>
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
                       fill='none'
@@ -269,7 +338,7 @@ export default function ManagerAccount() {
                   <div className='block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70'>
                     Role name
                   </div>
-                  <button type='button' onClick={() => handleSortColumn('roleName')}>
+                  <button type='button' onClick={() => addParams([{ sortColumn: 'roleName' }, { sortOrder: 'asc' }])}>
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
                       fill='none'
@@ -292,7 +361,7 @@ export default function ManagerAccount() {
                   <div className='block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70'>
                     Status
                   </div>
-                  <button type='button' onClick={() => handleSortColumn('statusAccount')}>
+                  <button type='button' onClick={() => addParams([{ sortColumn: 'statusAccount' }, { sortOrder: 'asc' }])}>
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
                       fill='none'
@@ -315,7 +384,7 @@ export default function ManagerAccount() {
                   <div className='block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70'>
                     Create date
                   </div>
-                  <button type='button' onClick={() => handleSortColumn('createdAt')}>
+                  <button type='button' onClick={() => addParams([{ sortColumn: 'createdAt' }, { sortOrder: 'asc' }])}>
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
                       fill='none'
@@ -433,37 +502,52 @@ export default function ManagerAccount() {
             Page
             <span className='font-semibold text-gray-700 '>
               {' '}
-              {page}/{totalPage}{' '}
+              {searchParamsObjectState.page}/{totalPage}{' '}
             </span>
           </div>
           <div aria-label='Page navigation example'>
             {totalPage > 1 && (
-              <div className='flex items-center gap-4'>
-                <Button variant='text' className='flex items-center gap-2' onClick={previousPage} disabled={page === 1}>
+              <div className='flex items-center gap-1'>
+                <Button
+                  variant='text'
+                  className='flex items-center gap-1 border border-solid'
+                  onClick={() => addParams([{ page: 1 }])}
+                  disabled={searchParamsObjectState.page == 1}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5" />
+                  </svg>
+                </Button>
+                <Button
+                  variant='text'
+                  className='flex items-center gap-1 border border-solid'
+                  onClick={() => addParams([{ page: +searchParamsObjectState.page - 1 }])}
+                  disabled={searchParamsObjectState.page == 1}
+                >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'
                     viewBox='0 0 24 24'
                     strokeWidth={1.5}
                     stroke='currentColor'
-                    className='w-6 h-6'
+                    className='w-4 h-4'
                   >
                     <path strokeLinecap='round' strokeLinejoin='round' d='M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18' />
                   </svg>
                   PreviousPage
                 </Button>
-                <div className='flex items-center gap-2'>
+                {/* <div className='flex items-center gap-2'>
                   {totalPageArray.map((page) => (
                     <IconButton {...getItemProps(page)} className='text-gray-700' key={page}>
                       {page}
                     </IconButton>
                   ))}
-                </div>
+                </div> */}
                 <Button
                   variant='text'
-                  className='flex items-center gap-2'
-                  onClick={nextPage}
-                  disabled={page === totalPage}
+                  className='flex items-center gap-1 border border-solid'
+                  onClick={() => addParams([{ page: +searchParamsObjectState.page + 1 }])}
+                  disabled={searchParamsObjectState.page == totalPage}
                 >
                   NextPage
                   <svg
@@ -472,10 +556,21 @@ export default function ManagerAccount() {
                     viewBox='0 0 24 24'
                     strokeWidth={1.5}
                     stroke='currentColor'
-                    className='w-6 h-6'
+                    className='w-4 h-4'
                   >
                     <path strokeLinecap='round' strokeLinejoin='round' d='M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3' />
                   </svg>
+                </Button>
+                <Button
+                  variant='text'
+                  className='flex items-center gap-1 border border-solid'
+                  onClick={() => addParams([{ page: totalPage }])}
+                  disabled={searchParamsObjectState.page == totalPage}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
+                  </svg>
+
                 </Button>
               </div>
             )}
