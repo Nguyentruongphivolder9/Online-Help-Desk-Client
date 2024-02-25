@@ -9,6 +9,7 @@ import { calculateTotalPages } from '@/utils/calculateTotalPages';
 import { getRole } from '@/admin/apiEndpoints/role.api';
 
 export default function ManagerAccount() {
+
   const [searchParams, setSearchParams] = useSearchParams()
   const [searchParamsObjectState, setSearchParamsObjectState] = useState(Object.fromEntries([...searchParams]))
   const navigate = useNavigate();
@@ -51,6 +52,7 @@ export default function ManagerAccount() {
       arrayObSearchParams.forEach((objSearchParam, index) => {
         let keyCondition = Object.keys(objSearchParam)[0]
         let valueCondition = Object.values(objSearchParam)[0]
+
 
         if (keyCondition === 'sortOrder') {
           if (searchParams.get('sortOrder') == null || searchParams.get('sortOrder') == undefined) {
@@ -136,6 +138,7 @@ export default function ManagerAccount() {
             className='block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 '
             placeholder='Search accountId, email and name'
             onChange={(e) => addParams([{ searchTerm: e.target.value }])}
+
           />
         </div>
       </div>
@@ -417,9 +420,20 @@ export default function ManagerAccount() {
                           className='relative inline-block h-9 w-9 !rounded-full object-cover object-center'
                         />
                       ) : (
-                        <div className="relative flex h-9 w-9 bg-gray-200 rounded-full object-cover object-center shadow justify-center items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-gray-400">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                        <div className='relative flex h-9 w-9 bg-gray-200 rounded-full object-cover object-center shadow justify-center items-center'>
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            strokeWidth={1.5}
+                            stroke='currentColor'
+                            className='w-6 h-6 text-gray-400'
+                          >
+                            <path
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              d='M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z'
+                            />
                           </svg>
                         </div>
                       )}

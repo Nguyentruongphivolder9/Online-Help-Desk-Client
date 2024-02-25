@@ -88,8 +88,12 @@ export default function AdminHome({ children }) {
               {children}
             </div>
           </div>
+        </aside>
+        <div id='main-content' className='min-h-dvh w-full bg-gray-50 relative overflow-y-auto lg:ml-64 p-[20px]'>
+          {children}
         </div>
       )}
     </>
+
   )
 }
