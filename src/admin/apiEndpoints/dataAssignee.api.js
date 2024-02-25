@@ -14,3 +14,14 @@ export const getListAssignee = (searchParamsObject) => {
     }
   })
 }
+
+export const getAllPendingRequestOfAssignee = (searchParamsObject, id) => {
+  const token = getCookie('access_token')
+  console.log(searchParamsObject)
+  return http.get(`/api/request/GetAllPendingRequestOfAssignee/${id}`, {
+    params: searchParamsObject,
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+}

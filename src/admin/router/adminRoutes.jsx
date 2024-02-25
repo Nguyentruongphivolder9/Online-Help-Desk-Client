@@ -9,6 +9,10 @@ import AssigneesHome from '../pages/AssigneesHome'
 import DetailsAssignee from '../pages/DetailsAssignee'
 import FacilityMain from '../pages/FacilityMain'
 import ListRequestOfAssigneesID from '../pages/ListRequestOfAssigneesID'
+import CreateDepartment from '../pages/CreateDepartment'
+import AllPendingRequest from '../pages/AllPendingRequest'
+import AllPendingRequestOfAssignee from '../pages/AllPendingRequestOfAssignee'
+import CreateRoom from '../pages/CreateRoom'
 
 const mainAdminLayout = (children) => <MainAdminLayout>{children}</MainAdminLayout>
 const adminRoutes = [
@@ -33,6 +37,22 @@ const adminRoutes = [
     element: (
       <AdminHome>
         <CreateAccount />
+      </AdminHome>
+    )
+  },
+  {
+    path: '/admin/create-department',
+    element: (
+      <AdminHome>
+        <CreateDepartment />
+      </AdminHome>
+    )
+  },
+  {
+    path: '/admin/create-room',
+    element: (
+      <AdminHome>
+        <CreateRoom />
       </AdminHome>
     )
   },
@@ -69,6 +89,22 @@ const adminRoutes = [
     element: (
       <FacilityHome>
         <ListRequestOfAssigneesID />
+      </FacilityHome>
+    )
+  },
+  {
+    path: '/admin/facility-header/AllPendingRequest',
+    element: (
+      <FacilityHome>
+        <AllPendingRequest />
+      </FacilityHome>
+    )
+  },
+  {
+    path: '/admin/facility-header/AllPendingRequestOfAssignee/:id',
+    element: (
+      <FacilityHome>
+        <AllPendingRequestOfAssignee />
       </FacilityHome>
     )
   },

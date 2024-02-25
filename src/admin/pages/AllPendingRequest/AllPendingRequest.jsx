@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { calculateTotalPages } from '@/utils/calculateTotalPages'
-import { getCountAllRequest, getAllRequest, getRequestStatus } from '@/admin/apiEndpoints/dataRequest.api'
-import { Button, IconButton } from '@material-tailwind/react'
-import { useConvertDate } from '@/hooks/useConvertDate'
+import { getAllPendingRequest, getRequestStatus } from '@/admin/apiEndpoints/dataRequest.api'
+import { Link } from 'react-router-dom'
 
 const getColorClass = (statusName) => {
   switch (statusName) {
@@ -60,7 +58,7 @@ const getColorClass = (statusName) => {
   }
 }
 
-export default function facilityMain() {
+export default function PendingRequest() {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(3)
   const [searchTerm, setSearchTerm] = useState('')
@@ -100,13 +98,14 @@ export default function facilityMain() {
     setSearchParams(searchParams)
   }, [sortColumn, sortOrder, searchTerm, sortStatus, page, limit])
 
-  const { data: totalRequest } = useQuery({
-    queryKey: ['request/getCountRequest'],
+  const { data: getAllPending } = useQuery({
+    queryKey: ['request/Pending', searchParamsObject],
     queryFn: async () => {
-      const data = await getCountAllRequest()
+      const data = await getAllPendingRequest(searchParamsObject)
       return data
     }
   })
+  console.log(getAllPending?.data)
 
   const { data: ListRequestStatus } = useQuery({
     queryKey: ['request/getListRequestStatus'],
@@ -116,16 +115,7 @@ export default function facilityMain() {
     }
   })
 
-  const { data: allRequest } = useQuery({
-    queryKey: ['request/getAllRequest', searchParamsObject],
-    queryFn: async () => {
-      const data = await getAllRequest(searchParamsObject)
-      return data
-    }
-  })
-  console.log(allRequest?.data)
-
-  const totalPage = calculateTotalPages(allRequest?.data?.data.totalCount, limit)
+  const totalPage = calculateTotalPages(getAllPendingRequest?.data?.data.totalCount, limit)
   const totalPageArray = Array.from({ length: totalPage }, (_, index) => index + 1)
 
   const nextPage = () => {
@@ -164,114 +154,10 @@ export default function facilityMain() {
   }
 
   return (
-    <div>
-      {/* so lieu request */}
-      <div className='max-w-7xl mx-auto lg:py-8 '>
-        <div className='grid grid-cols-1 gap-5 sm:grid-cols-4 mt-2'>
-          <div className='bg-white overflow-hidden shadow sm:rounded-lg'>
-            <div className='px-4 py-5 sm:p-6'>
-              <dl>
-                <dt className='text-sm leading-5 font-medium text-gray-500 truncate'>Total Request </dt>
-                <dd className='mt-1 text-3xl leading-9 font-semibold text-indigo-600'>
-                  {totalRequest?.data?.data?.all}
-                </dd>
-              </dl>
-            </div>
-          </div>
-          <div className='bg-white overflow-hidden shadow sm:rounded-lg'>
-            <div className='px-4 py-5 sm:p-6'>
-              <dl>
-                <dt className='text-sm leading-5 font-medium text-gray-500 truncate'>Open Request</dt>
-                <dd className='mt-1 text-3xl leading-9 font-semibold text-indigo-600'>
-                  {totalRequest?.data?.data?.open}
-                </dd>
-              </dl>
-            </div>
-          </div>
-          <div className='bg-white overflow-hidden shadow sm:rounded-lg'>
-            <div className='px-4 py-5 sm:p-6'>
-              <dl>
-                <dt className='text-sm leading-5 font-medium text-gray-500 truncate'>Assigned Request</dt>
-                <dd className='mt-1 text-3xl leading-9 font-semibold text-indigo-600'>
-                  {totalRequest?.data?.data?.assigned}
-                </dd>
-              </dl>
-            </div>
-          </div>
-          <div className='bg-white overflow-hidden shadow sm:rounded-lg'>
-            <div className='px-4 py-5 sm:p-6'>
-              <dl>
-                <dt className='text-sm leading-5 font-medium text-gray-500 truncate'>Work in progress</dt>
-                <dd className='mt-1 text-3xl leading-9 font-semibold text-indigo-600'>
-                  {totalRequest?.data?.data?.workInProgress}
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-
-        <div className='grid grid-cols-1 gap-5 sm:grid-cols-4 mt-4'>
-          <div className='bg-white overflow-hidden shadow sm:rounded-lg'>
-            <div className='px-4 py-5 sm:p-6'>
-              <dl>
-                <dt className='text-sm leading-5 font-medium text-gray-500 truncate'>Rejected </dt>
-                <dd className='mt-1 text-3xl leading-9 font-semibold text-indigo-600'>
-                  {totalRequest?.data?.data?.rejected}
-                </dd>
-              </dl>
-            </div>
-          </div>
-          <div className='bg-white overflow-hidden shadow sm:rounded-lg'>
-            <div className='px-4 py-5 sm:p-6'>
-              <dl>
-                <dt className='text-sm leading-5 font-medium text-gray-500 truncate'>Completed</dt>
-                <dd className='mt-1 text-3xl leading-9 font-semibold text-indigo-600'>
-                  {totalRequest?.data?.data?.complete}
-                </dd>
-              </dl>
-            </div>
-          </div>
-          <div className='bg-white overflow-hidden shadow sm:rounded-lg'>
-            <div className='px-4 py-5 sm:p-6'>
-              <dl>
-                <dt className='text-sm leading-5 font-medium text-gray-500 truncate'>Need more info</dt>
-                <dd className='mt-1 text-3xl leading-9 font-semibold text-indigo-600'>
-                  {' '}
-                  {totalRequest?.data?.data?.needMoreInfo}
-                </dd>
-              </dl>
-            </div>
-          </div>
-          <div className='bg-white overflow-hidden shadow sm:rounded-lg'>
-            <div className='px-4 py-5 sm:p-6'>
-              <dl>
-                <dt className='text-sm leading-5 font-medium text-rose-600 truncate'>Pending Request</dt>
-                <dd className='mt-1 text-3xl leading-9 font-semibold text-rose-600'>
-                  {totalRequest?.data?.data?.pending}
-                  <Link
-                    to={`/admin/facility-header/AllPendingRequest`}
-                    className='text-xs text-rose-600 font-normal  flex   '
-                  >
-                    See more
-                    <svg
-                      fill='none'
-                      stroke='currentColor'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      strokeWidth='2'
-                      viewBox='0 0 24 24'
-                      className='w-4 h-4 ml-3'
-                    >
-                      <path d='M14 5l7 7m0 0l-7 7m7-7H3 flex'></path>
-                    </svg>
-                  </Link>
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr />
+    <div className='mt-5'>
+      <h2 className='text-4xl font-extrabold tracking-tight text-red-600 sm:text-4xl px-80 py-8'>
+        List of Pending Requests
+      </h2>
       {/* search input */}
       <div className='mb-3 py-2 w-full flex flex-row justify-between items-center'>
         <div className='relative'>
@@ -370,8 +256,8 @@ export default function facilityMain() {
             </tr>
           </thead>
           <tbody>
-            {allRequest &&
-              allRequest?.data?.data.items.map((item) => (
+            {getAllPending &&
+              getAllPending?.data?.data.items.map((item) => (
                 <tr
                   key={item.id}
                   className={`border-l-4 ${getColorClass(item?.requestStatus?.statusName).borderColor}  hover:bg-gray-50 dark:hover:bg-gray-600`}
@@ -392,9 +278,7 @@ export default function facilityMain() {
                       {item.requestStatus.statusName}
                     </div>
                   </td>
-                  <td className=' px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis'>
-                    {useConvertDate(item.createdAt)}
-                  </td>
+                  <td className=' px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis'>{item.createdAt}</td>
                   <td className=' px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis'>
                     {item.processByAssignees[0]?.account.accountId}
                   </td>
