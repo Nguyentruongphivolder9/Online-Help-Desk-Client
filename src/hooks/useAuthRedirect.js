@@ -10,7 +10,7 @@ const useAuthRedirect = (roleTypeName) => {
   useEffect(() => {
     const objectJWT = useGetInfoFromJWT();
     if (objectJWT.accountId) {
-      if (objectJWT.roleTypes === roleTypeName) {
+      if (objectJWT.roleTypes == roleTypeName) {
         setAccountId(objectJWT.accountId);
         setIsLoading(false);
       } else {
