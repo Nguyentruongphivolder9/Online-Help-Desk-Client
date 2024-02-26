@@ -42,7 +42,7 @@ export default function CreateAccount() {
   const [fileUpdate, setFileUpdate] = useState(null);
   const [errorObject, setErrorObject] = useState(errorsField || {});
   const navigate = useNavigate();
-  const { accountId } = useParams();
+  const { id: accountId } = useParams();
 
   const range = (start, end) => {
     return new Array(end - start + 1).fill().map((d, i) => i + start);

@@ -14,6 +14,7 @@ import AllPendingRequest from '../pages/AllPendingRequest'
 import AllPendingRequestOfAssignee from '../pages/AllPendingRequestOfAssignee'
 import CreateRoom from '../pages/CreateRoom'
 import ManagerRequestAssignees from '../pages/ManagerRequestAssignees'
+import RequestDetail from '../pages/RequestDetail'
 
 
 const mainAdminLayout = (children) => <MainAdminLayout>{children}</MainAdminLayout>
@@ -35,7 +36,7 @@ const adminRoutes = [
     )
   },
   {
-    path: '/admin/create-account/:accountId',
+    path: '/admin/create-account/:id',
     element: (
       <AdminHome>
         <CreateAccount />
@@ -59,9 +60,13 @@ const adminRoutes = [
     )
   },
   {
-    path: '/admin/assignees',
+    path: '/admin/assignees/',
     element: <AssigneesHome></AssigneesHome>,
     children: [
+      {
+        path: 'requests/:id',
+        element: <RequestDetail />
+      },
       {
         path: '',
         element: <ManagerRequestAssignees />
