@@ -240,7 +240,7 @@ export default function SingleRequestById() {
                       <div className='flex items-center'>
                         <button
                           type='button'
-                          onClick={handleSubmit} // Fixed onClick handler
+                          onClick={handleSubmit}
                           className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
                         >
                           Update Process

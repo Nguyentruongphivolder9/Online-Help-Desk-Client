@@ -67,9 +67,10 @@ export default function facilityMain() {
   const [sortColumn, setSortColumn] = useState('')
   const [sortOrder, setSortOrder] = useState('')
   const [sortStatus, setSortStatus] = useState('')
+  const [statusName, setStatusName] = useState('')
+
   const [searchParams, setSearchParams] = useSearchParams()
   const searchParamsObject = Object.fromEntries([...searchParams])
-  const [statusName, setStatusName] = useState('')
 
   useEffect(() => {
     searchParams.set('page', page)
