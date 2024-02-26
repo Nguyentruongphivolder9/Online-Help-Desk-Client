@@ -10,6 +10,7 @@ import DetailsAssignee from '../pages/DetailsAssignee'
 import FacilityMain from '../pages/FacilityMain'
 import ListRequestOfAssigneesID from '../pages/ListRequestOfAssigneesID'
 import ManagerRequestAssignees from '../pages/ManagerRequestAssignees'
+import ChatBox from '@/common/components/ChatBox'
 
 const mainAdminLayout = (children) => <MainAdminLayout>{children}</MainAdminLayout>
 const adminRoutes = [
@@ -38,12 +39,18 @@ const adminRoutes = [
     )
   },
   {
-    path: '/admin/assignees',
-    element: (
-      <AssigneesHome>
-        <ManagerRequestAssignees />
-      </AssigneesHome>
-    )
+    path: '/admin',
+    element: <AssigneesHome></AssigneesHome>,
+    children: [
+      {
+        path: 'assignees',
+        element: <ManagerRequestAssignees />
+      },
+      {
+        path: 'assignees/messages/:id',
+        element: <ChatBox />
+      }
+    ]
   },
   {
     path: '/admin/facility-header',
