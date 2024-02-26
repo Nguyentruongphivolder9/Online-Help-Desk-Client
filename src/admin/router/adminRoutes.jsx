@@ -9,13 +9,13 @@ import AssigneesHome from '../pages/AssigneesHome'
 import DetailsAssignee from '../pages/DetailsAssignee'
 import FacilityMain from '../pages/FacilityMain'
 import ListRequestOfAssigneesID from '../pages/ListRequestOfAssigneesID'
-import CreateDepartment from '../pages/CreateDepartment'
 import AllPendingRequest from '../pages/AllPendingRequest'
 import AllPendingRequestOfAssignee from '../pages/AllPendingRequestOfAssignee'
 import CreateRoom from '../pages/CreateRoom'
 import ManagerRequestAssignees from '../pages/ManagerRequestAssignees'
-import RequestDetail from '../pages/RequestDetail'
 import ChatBox from '@/common/components/ChatBox'
+import CenterAssigneesHome from '../pages/CenterAssigneesHome'
+import RequestDetails from '../pages/RequestDetails/RequestDetails'
 
 
 const mainAdminLayout = (children) => <MainAdminLayout>{children}</MainAdminLayout>
@@ -53,12 +53,26 @@ const adminRoutes = [
     )
   },
   {
-    path: '/admin/assignees/',
+    path: '/admin/assignees',
     element: <AssigneesHome></AssigneesHome>,
     children: [
       {
         path: 'requests/:id',
-        element: <RequestDetail />
+        element: <CenterAssigneesHome />,
+        children: [
+          {
+            path: 'remark',
+            element: <ChatBox />
+          },
+          {
+            path: '',
+            element: <RequestDetails />
+          }
+        ]
+      },
+      {
+        path: 'messages/:id',
+        element: <ChatBox />
       },
       {
         path: '',
