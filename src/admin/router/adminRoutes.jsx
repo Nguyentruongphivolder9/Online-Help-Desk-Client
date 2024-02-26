@@ -135,7 +135,15 @@ const adminRoutes = [
         <SingleRequestById />
       </FacilityHome>
     )
-  }
+  },
+  {
+    path: '/admin/create-department',
+    element: (
+      <AdminHome>
+        <CreateDepartment />
+      </AdminHome>
+    )
+  },
 ]
 
 export default adminRoutes
