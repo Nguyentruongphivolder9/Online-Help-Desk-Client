@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getTotalRequestByAssignee, getDetailAssignee } from '@/admin/apiEndpoints/dataAssignee.api'
 import { useParams, Link } from 'react-router-dom'
 
-export default function List() {
+export default function DetailsAss() {
   const { id } = useParams()
 
   const { data: getAssigneeId } = useQuery({
@@ -23,10 +23,10 @@ export default function List() {
   })
 
   return (
-    <div>
+    <div className=' overflow-hidden bg-white px-80  w-full'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:py-10 lg:px-8'>
-        <h2 className='text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl px-24 py-7'>
-          All Details Of the Assignee
+        <h2 className='text-3xl font-extrabold tracking-tight text-gray-500 sm:text-4xl px-60 py-7'>
+          Details Of the Assignee
         </h2>
 
         <div className='bg-white border border-4 rounded-lg shadow m-1'>
@@ -165,17 +165,34 @@ export default function List() {
                 <dd className='mt-1 text-3xl leading-9 font-semibold text-rose-600'>
                   {' '}
                   {totalResponse?.data?.data?.pending}
+                  <Link
+                    to={`/admin/facility-header/AllPendingRequestOfAssignee/${id}`}
+                    className='text-xs text-rose-600 font-normal  flex   '
+                  >
+                    See more
+                    <svg
+                      fill='none'
+                      stroke='currentColor'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      strokeWidth='2'
+                      viewBox='0 0 24 24'
+                      className='w-4 h-4 ml-3'
+                    >
+                      <path d='M14 5l7 7m0 0l-7 7m7-7H3 flex'></path>
+                    </svg>
+                  </Link>
                 </dd>
               </dl>
             </div>
           </div>
-          <div className='bg-white overflow-hidden shadow sm:rounded-lg'>
-            <div className='px-4 py-5 sm:p-6'>
+          <div className='bg-white overflow-hidden shadow sm:rounded-lg '>
+            <div className=' sm:p-9 bg-gray-200'>
               <dl>
                 <dt className='text-sm leading-5 font-medium text-gray-500 truncate'>
                   <Link
                     to={`/admin/facility-header/ListRequestOfAssignees/${getAssigneeId?.data?.data?.accountId}`}
-                    className='text-base text-gray-900 font-normal rounded-lg flex items-center p-2 hover:bg-gray-00 group'
+                    className='text-base text-gray-900 font-bold rounded-lg flex items-center p-2 hover:bg-gray-00 group'
                   >
                     See more
                     <svg

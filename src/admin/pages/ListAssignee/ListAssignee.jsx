@@ -7,7 +7,7 @@ import { Button, IconButton } from '@material-tailwind/react'
 
 export default function List() {
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(5)
+  const [limit, setLimit] = useState(6)
   const [searchTerm, setSearchTerm] = useState('')
 
   const [searchParams, setSearchParams] = useSearchParams()
@@ -51,15 +51,6 @@ export default function List() {
     setPage(page - 1)
   }
 
-  // const handleIncrement = () => {
-  //   setLimit(limit + 5)
-  // }
-
-  // const handleDecrement = () => {
-  //   if (limit > 0 && limit - 5 > 0) {
-  //     setLimit(limit - 5)
-  //   }
-  // }
   const getItemProps = (index) => ({
     variant: page === index ? 'gradient' : 'outlined',
     color: 'gray',
@@ -67,7 +58,8 @@ export default function List() {
   })
 
   return (
-    <div className='max-w-7xl py-7 mx-auto px-5'>
+    <div className=' overflow-hidden bg-white px-80  w-full'>
+      <h2 className='text-4xl font-extrabold tracking-tight text-gray-500 sm:text-4xl px-80 py-8'>Assignee List</h2>
       <div className='mb-3 py-2 xl:w-96'>
         <div className='relative'>
           <div className='absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none'>

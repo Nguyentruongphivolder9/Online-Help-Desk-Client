@@ -11,8 +11,8 @@ const useAuthRedirect = (roleTypeName) => {
     const objectJWT = useGetInfoFromJWT()
     if (objectJWT.accountId) {
       if (objectJWT.roleTypes == roleTypeName) {
-        setAccountId(objectJWT.accountId)
-        setIsLoading(false)
+        setAccountId(objectJWT.accountId);
+        setIsLoading(false);
       } else {
         switch (objectJWT.roleTypes) {
           case 'End-Users':

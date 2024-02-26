@@ -19,7 +19,6 @@ export const accountRegister = (formRequest) => {
   Object.keys(formRequest).forEach((key) => {
     formData.append(key, formRequest[key]);
   });
-  console.log(formData);
 
   return http.post('/api/auth/register', formData, {
     headers: {
@@ -92,6 +91,38 @@ export const updateAccount = (formRequest) => {
   return http.put('/api/accounts/update', formData, {
     headers: {
       "Content-Type": 'multipart/form-data',
+      Authorization: `Bearer ${token}`,
+    },
+  })
+};
+
+export const banAccount = (accountId) => {
+  const token = getCookie("access_token");
+
+  return http.put(`/api/accounts/statusAccount/${accountId}/banned`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  })
+};
+
+export const activeAccount = (accountId) => {
+  const token = getCookie("access_token");
+
+  return http.put(`/api/accounts/statusAccount/${accountId}/active`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  })
+};
+
+export const deleteAccount = (accountId) => {
+  const token = getCookie("access_token");
+
+  return http.delete(`/api/accounts/delete/${accountId}`, {
+    headers: {
       Authorization: `Bearer ${token}`,
     },
   })
