@@ -16,6 +16,7 @@ import ManagerRequestAssignees from '../pages/ManagerRequestAssignees'
 import ChatBox from '@/common/components/ChatBox'
 import CenterAssigneesHome from '../pages/CenterAssigneesHome'
 import RequestDetails from '../pages/RequestDetails/RequestDetails'
+import CreateDepartment from '../pages/CreateDepartment'
 
 
 const mainAdminLayout = (children) => <MainAdminLayout>{children}</MainAdminLayout>
