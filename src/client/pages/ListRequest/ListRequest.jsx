@@ -3,7 +3,9 @@ import { useMutation, useQuery, useQueryClient, keepPreviousData } from '@tansta
 import React, { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import getColorClass from '@/hooks/useGetColorRequestStatus'
+import useAuthRedirect from '@/hooks/useAuthRedirect'
 export default function ListRequest() {
+  const { accountId, isLoading } = useAuthRedirect('End-Users')
   const queryClient = useQueryClient()
   const [searchParams, setSearchParams] = useSearchParams()
   const [searchParamsObjectState, setSearchParamsObjectState] = useState(Object.fromEntries([...searchParams]))

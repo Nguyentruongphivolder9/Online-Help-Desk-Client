@@ -5,12 +5,14 @@ import LoadingOverlay from '@/common/components/LoadingOverlay'
 import LobbyChat from '@/common/components/LobbyChat/LobbyChat'
 import SkeletonLoaderRequest from '@/common/components/SkeletonLoaderRequest'
 import { HubConnectionBuilder, LogLevel, HttpTransportType } from '@microsoft/signalr'
-import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useGetInfoFromJWT from '@/hooks/useGetInfoFromJWT'
 import { Outlet, useParams } from 'react-router-dom'
 import { getAllRequestOfAssigneeProcessing } from '@/admin/apiEndpoints/dataRequest.api'
+import { UpdateUnwatchsSeenOnNotifiRemark, getListNotifiRemarkByAccountId } from '@/client/apiEndpoints/remark.api'
 
 export default function AssigneesHome({ children }) {
+  const queryClient = useQueryClient()
   const { accountId, isLoading } = useAuthRedirect('Assignees')
   const { id: accountAssigneeId, roleTypes } = useGetInfoFromJWT()
   const [accountdIdState, setAccountdIdState] = useState(useAuthRedirect('Assignees'))
@@ -21,6 +23,7 @@ export default function AssigneesHome({ children }) {
   const [listRemarkState, setListRemarkState] = useState([])
   const [infoConnectState, setInfoConnectState] = useState({})
   const [connect, setConnection] = useState()
+  const [listNotifiRemark, setListNotifiRemark] = useState([])
   const handleSearchChange = (e) => {
     const value = e.target.value
     if (value !== null && value !== '') {
@@ -38,7 +41,42 @@ export default function AssigneesHome({ children }) {
     }
   })
 
-  const joinSpecificChatRoom = async (requestId, username) => {
+  const listNotifiRemarkQueries = useQuery({
+    queryKey: ['listNotifiRemarkQueries'],
+    queryFn: () => getListNotifiRemarkByAccountId(),
+    placeholderData: keepPreviousData
+  })
+
+  const UpdateUnwatchsSeenOnNotifiRemarkMutation = useMutation({
+    mutationFn: (body) => UpdateUnwatchsSeenOnNotifiRemark(body)
+  })
+
+  const handleUpdateUnwatchsSeenOnNotifiRemark = (objectData) => {
+    UpdateUnwatchsSeenOnNotifiRemarkMutation.mutate(objectData, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['listNotifiRemarkQueries'] })
+        console.log('Update successfully')
+      },
+      onError: () => {
+        console.log('Failed')
+      }
+    })
+  }
+
+  useEffect(() => {
+    if (listNotifiRemarkQueries.isSuccess) {
+      setListNotifiRemark((prev) => [...listNotifiRemarkQueries?.data?.data?.data])
+    }
+
+    return () => {
+      // disconnect before switch to another room (or unmounted component)
+      if (connect) {
+        connect.stop()
+      }
+    }
+  }, [connect, listNotifiRemarkQueries.isSuccess, listNotifiRemarkQueries.data])
+
+  const joinSpecificChatRoom = async (requestId, username, remarkId) => {
     if (connect != undefined || connect != null) {
       connect.stop()
     }
@@ -66,6 +104,7 @@ export default function AssigneesHome({ children }) {
 
       setInfoConnectState((prev) => ({ ...prev, requestId, username }))
       setConnection(connect)
+      handleUpdateUnwatchsSeenOnNotifiRemark({ id: remarkId })
     } catch (error) {
       console.log(error)
     }
@@ -84,8 +123,20 @@ export default function AssigneesHome({ children }) {
 
         connect.on('ReceiveNotificationRemark', (message) => {
           const parseMessageFromServer = JSON.parse(message)
-          // setListRemarkState((prev) => [...prev, parseMessageFromServer])
-          console.log(parseMessageFromServer)
+          const notifiRelateToAccount = parseMessageFromServer.find((item) => {
+            return item.accountId == accountId
+          })
+          setListNotifiRemark((prev) => {
+            const existingIndex = prev.findIndex((existingItem) => existingItem.id === notifiRelateToAccount.id)
+
+            if (existingIndex !== -1) {
+              const updatedList = [...prev]
+              updatedList[existingIndex] = notifiRelateToAccount
+              return updatedList
+            } else {
+              return [...prev, notifiRelateToAccount]
+            }
+          })
         })
 
         await connect.start()
@@ -98,6 +149,7 @@ export default function AssigneesHome({ children }) {
       console.log('hello')
       connectHub()
     }
+    queryClient.invalidateQueries({ queryKey: ['listNotifiRemarkQueries'] })
   }, [accountId])
 
   return (
@@ -208,6 +260,8 @@ export default function AssigneesHome({ children }) {
                       dataItem={getRequestRelatetoAssigneeQuery?.data?.data?.data.items}
                       joinSpecificChatRoom={joinSpecificChatRoom}
                       roleTypes={roleTypes}
+                      listNotifiRemark={listNotifiRemark}
+                      setListNotifiRemark={setListNotifiRemark}
                     />
                   </div>
                 )}

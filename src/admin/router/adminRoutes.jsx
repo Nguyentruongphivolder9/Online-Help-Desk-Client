@@ -14,6 +14,7 @@ import AllPendingRequest from '../pages/AllPendingRequest'
 import AllPendingRequestOfAssignee from '../pages/AllPendingRequestOfAssignee'
 import CreateRoom from '../pages/CreateRoom'
 import ManagerRequestAssignees from '../pages/ManagerRequestAssignees'
+import ChatBox from '@/common/components/ChatBox'
 
 
 const mainAdminLayout = (children) => <MainAdminLayout>{children}</MainAdminLayout>
@@ -43,6 +44,18 @@ const adminRoutes = [
     )
   },
   {
+    path: '/admin',
+    element: <AssigneesHome></AssigneesHome>,
+    children: [
+      {
+        path: 'assignees',
+        element: <ManagerRequestAssignees />
+      },
+      {
+        path: 'assignees/messages/:id',
+        element: <ChatBox />
+      }
+    ]
     path: '/admin/create-department',
     element: (
       <AdminHome>
