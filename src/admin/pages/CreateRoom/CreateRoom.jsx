@@ -1,6 +1,121 @@
+import { getAllDepartment } from '@/admin/apiEndpoints/department.api'
 import React, { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { useQuery, useMutation } from '@tanstack/react-query'
+import { createRoom, getAllRoomSSFP } from '@/admin/apiEndpoints/room.api'
+import { calculateTotalPages } from '@/utils/calculateTotalPages'
+import { Button, IconButton } from '@material-tailwind/react'
+
 export default function CreateRoom() {
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(5)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortDepartment, setSortDepartment] = useState('')
+
+  const [departmentName, setDepartmentName] = useState('')
+  const [departmentID, setDepartmentId] = useState('')
+  const [Number, setRoomNumber] = useState('')
+  const [Status, setRoomStatus] = useState('')
+
+  const [error, setError] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
+
+  const [searchParams, setSearchParams] = useSearchParams()
+  const searchParamsObject = Object.fromEntries([...searchParams])
+
+  useEffect(() => {
+    searchParams.set('page', page)
+    searchParams.set('limit', limit)
+
+    if (searchTerm) {
+      searchParams.set('searchTerm', searchTerm)
+    } else {
+      searchParams.delete('searchTerm')
+    }
+    if (sortDepartment) {
+      searchParams.set('SortDepartmentName', sortDepartment)
+    } else {
+      searchParams.delete('SortDepartmentName')
+    }
+
+    setSearchParams(searchParams)
+  }, [searchTerm, sortDepartment, page, limit])
+
+  const { data: allDepartment } = useQuery({
+    queryKey: ['department/getAll'],
+    queryFn: async () => {
+      const data = await getAllDepartment()
+      return data
+    }
+  })
+
+  const { data: allRoom } = useQuery({
+    queryKey: ['rooms/getAllSSFP', searchParamsObject],
+    queryFn: async () => {
+      const data = await getAllRoomSSFP(searchParamsObject)
+      return data
+    }
+  })
+  console.log(allRoom)
+
+  const handleSubmit = () => {
+    const re = {
+      departmentId: departmentID,
+      roomNumber: Number,
+      roomStatus: Status
+    }
+
+    if (re.departmentId && re.roomNumber && re.roomStatus) {
+      createRo.mutate(re, {
+        onSuccess: (response) => {
+          const result = response.data
+          if (result.isSuccess) {
+            setSuccessMessage('Create Room successfully')
+            setError(null)
+          } else {
+            setError(result.statusMessage)
+            setSuccessMessage(null)
+          }
+        },
+        onError: (error) => {
+          setError('An error occurred while updating the process.')
+          setSuccessMessage(null)
+        }
+      })
+    }
+  }
+
+  const createRo = useMutation({
+    mutationFn: (body) => {
+      return createRoom(body)
+    }
+  })
+
+  const totalPage = calculateTotalPages(allRoom?.data?.data.totalCount, limit)
+  const totalPageArray = Array.from({ length: totalPage }, (_, index) => index + 1)
+
+  const nextPage = () => {
+    if (page === 5) return
+
+    setPage(page + 1)
+  }
+
+  const previousPage = () => {
+    if (page === 1) return
+
+    setPage(page - 1)
+  }
+
+  const getItemProps = (index) => ({
+    variant: page === index ? 'gradient' : 'outlined',
+    color: 'gray',
+    onClick: () => setPage(index)
+  })
+
+  const handleSortDepartment = (e) => {
+    setSortDepartment(e.target.value)
+  }
+
   return (
     <>
       {/* form create Rooms */}
@@ -12,13 +127,19 @@ export default function CreateRoom() {
                 <label htmlFor='product-name' className='text-sm font-medium text-gray-900 block mb-2'>
                   Department :
                 </label>
-                <input
-                  type='text'
-                  name='product-name'
-                  id='product-name'
-                  className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5'
-                  readOnly
-                />
+                <select
+                  value={departmentID}
+                  className='w-full bg-gray-50 border mt-1 border-gray-300 text-gray-900 text-sm rounded block p-2.5 transition delay-500 outline-none'
+                  onChange={(e) => setDepartmentId(e.target.value)}
+                >
+                  <option value=''>Select Department</option>
+                  {allDepartment &&
+                    allDepartment?.data?.data.map((item) => (
+                      <option key={item.id} value={item.id} className='hover:bg-slate-400'>
+                        {item.departmentName}
+                      </option>
+                    ))}
+                </select>
               </div>
               <div className='col-span-6 sm:col-span-3'>
                 <label htmlFor='product-name' className='text-sm font-medium text-gray-900 block mb-2'>
@@ -26,10 +147,8 @@ export default function CreateRoom() {
                 </label>
                 <input
                   type='text'
-                  name='product-name'
-                  id='product-name'
+                  onChange={(e) => setRoomNumber(e.target.value)}
                   className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5'
-                  readOnly
                 />
               </div>
               <div className='col-span-6 sm:col-span-3'>
@@ -38,16 +157,22 @@ export default function CreateRoom() {
                 </label>
                 <input
                   type='text'
-                  name='product-name'
-                  id='product-name'
+                  onChange={(e) => setRoomStatus(e.target.value)}
                   className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5'
-                  readOnly
                 />
               </div>
               <div className='col-span-6 sm:col-span-3'>
-                <button className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'>
+                <button
+                  type='button'
+                  onClick={handleSubmit}
+                  className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
+                >
                   Create
                 </button>
+                {error && <h2 className='text-l font-medium leading-6 text-red-600'>Error: {error}</h2>}
+                {successMessage && (
+                  <h2 className='text-l font-medium leading-6 text-green-600'>Success: {successMessage}</h2>
+                )}
               </div>
             </div>
           </form>
@@ -76,7 +201,7 @@ export default function CreateRoom() {
               type='text'
               id='table-search'
               className='block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 '
-              placeholder='Search ,Room,Department'
+              placeholder='Search Room here'
               onChange={(e) => {
                 setSearchTerm(e.target.value)
                 setPage(1)
@@ -86,17 +211,15 @@ export default function CreateRoom() {
           <select
             id='roomId'
             className='w-60 bg-gray-50 border mt-1 border-gray-300 text-gray-900 text-sm rounded block p-2.5 transition delay-500 outline-none'
-            // value={statusName}
-            // onChange={handleSortStatus}
+            onChange={handleSortDepartment}
           >
-            <option value=''>Select Department</option>
             <option value=''>All</option>
-            {/* {ListRequestStatus &&
-              ListRequestStatus?.data?.data.map((item) => (
-                <option key={item.id} value={`${item.statusName}`} className='hover:bg-slate-400'>
-                  {item.statusName}
+            {allDepartment &&
+              allDepartment?.data?.data.map((item) => (
+                <option key={item.id} value={item.departmentName} className='hover:bg-slate-400'>
+                  {item.departmentName}
                 </option>
-              ))} */}
+              ))}
           </select>
         </div>
         <div className='relative shadow-md sm:rounded-lg bg-white '>
@@ -121,84 +244,95 @@ export default function CreateRoom() {
               </tr>
             </thead>
             <tbody>
-              <tr className='hover:bg-gray-50 dark:hover:bg-gray-600'>
-                <td scope='row' className=' px-6 py-4'></td>
-                <td scope='row' className=' px-6 py-4'></td>
-                <td scope='row' className=' px-6 py-4'></td>
-                <td scope='row' className=' px-6 py-4'></td>
-                <td className='max-w-[200px] min-w-[150px]'>
-                  <div className='flex items-center'>
-                    <Link className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'>
-                      Update
-                    </Link>
-                  </div>
-                </td>
-              </tr>
+              {allRoom &&
+                allRoom?.data?.data?.items.map((item, index) => (
+                  <tr className='hover:bg-gray-50 dark:hover:bg-gray-600'>
+                    <td scope='row' className=' px-6 py-4'>
+                      {index + 1}
+                    </td>
+                    <td scope='row' className=' px-6 py-4'>
+                      {item.departments.departmentName}
+                    </td>
+                    <td scope='row' className=' px-6 py-4'>
+                      {item.roomNumber}
+                    </td>
+                    <td scope='row' className=' px-6 py-4'>
+                      {item.roomStatus}
+                    </td>
+                    <td className='max-w-[200px] min-w-[150px]'>
+                      <div className='flex items-center'>
+                        <Link className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'>
+                          Update
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
-          {/* <div className='flex items-center justify-between p-4 border-t border-blue-gray-50'>
-        <nav
-          className='w-full flex items-center justify-between flex-column flex-wrap md:flex-row pt-4 gap-3'
-          aria-label='Table navigation'
-        >
-          <div className='text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto'>
-            Page
-            <span className='font-semibold text-gray-700 '>
-              {' '}
-              {page}/{totalPage}{' '}
-            </span>
-          </div>
-          <div aria-label='Page navigation example'>
-            {totalPage > 1 && (
-              <div className='flex items-center gap-4'>
-                <Button
-                  variant='text'
-                  className='flex items-center gap-2'
-                  onClick={previousPage}
-                  disabled={page === 1}
-                >
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    strokeWidth={1.5}
-                    stroke='currentColor'
-                    className='w-6 h-6'
-                  >
-                    <path strokeLinecap='round' strokeLinejoin='round' d='M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18' />
-                  </svg>
-                  PreviousPage
-                </Button>
-                <div className='flex items-center gap-2'>
-                  {totalPageArray.map((page) => (
-                    <IconButton {...getItemProps(page)} className='text-gray-700' key={page}>
-                      {page}
-                    </IconButton>
-                  ))}
-                </div>
-                <Button
-                  variant='text'
-                  className='flex items-center gap-2'
-                  onClick={nextPage}
-                  disabled={page === totalPage}
-                >
-                  NextPage
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    strokeWidth={1.5}
-                    stroke='currentColor'
-                    className='w-6 h-6'
-                  >
-                    <path strokeLinecap='round' strokeLinejoin='round' d='M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3' />
-                  </svg>
-                </Button>
+          <div className='flex items-center justify-between p-4 border-t border-blue-gray-50'>
+            <nav
+              className='w-full flex items-center justify-between flex-column flex-wrap md:flex-row pt-4 gap-3'
+              aria-label='Table navigation'
+            >
+              <div className='text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto'>
+                Page
+                <span className='font-semibold text-gray-700 '>
+                  {' '}
+                  {page}/{totalPage}{' '}
+                </span>
               </div>
-            )}
+              <div aria-label='Page navigation example'>
+                {totalPage > 1 && (
+                  <div className='flex items-center gap-4'>
+                    <Button
+                      variant='text'
+                      className='flex items-center gap-2'
+                      onClick={previousPage}
+                      disabled={page === 1}
+                    >
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='none'
+                        viewBox='0 0 24 24'
+                        strokeWidth={1.5}
+                        stroke='currentColor'
+                        className='w-6 h-6'
+                      >
+                        <path strokeLinecap='round' strokeLinejoin='round' d='M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18' />
+                      </svg>
+                      PreviousPage
+                    </Button>
+                    <div className='flex items-center gap-2'>
+                      {totalPageArray.map((page) => (
+                        <IconButton {...getItemProps(page)} className='text-gray-700' key={page}>
+                          {page}
+                        </IconButton>
+                      ))}
+                    </div>
+                    <Button
+                      variant='text'
+                      className='flex items-center gap-2'
+                      onClick={nextPage}
+                      disabled={page === totalPage}
+                    >
+                      NextPage
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='none'
+                        viewBox='0 0 24 24'
+                        strokeWidth={1.5}
+                        stroke='currentColor'
+                        className='w-6 h-6'
+                      >
+                        <path strokeLinecap='round' strokeLinejoin='round' d='M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3' />
+                      </svg>
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </nav>
           </div>
-        </nav>
-      </div> */}
         </div>
       </div>
     </>

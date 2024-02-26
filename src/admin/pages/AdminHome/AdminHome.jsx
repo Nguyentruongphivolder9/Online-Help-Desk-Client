@@ -95,8 +95,8 @@ export default function AdminHome({ children }) {
                         </NavLink>
                       </li>
                       <li>
-                        <a
-                          href='#'
+                        <NavLink
+                          to='/admin/create-department'
                           className='text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group '
                         >
                           <svg
@@ -112,11 +112,11 @@ export default function AdminHome({ children }) {
                             />
                           </svg>
                           <span className='ml-3 flex-1 whitespace-nowrap'>Department</span>
-                        </a>
+                        </NavLink>
                       </li>
                       <li>
-                        <a
-                          href='#'
+                        <NavLink
+                          to='/admin/create-room'
                           className='text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group '
                         >
                           <svg
@@ -133,7 +133,7 @@ export default function AdminHome({ children }) {
                             />
                           </svg>
                           <span className='ml-3 flex-1 whitespace-nowrap'>Rooms</span>
-                        </a>
+                        </NavLink>
                       </li>
                       <li>
                         <a
