@@ -181,7 +181,7 @@ export default function CreateDepartments() {
                       {item.departmentName}
                     </td>
                     <td scope='row' className=' px-6 py-4 font-bold'>
-                      {item.statusDeppartment ? 'In Use' : 'False'}
+                      {item.statusDepartment ? 'In Use' : 'False'}
                     </td>
                     <td className='max-w-[200px] min-w-[150px]'>
                       <div className='flex items-center'>
