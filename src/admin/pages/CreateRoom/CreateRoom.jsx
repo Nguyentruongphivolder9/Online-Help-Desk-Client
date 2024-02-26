@@ -15,7 +15,6 @@ export default function CreateRoom() {
   const [departmentName, setDepartmentName] = useState('')
   const [departmentID, setDepartmentId] = useState('')
   const [Number, setRoomNumber] = useState('')
-  const [Status, setRoomStatus] = useState('')
 
   const [error, setError] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
@@ -56,16 +55,14 @@ export default function CreateRoom() {
       return data
     }
   })
-  console.log(allRoom)
 
   const handleSubmit = () => {
     const re = {
       departmentId: departmentID,
-      roomNumber: Number,
-      roomStatus: Status
+      roomNumber: Number
     }
 
-    if (re.departmentId && re.roomNumber && re.roomStatus) {
+    if (re.departmentId && re.roomNumber) {
       createRo.mutate(re, {
         onSuccess: (response) => {
           const result = response.data
@@ -148,16 +145,6 @@ export default function CreateRoom() {
                 <input
                   type='text'
                   onChange={(e) => setRoomNumber(e.target.value)}
-                  className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5'
-                />
-              </div>
-              <div className='col-span-6 sm:col-span-3'>
-                <label htmlFor='product-name' className='text-sm font-medium text-gray-900 block mb-2'>
-                  RoomStatus :
-                </label>
-                <input
-                  type='text'
-                  onChange={(e) => setRoomStatus(e.target.value)}
                   className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5'
                 />
               </div>
@@ -246,7 +233,7 @@ export default function CreateRoom() {
             <tbody>
               {allRoom &&
                 allRoom?.data?.data?.items.map((item, index) => (
-                  <tr className='hover:bg-gray-50 dark:hover:bg-gray-600'>
+                  <tr key={item.id} className='hover:bg-gray-50 dark:hover:bg-gray-600'>
                     <td scope='row' className=' px-6 py-4'>
                       {index + 1}
                     </td>
@@ -257,7 +244,7 @@ export default function CreateRoom() {
                       {item.roomNumber}
                     </td>
                     <td scope='row' className=' px-6 py-4'>
-                      {item.roomStatus}
+                      {item.roomStatus ? 'In Use' : 'False'}
                     </td>
                     <td className='max-w-[200px] min-w-[150px]'>
                       <div className='flex items-center'>
