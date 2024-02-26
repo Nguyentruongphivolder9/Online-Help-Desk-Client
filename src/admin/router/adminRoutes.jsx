@@ -45,26 +45,6 @@ const adminRoutes = [
     )
   },
   {
-    path: '/admin',
-    element: <AssigneesHome></AssigneesHome>,
-    children: [
-      {
-        path: 'assignees',
-        element: <ManagerRequestAssignees />
-      },
-      {
-        path: 'assignees/messages/:id',
-        element: <ChatBox />
-      }
-    ]
-    path: '/admin/create-department',
-    element: (
-      <AdminHome>
-        <CreateDepartment />
-      </AdminHome>
-    )
-  },
-  {
     path: '/admin/create-room',
     element: (
       <AdminHome>
