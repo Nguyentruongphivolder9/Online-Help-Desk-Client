@@ -23,7 +23,7 @@ export default function ItemRequest({ dataItem, joinSpecificChatRoom, roleTypes,
 
   return (
     <Link
-      to={roleTypes === 'Assignees' ? `/admin/assignees/messages/${dataItem.id}` : `/messages/${dataItem.id}`}
+      to={roleTypes === 'Assignees' ? `/admin/assignees/requests/${dataItem.id}` : `/messages/${dataItem.id}`}
       className={`h-28 w-full p-[10px] flex flex-row border-y border-solid border-gray-300 ${notifiRemark?.unwatchs > 0 ? 'bg-sky-100' : ''}`}
       onClick={
         roleTypes === 'Assignees'

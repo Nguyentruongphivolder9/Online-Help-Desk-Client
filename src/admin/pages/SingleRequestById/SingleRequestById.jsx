@@ -119,7 +119,7 @@ export default function SingleRequestById() {
           </div>
           <form>
             <input
-              className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'
+              className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
               type='hidden'
               value={data.id}
               readOnly
@@ -129,7 +129,7 @@ export default function SingleRequestById() {
                 <div className='px-3 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                   <dt className='text-sm font-medium leading-6 text-gray-900'>Name of End-User : </dt>
                   <input
-                    className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'
+                    className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                     type='text'
                     value={data.account.fullName}
                     readOnly
@@ -139,7 +139,7 @@ export default function SingleRequestById() {
                 <div className='px-3 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                   <dt className='text-sm font-medium leading-6 text-gray-900'>Email of End-User : </dt>
                   <input
-                    className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'
+                    className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                     type='text'
                     value={data.account.email}
                     readOnly
@@ -149,7 +149,7 @@ export default function SingleRequestById() {
                 <div className='px-3 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                   <dt className='text-sm font-medium leading-6 text-gray-900'>Department : </dt>
                   <input
-                    className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'
+                    className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                     type='text'
                     value={data.room.departments.departmentName}
                     readOnly
@@ -159,7 +159,7 @@ export default function SingleRequestById() {
                 <div className='px-3 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                   <dt className='text-sm font-medium leading-6 text-gray-900'>Room of Department : </dt>
                   <input
-                    className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'
+                    className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                     type='text'
                     value={data.room.roomNumber}
                     readOnly
@@ -169,7 +169,7 @@ export default function SingleRequestById() {
                 <div className='px-3 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                   <dt className='text-sm font-medium leading-6 text-gray-900'>Description : </dt>
                   <input
-                    className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'
+                    className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                     type='text'
                     value={data.description}
                     readOnly
@@ -179,7 +179,7 @@ export default function SingleRequestById() {
                 <div className='px-3 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                   <dt className='text-sm font-medium leading-6 text-gray-900'> Level : </dt>
                   <input
-                    className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'
+                    className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                     type='text'
                     value={data.severalLevel}
                     readOnly
@@ -189,7 +189,7 @@ export default function SingleRequestById() {
                 <div className='px-3 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                   <dt className='text-sm font-medium leading-6 text-gray-900'> CreateAt : </dt>
                   <input
-                    className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'
+                    className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                     type='text'
                     value={data.createdAt}
                     readOnly
@@ -213,7 +213,7 @@ export default function SingleRequestById() {
                     {data.processByAssignees[0]?.account?.accountId != null ? (
                       <div className='flex items-center'>
                         <input
-                          className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'
+                          className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                           type='text'
                           value={data.processByAssignees[0]?.account?.accountId}
                           readOnly
@@ -221,7 +221,7 @@ export default function SingleRequestById() {
                       </div>
                     ) : (
                       <input
-                        className='mt-1  text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'
+                        className='mt-1  text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                         type='text'
                         id='assigneeID'
                         placeholder='N/A - Assignee'

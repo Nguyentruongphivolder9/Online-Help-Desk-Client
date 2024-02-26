@@ -68,12 +68,12 @@ export default function AssigneesHome({ children }) {
       setListNotifiRemark((prev) => [...listNotifiRemarkQueries?.data?.data?.data])
     }
 
-    return () => {
-      // disconnect before switch to another room (or unmounted component)
-      if (connect) {
-        connect.stop()
-      }
-    }
+    // return () => {
+    //   // disconnect before switch to another room (or unmounted component)
+    //   if (connect) {
+    //     connect.stop()
+    //   }
+    // }
   }, [connect, listNotifiRemarkQueries.isSuccess, listNotifiRemarkQueries.data])
 
   const joinSpecificChatRoom = async (requestId, username, remarkId) => {
