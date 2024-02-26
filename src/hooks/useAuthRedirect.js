@@ -1,14 +1,14 @@
-import { useNavigate } from 'react-router-dom';
-import useGetInfoFromJWT from './useGetInfoFromJWT';
-import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'
+import useGetInfoFromJWT from './useGetInfoFromJWT'
+import { useEffect, useState } from 'react'
 
 const useAuthRedirect = (roleTypeName) => {
-  const navigate = useNavigate();
-  const [accountId, setAccountId] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate()
+  const [accountId, setAccountId] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const objectJWT = useGetInfoFromJWT();
+    const objectJWT = useGetInfoFromJWT()
     if (objectJWT.accountId) {
       if (objectJWT.roleTypes == roleTypeName) {
         setAccountId(objectJWT.accountId);
@@ -30,11 +30,11 @@ const useAuthRedirect = (roleTypeName) => {
         }
       }
     } else {
-      navigate('/login');
+      navigate('/login')
     }
   }, [])
 
-  return { accountId, isLoading };
-};
+  return { accountId, isLoading }
+}
 
-export default useAuthRedirect;
+export default useAuthRedirect

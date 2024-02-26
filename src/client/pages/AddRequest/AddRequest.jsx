@@ -1,11 +1,13 @@
 import { addRequest, getDepartments, getRequest } from '@/client/apiEndpoints/request.api'
 import http from '@/client/utils/http'
 import getCookie from '@/hooks/getCookie'
+import useAuthRedirect from '@/hooks/useAuthRedirect'
 import useGetInfoFromJWT from '@/hooks/useGetInfoFromJWT'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { jwtDecode } from 'jwt-decode'
 import { useEffect, useState } from 'react'
 import { useMatch, useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 const initialFormState = {
   accountId: '',
@@ -16,6 +18,7 @@ const initialFormState = {
 }
 
 export default function AddRequest() {
+  const { accountId: userAccountId, isLoading } = useAuthRedirect('End-Users')
   const { accountId } = useGetInfoFromJWT()
   const [formState, setFormState] = useState(initialFormState || {})
   const [selectedDepartment, setSelectedDepartment] = useState('')
@@ -83,6 +86,7 @@ export default function AddRequest() {
         if (!data?.data.validationsErrors && !data?.data?.error) {
           setFormState(initialFormState)
           setSelectedDepartment('')
+          toast.success('Submit request successfully')
         } else if (data?.data.validationsErrors && data?.data?.error.code === 'ValidationError') {
           if (selectedDepartment == '') {
             setDepartmentError('Please select department!')
@@ -90,6 +94,7 @@ export default function AddRequest() {
           setErrorState(data?.data?.validationsErrors)
         } else if (data?.data?.error) {
           setUnProRequestErrorState(data?.data?.error.description)
+          toast.warn(data?.data?.error.description)
         }
       }
     })
@@ -104,7 +109,6 @@ export default function AddRequest() {
   return (
     <section className=''>
       <div className='py-8 px-4 mx-auto max-w-2xl lg:py-16'>
-        <span className='text-sm text-red-500'>{unProRequestErrorState}</span>
         <h2 className='mb-4 text-xl font-bold text-gray-900 dark:text-white'>
           {isAddMode ? 'Make' : 'Edit'} a Request
         </h2>

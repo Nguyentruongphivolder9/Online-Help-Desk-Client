@@ -29,3 +29,21 @@ export const addRemark = (remark) => {
     }
   })
 }
+
+export const getListNotifiRemarkByAccountId = () => {
+  const token = getCookie('access_token')
+  return http.get(`/api/notiRemarkByAccountId`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+}
+
+export const UpdateUnwatchsSeenOnNotifiRemark = (notification) => {
+  const token = getCookie('access_token')
+  return http.post('/api/noti/update_notiremark', notification, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+}
