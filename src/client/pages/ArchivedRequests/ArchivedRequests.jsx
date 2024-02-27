@@ -520,7 +520,7 @@ export default function ArchivedRequests() {
                             ? 'visible'
                             : 'invisible'
                         }`}
-                        data-tip='Archive'
+                        data-tip='Unarchive'
                         onClick={() =>
                           handleUpdateRequest({
                             id: request?.id,

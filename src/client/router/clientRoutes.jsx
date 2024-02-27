@@ -58,7 +58,11 @@ const clientRoutes = [
   },
   {
     path: '/messages',
-    element: <ChatLayout></ChatLayout>,
+    element: (
+      <MainClientLayout>
+        <ChatLayout></ChatLayout>
+      </MainClientLayout>
+    ),
     children: [
       {
         path: ':id',

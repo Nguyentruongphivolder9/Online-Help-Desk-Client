@@ -6,6 +6,7 @@ import {
 import { getRequests, getRequestsWithoutSsfp } from '@/client/apiEndpoints/request.api'
 import CheckBox from '@/common/components/ChatBox'
 import LobbyChat from '@/common/components/LobbyChat/LobbyChat'
+import MessageSvg from '@/common/components/MessageSvg'
 import SkeletonLoaderRequest from '@/common/components/SkeletonLoaderRequest'
 import getCookie from '@/hooks/getCookie'
 import useAuthRedirect from '@/hooks/useAuthRedirect'
@@ -68,15 +69,15 @@ export default function ChatLayout() {
       setListNotifiRemark((prev) => [...listNotifiRemarkQueries?.data?.data?.data])
     }
 
-    return () => {
-      // disconnect before switch to another room (or unmounted component)
-      if (connect) {
-        connect.stop()
-      }
-    }
+    // return () => {
+    //   // disconnect before switch to another room (or unmounted component)
+    //   if (connect) {
+    //     connect.stop()
+    //   }
+    // }
   }, [connect, listNotifiRemarkQueries.isSuccess, listNotifiRemarkQueries.data])
 
-  console.log(listNotifiRemark)
+  // console.log(listNotifiRemark)
 
   useEffect(() => {
     const connectHub = async () => {
@@ -118,8 +119,6 @@ export default function ChatLayout() {
     }
     queryClient.invalidateQueries({ queryKey: ['listNotifiRemarkQueries'] })
   }, [accountId])
-
-  console.log(listNotifiRemark)
 
   const joinSpecificChatRoom = async (requestId, username, remarkId) => {
     if (connect != undefined || connect != null) {

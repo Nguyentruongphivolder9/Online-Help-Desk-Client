@@ -123,7 +123,7 @@ export default function ListRequest() {
     })
   }
   return (
-    <div className='max-w-7xl mx-auto p-5 my-10 border border-slate-100 shadow-lg bg-white rounded-lg'>
+    <div className='max-w-7xl mx-auto p-5 my-24 border border-slate-100 shadow-lg bg-white rounded-lg'>
       <Link
         className='inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-sky-500 rounded-lg hover:bg-sky-600 focus:ring-4 focus:ring-blue-200'
         to={'/client/request/archived'}

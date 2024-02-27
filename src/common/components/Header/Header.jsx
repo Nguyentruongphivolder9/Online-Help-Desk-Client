@@ -1,52 +1,119 @@
+import { getAccountById } from '@/admin/apiEndpoints/account.api'
 import Navbar from '../Navbar'
 import { Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import useAuthRedirect from '@/hooks/useAuthRedirect'
+import { useEffect, useState } from 'react'
+import useLogout from '@/hooks/useLogout'
 export default function Header({ children }) {
   const isLogin = false // vi du ma chua dang nhap thi show cai buuton login ra
+  const { accountId, isLoading } = useAuthRedirect('End-Users')
+  const [account, setAccount] = useState(null)
 
+  const accountQuery = useQuery({
+    queryKey: ['accounts/getById', accountId],
+    queryFn: async () => {
+      const data = await getAccountById(accountId)
+      return data
+    }
+  })
+
+  useEffect(() => {
+    setAccount(accountQuery?.data?.data?.data)
+  }, [accountQuery?.data])
+
+  console.log(account)
   return (
-    <header className='flex flex-wrap justify-between items-center mx-auto max-w-screen-xl'>
+    <header className='flex fixed top-0 z-10 h-16 w-full bg-gray-50 flex-wrap justify-between items-center mx-auto'>
       <Link to='/' className='flex items-center'>
         <img
           src='https://www.shorttermprograms.com/images/cache/600_by_314/uploads/institution-logos/harvard-university.png'
-          className='mr-3 sm:h-9'
+          className='mr-3 sm:h-9 lg:h-16'
           alt='Flowbite Logo'
         />
       </Link>
       {children}
 
-      <Link to='/admin/home' className='bg-sky-500 hover:bg-sky-700 px-5 py-2 rounded-md mr-4'>
-        Admin page
-      </Link>
-      {!isLogin && (
-        <div className='flex items-center lg:order-2'>
-          <Link to={'/client/login'} className='bg-sky-500 hover:bg-sky-700 px-5 py-2 rounded-md'>
-            Log in
-          </Link>
-          <button
-            data-collapse-toggle='mobile-menu-2'
-            type='button'
-            className='inline-flex items-center p-2 ml-1 text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600'
-            aria-controls='mobile-menu-2'
-            aria-expanded='false'
-          >
-            <span className='sr-only'>Open main menu</span>
-            <svg className='w-6 h-6' fill='currentColor' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'>
-              <path
-                fillRule='evenodd'
-                d='M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z'
-                clipRule='evenodd'
+      <div className='flex items-center gap-x-3 mr-[30px]'>
+        <span className='text-sm text-gray-700'>{account?.fullName}</span>
+        <div className='avatar dropdown dropdown-bottom dropdown-end'>
+          <div className='w-10 rounded-full' tabIndex={0} role='button'>
+            {account?.avatarPhoto != null ? (
+              <img
+                src={`https://storeimageohd.blob.core.windows.net/images/${account?.avatarPhoto}`}
+                alt={account?.fullName}
+                className='relative inline-block h-9 w-9 !rounded-full object-cover object-center'
               />
-            </svg>
-            <svg className='hidden w-6 h-6' fill='currentColor' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'>
-              <path
-                fillRule='evenodd'
-                d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z'
-                clipRule='evenodd'
-              />
-            </svg>
-          </button>
+            ) : (
+              <div className='relative flex h-9 w-9 bg-gray-200 rounded-full object-cover object-center shadow justify-center items-center'>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth={1.5}
+                  stroke='currentColor'
+                  className='w-6 h-6 text-gray-400'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    d='M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z'
+                  />
+                </svg>
+              </div>
+            )}
+          </div>
+          <div tabIndex={0} className='dropdown-content w-44 h-24 px-5 py-3 bg-gray-100 rounded-lg shadow border mt-4'>
+            <ul className='space-y-3 text-gray-700'>
+              <li className='font-medium'>
+                <button className='flex items-center transform transition-colors duration-200 border-r-4 border-transparent '>
+                  <div className='mr-3'>
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      strokeWidth={1.5}
+                      stroke='currentColor'
+                      className='w-6 h-6'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z'
+                      />
+                    </svg>
+                  </div>
+                  Account
+                </button>
+              </li>
+              <li className='font-medium '>
+                <button
+                  onClick={useLogout()}
+                  className='flex items-center transform transition-colors duration-200 border-r-4 border-transparent'
+                >
+                  <div className='mr-3'>
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      strokeWidth={1.5}
+                      stroke='currentColor'
+                      className='w-6 h-6'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='M7.5 7.5h-.75A2.25 2.25 0 0 0 4.5 9.75v7.5a2.25 2.25 0 0 0 2.25 2.25h7.5a2.25 2.25 0 0 0 2.25-2.25v-7.5a2.25 2.25 0 0 0-2.25-2.25h-.75m0-3-3-3m0 0-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 0 1 2.25 2.25v7.5a2.25 2.25 0 0 1-2.25 2.25h-7.5a2.25 2.25 0 0 1-2.25-2.25v-.75'
+                      />
+                    </svg>
+                  </div>
+                  Log out
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
-      )}
+      </div>
 
       {/* nếu islogin băng true thì kiếm cái template user bỏ vào */}
     </header>

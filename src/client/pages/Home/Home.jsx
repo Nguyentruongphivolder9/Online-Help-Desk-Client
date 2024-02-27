@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { jwtDecode } from 'jwt-decode'
 import getCookie from '@/hooks/getCookie'
@@ -10,8 +10,8 @@ import LoadingOverlay from '@/common/components/LoadingOverlay'
 LoadingOverlay
 
 export default function Home() {
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(false)
 
   const { mutate } = useMutation({
     mutationFn: (body) => {
@@ -41,7 +41,7 @@ export default function Home() {
 
             switch (roleTypes) {
               case 'End-Users':
-                setIsLoading(true);
+                setIsLoading(true)
                 break
               case 'Facility-Heads':
                 navigate('/admin/facility-header')
@@ -68,7 +68,19 @@ export default function Home() {
       {!isLoading ? (
         <LoadingOverlay opacity={1} />
       ) : (
-        <div>Home</div>
+        <div className='relative top-16'>
+          <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50'>
+            <h2 className='text-white font-bold text-5xl text-center font-serif'>
+              Life is not all about studying. But if you can’t even conquer this little part of life, then what else can
+              you possibly do?
+            </h2>
+          </div>
+          <img
+            className='h-[800px] w-full object-cover object-top brightness-50 blur-[2px]'
+            src='../../../../public/wp1915260.jpg'
+            alt='nature image'
+          />
+        </div>
       )}
     </>
   )
