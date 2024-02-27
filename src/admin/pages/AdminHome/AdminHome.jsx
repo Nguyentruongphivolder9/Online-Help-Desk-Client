@@ -135,7 +135,7 @@ export default function AdminHome({ children }) {
                           <span className='ml-3 flex-1 whitespace-nowrap'>Rooms</span>
                         </NavLink>
                       </li>
-                      <li>
+                      {/* <li>
                         <a
                           href='#'
                           className='text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group '
@@ -160,7 +160,7 @@ export default function AdminHome({ children }) {
                           </svg>
                           <span className='ml-3 flex-1 whitespace-nowrap'>HelpAbout</span>
                         </a>
-                      </li>
+                      </li> */}
                     </ul>
                     <div className='space-y-2 pt-2 w-full'>
                       <ButtonLogout />

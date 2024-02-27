@@ -2,7 +2,7 @@ import React from 'react'
 import { Link, NavLink } from 'react-router-dom'
 export default function Navbar() {
   return (
-    <nav className='border-gray-200 h-full px-4 lg:px-6 py-2.5 dark:bg-gray-800 flex-1'>
+    <nav className='border-gray-200 h-full px-4 lg:px-6 py-2.5 flex-1'>
       <div
         className='hidden justify-between items-center h-full w-full lg:flex lg:w-auto lg:order-1'
         id='mobile-menu-2'
