@@ -10,7 +10,6 @@ export default function LobbyChat({
   listNotifiRemark,
   setListNotifiRemark
 }) {
-  console.log(listNotifiRemark)
   return (
     <>
       {/* {isLoading ? (
