@@ -7,11 +7,12 @@ export default function CenterAssigneesHome() {
   const [connect, joinSpecificChatRoom, infoConnectState, setInfoConnectState, listRemarkState, setListRemarkState] = useOutletContext()
   const [requestObjectById, setRequestObjectById] = useState(null);
   const [showPage, setShowPage] = useState("Details");
+  const [reloadRequest, setReloadRequest] = useState(null);
   const { id: requestId } = useParams();
   const navigate = useNavigate()
 
   const { data: getRequestById } = useQuery({
-    queryKey: ['getRequestById', requestId],
+    queryKey: ['getRequestById', requestId, reloadRequest],
     queryFn: async () => {
       const data = await getSingleRequestById(requestId)
       return data
@@ -86,7 +87,8 @@ export default function CenterAssigneesHome() {
                 setInfoConnectState,
                 listRemarkState,
                 setListRemarkState,
-                requestObjectById
+                requestObjectById,
+                setReloadRequest
               ]}
             ></Outlet>
           </div>

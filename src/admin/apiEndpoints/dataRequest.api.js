@@ -52,3 +52,15 @@ export const getAllRequestOfAssigneeProcessing = (accountId, searchParamsObject)
     }
   })
 }
+
+export const updateRequestStatus = (object) => {
+  const token = getCookie('access_token')
+  console.log(object);
+  return http.put(`/api/request/update-status`, object, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+}
+
+
