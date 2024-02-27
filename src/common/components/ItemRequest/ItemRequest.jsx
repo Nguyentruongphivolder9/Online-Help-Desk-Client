@@ -34,11 +34,19 @@ export default function ItemRequest({ dataItem, joinSpecificChatRoom, roleTypes,
       }
     >
       <div className='w-2/12 justify-center flex'>
-        <img
-          src='https://storeimageohd.blob.core.windows.net/images/233f7ba3-6819-4ef1-9176-91710437b880.png'
-          alt='John Michael'
-          className='relative inline-block h-8 w-8 !rounded-full object-cover object-center'
-        />
+        {dataItem.account.avatarPhoto != null ? (
+          <img
+            src={`https://storeimageohd.blob.core.windows.net/images/${dataItem.account.avatarPhoto}`}
+            alt={dataItem.account.fullName}
+            className='relative inline-block h-9 w-9 !rounded-full object-cover object-center'
+          />
+        ) : (
+          <div className="relative flex h-9 w-9 bg-gray-200 rounded-full object-cover object-center shadow justify-center items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-gray-400">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+            </svg>
+          </div>
+        )}
       </div>
       <div className='h-full w-10/12 flex flex-row text-left'>
         <div className='w-4/5 h-full px-[6px]'>

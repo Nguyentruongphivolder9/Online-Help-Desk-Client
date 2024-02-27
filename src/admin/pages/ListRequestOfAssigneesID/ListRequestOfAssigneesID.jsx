@@ -157,8 +157,8 @@ export default function ListRequestOfAssigneesId() {
   }
 
   return (
-    <div>
-      <h2 className='text-l font-extrabold tracking-tight text-gray-900 sm:text-2xl px-24 py-7'>
+    <div className='container mt-6 p-4 relative flex flex-col w-full h-auto text-gray-700 bg-white shadow-md rounded-xl bg-clip-border'>
+      <h2 className='text-l font-extrabold tracking-tight text-gray-900 sm:text-2xl px-5 py-4'>
         All Request Of the Assignee ID : <span className='text-green-500'> {id} </span>
       </h2>
       {/* search input */}

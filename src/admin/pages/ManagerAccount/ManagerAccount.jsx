@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useQuery, useMutation, keepPreviousData } from '@tanstack/react-query'
-import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useSearchParams, useNavigate, Link } from 'react-router-dom'
 import { Button } from '@material-tailwind/react'
 import { toast } from 'react-toastify';
 
@@ -240,9 +240,9 @@ export default function ManagerAccount() {
   }
 
   return (
-    <div className='container relative flex flex-col w-full h-auto text-gray-700 bg-white shadow-md rounded-xl bg-clip-border'>
+    <div className='container mt-6 relative flex flex-col w-full h-auto text-gray-700 bg-white shadow-md rounded-xl bg-clip-border'>
       <div className='relative mx-4 mt-4 overflow-hidden text-gray-700 bg-white rounded-none bg-clip-border'>
-        <div className='flex items-center justify-between gap-8 mb-8'>
+        <div className='flex flex-row items-center justify-between gap-8 mb-4'>
           <div>
             <h5 className='block font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-blue-gray-900'>
               Manager Account
@@ -251,7 +251,14 @@ export default function ManagerAccount() {
               See information about all members
             </p>
           </div>
-          {/* <div className */}
+          <div className=''>
+            <Link
+              to={'/admin/create-account'}
+              className='text-sm rounded-lg py-4 px-5 bg-blue-500 text-white mr-10'
+            >
+              Add members
+            </Link>
+          </div>
         </div>
       </div>
       <div className='flex justify-end px-4'>
