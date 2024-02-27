@@ -397,7 +397,7 @@ export default function CreateAccount() {
   }
 
   return (
-    <div className="relative flex flex-col w-full h-auto text-gray-700 bg-white shadow-md rounded-xl bg-clip-border">
+    <div className="relative mt-6 flex flex-col w-full h-auto text-gray-700 bg-white shadow-md rounded-xl bg-clip-border">
       <div className="p-6 bg-gray-100 flex items-center justify-center">
         <div className="max-w-screen-lg mx-auto">
           <div>

@@ -269,7 +269,7 @@ export default function AssigneesHome({ children }) {
 
               <div
                 id='main-content'
-                className='h-full w-3/5 p-[10px] relative overflow-y-scroll hide-scrollbar border-x border-x-gray-300'
+                className='h-full w-3/5 p-[10px] relative border-x border-x-gray-300'
               >
                 <Outlet
                   context={[

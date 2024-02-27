@@ -164,10 +164,10 @@ export default function PendingAssignee() {
   }
 
   return (
-    <div className='mt-5'>
+    <div className='container mt-6 relative flex flex-col w-full h-auto text-gray-700 bg-white shadow-md rounded-xl bg-clip-border'>
       <h5 className='text-xl font-extrabold tracking-tight text-red-600 sm:text-4xl px-80 py-8'>Pending Requests</h5>
       {/* details assignees pending  */}
-      <div className='bg-white border border-4 rounded-lg shadow m-1'>
+      <div className='bg-white border rounded-lg shadow m-1'>
         <div className='p-6 space-y-6'>
           <form action='#'>
             <div className='grid grid-cols-6 gap-6'>
