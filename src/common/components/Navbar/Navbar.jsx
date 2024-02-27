@@ -1,51 +1,76 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 export default function Navbar() {
   return (
-    <nav className='bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800 flex-1'>
-      <div className='hidden justify-between items-center w-full lg:flex lg:w-auto lg:order-1' id='mobile-menu-2'>
-        <ul className='flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0'>
-          <li>
-            <Link
+    <nav className='border-gray-200 h-full px-4 lg:px-6 py-2.5 dark:bg-gray-800 flex-1'>
+      <div
+        className='hidden justify-between items-center h-full w-full lg:flex lg:w-auto lg:order-1'
+        id='mobile-menu-2'
+      >
+        <ul className='flex flex-col h-full items-center mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0'>
+          <li className='h-full flex items-center'>
+            <NavLink
               to={'/'}
-              className='block py-2 pr-4 pl-3 text-gray-700 rounded bg-blue-700 lg:bg-transparent lg:text-blue-700 lg:p-0 dark:text-white'
+              end
+              className={({ isActive }) =>
+                `h-full flex items-center py-2 pr-4 pl-3 rounded hover:text-black hover:bg-sky-200 ${isActive ? 'text-white bg-sky-500' : 'text-gray-700'}`
+              }
               aria-current='page'
             >
               Home
-            </Link>
+            </NavLink>
           </li>
-          <li>
-            <Link
+          <li className='h-full flex items-center'>
+            <NavLink
+              end
               to={'/client/request'}
-              className='block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700'
+              className={({ isActive }) =>
+                `h-full flex items-center py-2 pr-4 pl-3 rounded hover:text-black hover:bg-sky-200 ${isActive ? 'text-white bg-sky-500 hover:text-black' : 'text-gray-700'} `
+              }
             >
               List Request
-            </Link>
+            </NavLink>
           </li>
-          <li>
-            <Link
+          <li className='h-full flex items-center'>
+            <NavLink
               to={'/client/request/add'}
-              className='block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700'
+              className={({ isActive }) =>
+                `h-full flex items-center py-2 pr-4 pl-3 rounded hover:text-black hover:bg-sky-200 ${isActive ? 'text-white bg-sky-500 hover:text-black' : 'text-gray-700'} `
+              }
             >
               Make a Request
-            </Link>
+            </NavLink>
+          </li>
+          <li className='h-full flex items-center'>
+            <NavLink
+              to={'/messages'}
+              className={({ isActive }) =>
+                `h-full flex items-center py-2 pr-4 pl-3 rounded hover:text-black hover:bg-sky-200 ${isActive ? 'text-white bg-sky-500 hover:text-black' : 'text-gray-700'} `
+              }
+            >
+              Messages
+            </NavLink>
           </li>
 
-          <li>
-            <Link
+          <li className='h-full flex items-center'>
+            <NavLink
               to={'/client/about'}
-              className='block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700'
+              className={({ isActive }) =>
+                `h-full flex items-center py-2 pr-4 pl-3 rounded hover:text-black hover:bg-sky-200 ${isActive ? 'text-white bg-sky-500 hover:text-black' : 'text-gray-700'} `
+              }
             >
               About
-            </Link>
+            </NavLink>
           </li>
-          <li>
-            <Link
+          <li className='h-full flex items-center'>
+            <NavLink
               to={'/client/contact'}
-              className='block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700'
+              className={({ isActive }) =>
+                `h-full flex items-center py-2 pr-4 pl-3 rounded hover:text-black hover:bg-sky-200 ${isActive ? 'text-white bg-sky-500 hover:text-black' : 'text-gray-700'} `
+              }
             >
               Contact
-            </Link>
+            </NavLink>
           </li>
         </ul>
       </div>
