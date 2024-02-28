@@ -17,7 +17,7 @@ import ChatBox from '@/common/components/ChatBox'
 import CenterAssigneesHome from '../pages/CenterAssigneesHome'
 import RequestDetails from '../pages/RequestDetails/RequestDetails'
 import CreateDepartment from '../pages/CreateDepartment'
-
+import DetailRoom from '../pages/DetailRoom'
 
 const mainAdminLayout = (children) => <MainAdminLayout>{children}</MainAdminLayout>
 const adminRoutes = [
@@ -145,6 +145,14 @@ const adminRoutes = [
       </AdminHome>
     )
   },
+  {
+    path: '/admin/detail-room/:id',
+    element: (
+      <AdminHome>
+        <DetailRoom />
+      </AdminHome>
+    )
+  }
 ]
 
 export default adminRoutes

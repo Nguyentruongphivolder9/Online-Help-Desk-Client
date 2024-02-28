@@ -58,7 +58,7 @@ export default function List() {
   })
 
   return (
-    <div className="relative mt-6 flex flex-col w-full h-auto text-gray-700 bg-white shadow-md rounded-xl bg-clip-border">
+    <div className='relative mt-6 flex flex-col w-full h-auto text-gray-700 bg-white shadow-md rounded-xl bg-clip-border'>
       <div className='bg-white p-4 w-full'>
         <h2 className='text-4xl font-extrabold tracking-tight text-gray-500 sm:text-4xl pb-4'>Assignee List</h2>
         <div className='mb-3 py-2 xl:w-96'>
@@ -108,7 +108,12 @@ export default function List() {
                 </th>
                 <th scope='col' className='px-6 py-3 '>
                   <div className='flex justify-between'>
-                    <span>Status</span>
+                    <span>Enable</span>
+                  </div>
+                </th>
+                <th scope='col' className='px-6 py-3 '>
+                  <div className='flex justify-between'>
+                    <span>Banned</span>
                   </div>
                 </th>
                 <th scope='col' className='px-6 py-3 '>
@@ -128,7 +133,10 @@ export default function List() {
                   </th>
                   <td className=' px-6 py-4'>{assignee.email}</td>
                   <td className=' px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis'>
-                    {assignee.statusAccount}
+                    {assignee.enable ? 'Active' : 'Inactive'}
+                  </td>
+                  <td className=' px-6 py-4 whitespace-nowrap font-bold overflow-hidden overflow-ellipsis'>
+                    {assignee.banned ? 'Banned' : 'X'}
                   </td>
                   <td className='max-w-[200px] min-w-[150px]'>
                     <div className='flex items-center'>

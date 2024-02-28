@@ -25,3 +25,5 @@ export const getAllPendingRequestOfAssignee = (searchParamsObject, id) => {
     }
   })
 }
+
+export const getAllAssignee = () => http.get(`/api/assignee/getAll`)

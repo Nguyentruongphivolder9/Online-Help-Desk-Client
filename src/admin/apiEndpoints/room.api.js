@@ -12,3 +12,5 @@ export const getAllRoomSSFP = (searchParamsObject) => {
     }
   })
 }
+
+export const changeStatusRoom = (dataRoom) => http.post(`/api/room/update_statusRoom`, dataRoom)
