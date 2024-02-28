@@ -201,10 +201,20 @@ export default function ListRequest() {
             <div
               tabIndex={0}
               role='button'
-              className={`btn m-1 min-h-10 h-10 focus:border-sky-500 hover:bg-sky-500 hover:text-white 
+              className={`flex justify-between btn m-1 min-h-10 h-10 w-40 focus:border-sky-500 hover:bg-sky-500 hover:text-white 
               ${searchParamsObjectState.fCondition ? 'bg-sky-500 text-white' : ''}`}
             >
-              Department
+              {searchParamsObjectState.fCondition ? searchParamsObjectState.fCondition : 'Department'}
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                fill='none'
+                viewBox='0 0 24 24'
+                strokeWidth={1.5}
+                stroke='currentColor'
+                className='w-4 h-4'
+              >
+                <path strokeLinecap='round' strokeLinejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' />
+              </svg>
             </div>
             <ul
               tabIndex={0}
@@ -236,10 +246,20 @@ export default function ListRequest() {
             <div
               tabIndex={0}
               role='button'
-              className={`btn m-1 min-h-10 h-10 focus:border-sky-500 hover:bg-sky-500 hover:text-white 
+              className={`flex justify-between btn m-1 min-h-10 h-10 w-40 focus:border-sky-500 hover:bg-sky-500 hover:text-white 
             ${searchParamsObjectState.sCondition ? 'bg-sky-500 text-white' : ''}`}
             >
-              Level
+              {searchParamsObjectState.sCondition ? searchParamsObjectState.sCondition : 'Level'}
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                fill='none'
+                viewBox='0 0 24 24'
+                strokeWidth={1.5}
+                stroke='currentColor'
+                className='w-4 h-4'
+              >
+                <path strokeLinecap='round' strokeLinejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' />
+              </svg>
             </div>
             <ul tabIndex={0} className='dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 text-black'>
               <li>
@@ -267,16 +287,42 @@ export default function ListRequest() {
                   Important
                 </div>
               </li>
+              <li>
+                <div
+                  className='border border-white hover:bg-sky-500 hover:text-white'
+                  onClick={() => addParams([{ sCondition: 'Urgent' }])}
+                >
+                  Urgent
+                </div>
+              </li>
+              <li>
+                <div
+                  className='border border-white hover:bg-sky-500 hover:text-white'
+                  onClick={() => addParams([{ sCondition: 'Flexible' }])}
+                >
+                  Flexible
+                </div>
+              </li>
             </ul>
           </div>
           <div className='dropdown'>
             <div
               tabIndex={0}
               role='button'
-              className={`btn m-1 min-h-10 h-10 focus:border-sky-500 hover:bg-sky-500 hover:text-white 
+              className={`flex justify-between btn m-1 min-h-10 h-10 w-44 focus:border-sky-500 hover:bg-sky-500 hover:text-white 
             ${searchParamsObjectState.tCondition ? 'bg-sky-500 text-white' : ''}`}
             >
-              Status
+              {searchParamsObjectState.tCondition ? searchParamsObjectState.tCondition : 'Status'}
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                fill='none'
+                viewBox='0 0 24 24'
+                strokeWidth={1.5}
+                stroke='currentColor'
+                className='w-4 h-4'
+              >
+                <path strokeLinecap='round' strokeLinejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' />
+              </svg>
             </div>
             <ul tabIndex={0} className='dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 text-black'>
               <li>
