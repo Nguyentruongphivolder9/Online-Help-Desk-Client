@@ -4,9 +4,7 @@ import Navbar from '@/common/components/Navbar'
 export default function MainClientLayout({ children }) {
   return (
     <div>
-      <Header>
-        <Navbar></Navbar>
-      </Header>
+      <Header></Header>
       {children}
       <Footer />
     </div>

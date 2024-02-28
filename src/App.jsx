@@ -1,17 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect } from 'react'
 import './App.css'
 import useRouteElement from './useRouteElement'
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import { HubConnectionBuilder, LogLevel, HttpTransportType } from '@microsoft/signalr'
-import useGetInfoFromJWT from './hooks/useGetInfoFromJWT';
+import useGetInfoFromJWT from './hooks/useGetInfoFromJWT'
 import { useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify';
+import { toast } from 'react-toastify'
 
 function App() {
   const element = useRouteElement()
   const { accountId } = useGetInfoFromJWT()
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   useEffect(() => {
     const connectHub = async () => {
@@ -26,15 +26,15 @@ function App() {
 
         connect.on('LogoutAccountWhenBanned', (message) => {
           toast.warn(`${message}`, {
-            position: "top-right",
+            position: 'top-right',
             autoClose: 3000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            theme: "colored"
-          });
+            theme: 'colored'
+          })
           navigate('/login')
         })
 
@@ -49,11 +49,12 @@ function App() {
     }
   }, [accountId])
 
-
-  return <>
-    {element}
-    <ToastContainer />
-  </>
+  return (
+    <>
+      {element}
+      <ToastContainer />
+    </>
+  )
 }
 
 export default App

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link, NavLink } from 'react-router-dom'
-export default function Navbar() {
+export default function Navbar({ listRequest }) {
   return (
     <nav className='border-gray-200 h-full px-4 lg:px-6 py-2.5 flex-1'>
       <div
@@ -43,7 +43,7 @@ export default function Navbar() {
           </li>
           <li className='h-full flex items-center'>
             <NavLink
-              to={'/messages'}
+              to={listRequest && listRequest.length > 0 ? `/messages/${listRequest[0]?.id}` : '/messages'}
               className={({ isActive }) =>
                 `h-full flex items-center py-2 pr-4 pl-3 rounded hover:text-black hover:bg-sky-200 ${isActive ? 'text-white bg-sky-500 hover:text-black' : 'text-gray-700'} `
               }
