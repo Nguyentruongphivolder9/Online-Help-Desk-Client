@@ -44,7 +44,6 @@ export const getAllPendingRequest = (searchParamsObject) => {
 export const getAllRequestStatus = () => http.get('/api/request/requestStatus')
 
 export const getAllRequestOfAssigneeProcessing = (accountId, searchParamsObject) => {
-  console.log(accountId);
   const token = getCookie('access_token')
   return http.get(`/api/requests/processByAssignees/${accountId}`, {
     params: searchParamsObject,

@@ -296,8 +296,6 @@ export default function AssigneesHome({ children }) {
                         roleTypes={roleTypes}
                         listNotifiRemark={listNotifiRemark}
                         setListNotifiRemark={setListNotifiRemark}
-                        setIsShowResultSearch={setIsShowResultSearch}
-                        setSearchValue={setSearchValue}
                       />
                     ) : (
                       <div className='w-full h-full'>
@@ -336,7 +334,6 @@ export default function AssigneesHome({ children }) {
                       roleTypes={roleTypes}
                       listNotifiRemark={listNotifiRemark}
                       setListNotifiRemark={setListNotifiRemark}
-                      setIsShowResultSearch={setIsShowResultSearch}
                     />
                   </div>
                 )}
