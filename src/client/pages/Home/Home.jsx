@@ -66,7 +66,7 @@ export default function Home() {
   return (
     <>
       {!isLoading ? (
-        <LoadingOverlay opacity={1} />
+        <LoadingOverlay opacity={'opacity-100'} />
       ) : (
         <div className='relative top-16'>
           <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50'>
