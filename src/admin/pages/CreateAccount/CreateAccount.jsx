@@ -262,12 +262,13 @@ export default function CreateAccount() {
       case 'birthday':
         value = format(e, "yyyy/MM/dd");
         const inputDate = new Date(value);
-        const currentDate = new Date();
         const eighteenYearsAgo = new Date();
+        const sixtyYearsAgo = new Date();
         eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+        sixtyYearsAgo.setFullYear(sixtyYearsAgo.getFullYear() - 60);
 
-        if (inputDate > eighteenYearsAgo) {
-          error = 'Must be at least 18 years old';
+        if (inputDate > eighteenYearsAgo || inputDate < sixtyYearsAgo) {
+          error = 'Must be between 18 and 60 years old';
         } else {
           error = '';
         }

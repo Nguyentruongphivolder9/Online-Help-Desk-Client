@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import HeaderAdmin from '@/admin/components/HeaderAdmin'
 import useAuthRedirect from '@/hooks/useAuthRedirect'
 import LoadingOverlay from '@/common/components/LoadingOverlay'
@@ -10,6 +10,7 @@ import useGetInfoFromJWT from '@/hooks/useGetInfoFromJWT'
 import { Outlet, useParams } from 'react-router-dom'
 import { getAllRequestOfAssigneeProcessing } from '@/admin/apiEndpoints/dataRequest.api'
 import { UpdateUnwatchsSeenOnNotifiRemark, getListNotifiRemarkByAccountId } from '@/client/apiEndpoints/remark.api'
+import useDebounce from '@/hooks/useDebounce'
 
 export default function AssigneesHome({ children }) {
   const queryClient = useQueryClient()
@@ -24,13 +25,23 @@ export default function AssigneesHome({ children }) {
   const [infoConnectState, setInfoConnectState] = useState({})
   const [connect, setConnection] = useState()
   const [listNotifiRemark, setListNotifiRemark] = useState([])
+  const [dateSearchState, setDateSearchState] = useState(null)
+  const [searchResult, setSearchResult] = useState([]);
+  const [searchValue, setSearchValue] = useState('');
+  const inputRef = useRef();
+
+  const debouncedValue = useDebounce(searchValue, 500);
+
   const handleSearchChange = (e) => {
-    const value = e.target.value
-    if (value !== null && value !== '') {
-      setIsShowResultSearch(true)
+    let value;
+    if (e.target.value.trim().length < 1) {
+      value = e.target.value.trim();
+      setSearchResult([])
     } else {
-      setIsShowResultSearch(false)
+      value = e.target.value.replace(/\s\s+/g, ' ');
     }
+
+    setSearchValue(value);
   }
 
   const getRequestRelatetoAssigneeQuery = useQuery({
@@ -152,13 +163,34 @@ export default function AssigneesHome({ children }) {
     queryClient.invalidateQueries({ queryKey: ['listNotifiRemarkQueries'] })
   }, [accountId])
 
+  const { data: getSearchRequest } = useQuery({
+    queryKey: ['getSearchRequestOfAssignee', debouncedValue],
+    queryFn: async () => {
+      const data = await getAllRequestOfAssigneeProcessing(accountId, { searchTerm: debouncedValue, page: 1, limit: 10 })
+      return data
+    },
+    enabled: debouncedValue != ''
+  })
+
+  useEffect(() => {
+    if (getSearchRequest?.data?.data) {
+      setSearchResult(getSearchRequest?.data?.data?.items)
+    }
+  }, [debouncedValue, getSearchRequest])
+
+  const handleClear = () => {
+    setSearchValue('');
+    setSearchResult([]);
+    inputRef.current.focus();
+  }
+
   return (
     <>
       {isLoading ? (
         <LoadingOverlay />
       ) : (
         <div>
-          <HeaderAdmin urlLogo='/admin/assignees' container='container' accountId={accountId} />
+          <HeaderAdmin urlLogo='/admin/assignees' container='container' accountId={accountId} urlProfile={'/admin/assignees/myProfile/'} />
           <div className='flex flex-row w-full h-full fixed justify-center overflow-hidden bg-white pt-[72px]'>
             <div className='flex h-full flex-row w-full border border-x-gray-300'>
               <div className='h-full w-1/5 overflow-hidden'>
@@ -181,12 +213,26 @@ export default function AssigneesHome({ children }) {
                       </svg>
                     </div>
                     <input
+                      ref={inputRef}
                       className='peer h-full w-full outline-none text-sm text-gray-700 pr-2 bg-slate-200'
                       type='text'
-                      id='search'
                       placeholder='Search something..'
+                      value={searchValue}
                       onChange={handleSearchChange}
+                      onFocus={() => {
+                        setIsShowResultSearch(true)
+                      }}
                     />
+                    {!!searchValue && (
+                      <button
+                        className='absolute right-2'
+                        onClick={handleClear}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
                   </div>
                   <div className='grid place-items-center h-full w-12 text-gray-500'>
                     <svg
@@ -208,32 +254,60 @@ export default function AssigneesHome({ children }) {
 
                 {isShowResultSearch ? (
                   <div className='h-10/12 relative w-full text-sm'>
-                    <div className='flex flex-row w-full p-[15px] items-center border-b gap-2 border-solid text-gray-700'>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        fill='none'
-                        viewBox='0 0 24 24'
-                        strokeWidth={1.5}
-                        stroke='currentColor'
-                        className='w-5 h-5'
+                    <div className='flex flex-row w-full p-[15px] items-center justify-between border-b gap-2 border-solid text-gray-700'>
+                      <div className='flex flex-row gap-1'>
+                        <svg
+                          xmlns='http://www.w3.org/2000/svg'
+                          fill='none'
+                          viewBox='0 0 24 24'
+                          strokeWidth={1.5}
+                          stroke='currentColor'
+                          className='w-5 h-5'
+                        >
+                          <path
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            d='M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm3.75 11.625a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z'
+                          />
+                        </svg>
+                        <div className='p-[10px]text-base font-medium'>Request search results</div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setSearchValue('');
+                          setSearchResult([]);
+                          setIsShowResultSearch(false)
+                        }}
+                        className='flex flex-row items-center gap-1 py-1 px-3 border rounded-md border-gray-600 text-xs'
                       >
-                        <path
-                          strokeLinecap='round'
-                          strokeLinejoin='round'
-                          d='M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm3.75 11.625a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z'
-                        />
-                      </svg>
-                      <div className='p-[10px]text-base font-medium'>Request search results</div>
+                        <span>Closed</span>
+                        <span>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                          </svg>
+                        </span>
+                      </button>
                     </div>
 
-                    <div className='w-full h-full'>
-                      <SkeletonLoaderRequest />
-                      <SkeletonLoaderRequest />
-                      <SkeletonLoaderRequest />
-                      <SkeletonLoaderRequest />
-                      <SkeletonLoaderRequest />
-                      <SkeletonLoaderRequest />
-                    </div>
+                    {(isShowResultSearch && searchResult.length > 0) ? (
+                      <LobbyChat
+                        dataItem={searchResult}
+                        joinSpecificChatRoom={joinSpecificChatRoom}
+                        roleTypes={roleTypes}
+                        listNotifiRemark={listNotifiRemark}
+                        setListNotifiRemark={setListNotifiRemark}
+                        setIsShowResultSearch={setIsShowResultSearch}
+                        setSearchValue={setSearchValue}
+                      />
+                    ) : (
+                      <div className='w-full h-full'>
+                        <SkeletonLoaderRequest />
+                        <SkeletonLoaderRequest />
+                        <SkeletonLoaderRequest />
+                        <SkeletonLoaderRequest />
+                        <SkeletonLoaderRequest />
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className='h-10/12 relative w-full text-sm'>
@@ -262,6 +336,7 @@ export default function AssigneesHome({ children }) {
                       roleTypes={roleTypes}
                       listNotifiRemark={listNotifiRemark}
                       setListNotifiRemark={setListNotifiRemark}
+                      setIsShowResultSearch={setIsShowResultSearch}
                     />
                   </div>
                 )}
@@ -269,7 +344,7 @@ export default function AssigneesHome({ children }) {
 
               <div
                 id='main-content'
-                className='h-full w-3/5 p-[10px] relative border-x border-x-gray-300'
+                className='h-full w-3/5 p-[10px] overflow-y-scroll hide-scrollbar relative border-x border-x-gray-300'
               >
                 <Outlet
                   context={[

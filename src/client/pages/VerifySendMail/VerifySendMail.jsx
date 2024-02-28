@@ -5,9 +5,11 @@ import { useNavigate } from 'react-router-dom'
 import LoadingButton from '@/common/components/LoadingButton';
 
 export default function VerifySendMail() {
-  const [accountIdValue, setAccountIdValue] = useState(null);
+  const formatEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  const [emailValue, setAccountIdValue] = useState(null);
   const [sendMailError, setSendMailError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const { mutate } = useMutation({
@@ -19,17 +21,19 @@ export default function VerifySendMail() {
   const handleSend = async (e) => {
     e.preventDefault();
 
-    if (accountIdValue === null) {
-      setSendMailError("Please enter your account");
+    if (emailValue === null || emailValue === '') {
+      setSendMailError("Please enter your email address");
+    } else if (!formatEmailRegex.test(emailValue)) {
+      setSendMailError('Invalid email format');
     } else {
-      setIsLoading(false);
-      mutate(accountIdValue, {
+      setIsLoading(true);
+      mutate(emailValue, {
         onSuccess: (response) => {
-          setIsLoading(true);
+          setIsLoading(false);
           const result = response.data;
           if (result.isSuccess) {
             navigate('/users/verify-code', {
-              state: accountIdValue
+              state: emailValue
             });
           } else {
             setSendMailError(result.statusMessage);
@@ -60,16 +64,20 @@ export default function VerifySendMail() {
                 )}
                 <div className="flex flex-col space-y-5">
                   <label htmlFor="email">
-                    <p className="font-medium text-white pb-2">Account code</p>
+                    <p className="font-medium text-white pb-2">Email receive code</p>
                     <input
                       name="accountId"
                       type="text"
-                      onChange={(e) => setAccountIdValue(e.target.value)}
+                      value={emailValue}
+                      onChange={(e) => {
+                        const value = e.target.value.trim();
+                        setAccountIdValue(value)
+                      }}
                       className="w-full py-3 border text-gray-200 border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
-                      placeholder="Enter account code"
+                      placeholder="Enter your email"
                     />
                   </label>
-                  {!isLoading ? (
+                  {isLoading ? (
                     <LoadingButton />
                   ) : (
                     <button
