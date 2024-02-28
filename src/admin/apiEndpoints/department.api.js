@@ -14,3 +14,5 @@ export const getAllDepartmentSSFP = (searchParamsObject) => {
 export const getAllDepartment = () => http.get('/api/department/getAll')
 
 export const createDepartment = (data) => http.post('/api/department/create_department', data)
+
+export const changeStatusDepartment = (id) => http.post(`/api/department/update_statusDepartment`, id)

@@ -1,20 +1,21 @@
-import { getAllDepartmentSSFP, createDepartment } from '@/admin/apiEndpoints/department.api'
+import { getAllDepartmentSSFP, createDepartment, changeStatusDepartment } from '@/admin/apiEndpoints/department.api'
 import React, { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { calculateTotalPages } from '@/utils/calculateTotalPages'
 import { Button, IconButton } from '@material-tailwind/react'
+import { toast } from 'react-toastify'
 
 export default function CreateDepartments() {
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(2)
+  const [limit, setLimit] = useState(8)
   const [searchTerm, setSearchTerm] = useState('')
   const [department, setDepartmentName] = useState(null)
-  const [error, setError] = useState(null)
-  const [successMessage, setSuccessMessage] = useState(null)
 
   const [searchParams, setSearchParams] = useSearchParams()
   const searchParamsObject = Object.fromEntries([...searchParams])
+
+  const [reloadThenSubmitSuccess, setReloadThenSubmitSuccess] = useState(null)
 
   useEffect(() => {
     searchParams.set('page', page)
@@ -35,7 +36,6 @@ export default function CreateDepartments() {
       return data
     }
   })
-  console.log(allDepartment)
 
   const handleSubmit = () => {
     const re = {
@@ -46,16 +46,29 @@ export default function CreateDepartments() {
         onSuccess: (response) => {
           const result = response.data
           if (result.isSuccess) {
-            setSuccessMessage('Create successfully')
-            setError(null)
+            setReloadThenSubmitSuccess(new Date())
+            toast.success(`${result.statusMessage}`, {
+              position: 'top-right',
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'colored'
+            })
           } else {
-            setError(result.statusMessage)
-            setSuccessMessage(null)
+            toast.error(`${result.statusMessage}`, {
+              position: 'top-right',
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'colored'
+            })
           }
-        },
-        onError: (error) => {
-          setError('An error occurred while updating the process.')
-          setSuccessMessage(null)
         }
       })
     }
@@ -64,6 +77,50 @@ export default function CreateDepartments() {
   const createDe = useMutation({
     mutationFn: (body) => {
       return createDepartment(body)
+    }
+  })
+
+  const submitUpdate = (id) => {
+    const updateData = {
+      id: id
+    }
+    console.log(updateData)
+    if (updateData.id) {
+      updateStatusDepartment.mutate(updateData, {
+        onSuccess: (response) => {
+          const result = response.data
+          if (result.isSuccess) {
+            setReloadThenSubmitSuccess(new Date())
+            toast.success(`${result.statusMessage}`, {
+              position: 'top-right',
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'colored'
+            })
+          } else {
+            toast.error(`${result.statusMessage}`, {
+              position: 'top-right',
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'colored'
+            })
+          }
+        }
+      })
+    }
+  }
+
+  const updateStatusDepartment = useMutation({
+    mutationFn: (body) => {
+      return changeStatusDepartment(body)
     }
   })
 
@@ -92,9 +149,7 @@ export default function CreateDepartments() {
     <>
       {/* form create department */}
       <div className='bg-white  rounded-lg shadow '>
-        <div className='p-6 space-y-6'>
-          {error && <h2 className='text-l font-medium leading-6 text-red-600'>Error: {error}</h2>}
-          {successMessage && <h2 className='text-l font-medium leading-6 text-green-600'>Success: {successMessage}</h2>}
+        <div className='p-6 space-y-6 mt-6'>
           <form action='#'>
             <div className='grid grid-cols-6 gap-6'>
               <div className='col-span-6 sm:col-span-3'>
@@ -165,8 +220,8 @@ export default function CreateDepartments() {
                 <th scope='col' className='px-6 py-3 '>
                   <span>Status </span>
                 </th>
-                <th scope='col' className='px-6 py-3 '>
-                  <span></span>
+                <th scope='col' className='px-6 py-3 text-center'>
+                  <span>Action</span>
                 </th>
               </tr>
             </thead>
@@ -180,27 +235,20 @@ export default function CreateDepartments() {
                     <td scope='row' className=' px-6 py-4 font-bold'>
                       {item.departmentName}
                     </td>
-                    <td scope='row' className=' px-6 py-4 font-bold'>
-                      {item.statusDepartment ? 'In Use' : 'False'}
+                    <td
+                      scope='row'
+                      className=' px-6 py-4 font-bold'
+                      style={{ color: item.statusDepartment ? 'green' : 'brown' }}
+                    >
+                      {item.statusDepartment ? 'Active' : 'In Active'}
                     </td>
                     <td className='max-w-[200px] min-w-[150px]'>
-                      <div className='flex items-center'>
+                      <div className='flex items-center justify-center'>
                         <button
-                          className='relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-gray-900 transition-all hover:bg-gray-900/10 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none'
-                          type='button'
-                          // onClick={() => navigate(`/admin/create-account/${item.accountId}`)}
+                          onClick={() => submitUpdate(item.id)}
+                          className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
                         >
-                          <span className='absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2'>
-                            <svg
-                              xmlns='http://www.w3.org/2000/svg'
-                              viewBox='0 0 24 24'
-                              fill='currentColor'
-                              aria-hidden='true'
-                              className='w-4 h-4'
-                            >
-                              <path d='M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z'></path>
-                            </svg>
-                          </span>
+                          Change Status
                         </button>
                       </div>
                     </td>

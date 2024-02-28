@@ -3,7 +3,9 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { getSingleRequestById, createProcessByAssignees } from '@/admin/apiEndpoints/dataRequest.api'
 import { useParams } from 'react-router-dom'
 import { Link, useSearchParams } from 'react-router-dom'
-import { toast } from 'react-toastify';
+import { toast } from 'react-toastify'
+import { convertDateHourAndMinute } from '@/utils/convertDateHourAndMinute'
+import { getAllAssignee } from '@/admin/apiEndpoints/dataAssignee.api'
 
 const getColorClass = (statusName) => {
   switch (statusName) {
@@ -64,6 +66,16 @@ export default function SingleRequestById() {
   const [accountIdAssignees, setAccountIdAssignees] = useState(null)
   const [reloadThenSubmitSuccess, setReloadThenSubmitSuccess] = useState(null)
 
+  const { data: allAssignee } = useQuery({
+    queryKey: ['assignee/getAll'],
+    queryFn: async () => {
+      const data = await getAllAssignee()
+      return data
+    }
+  })
+
+  console.log(allAssignee)
+
   const requestQuery = useQuery({
     queryKey: ['request', id, reloadThenSubmitSuccess],
     queryFn: async () => {
@@ -89,26 +101,26 @@ export default function SingleRequestById() {
           if (result.isSuccess) {
             setReloadThenSubmitSuccess(new Date())
             toast.success(`${result.statusMessage}`, {
-              position: "top-right",
+              position: 'top-right',
               autoClose: 5000,
               hideProgressBar: false,
               closeOnClick: true,
               pauseOnHover: true,
               draggable: true,
               progress: undefined,
-              theme: "colored"
-            });
+              theme: 'colored'
+            })
           } else {
             toast.error(`${result.statusMessage}`, {
-              position: "top-right",
+              position: 'top-right',
               autoClose: 5000,
               hideProgressBar: false,
               closeOnClick: true,
               pauseOnHover: true,
               draggable: true,
               progress: undefined,
-              theme: "colored"
-            });
+              theme: 'colored'
+            })
           }
         }
       })
@@ -123,12 +135,12 @@ export default function SingleRequestById() {
   return (
     <>
       {data && (
-        <div className='container mt-6 justify-center relative flex flex-col w-full h-auto text-gray-700 bg-white shadow-md rounded-xl bg-clip-border'>
-          <div className="p-6 bg-gray-100 flex items-center justify-center">
+        <div className='container mt-1 justify-center relative flex flex-col w-full h-auto text-gray-700 bg-white shadow-md rounded-xl bg-clip-border'>
+          <div className='p-6 bg-gray-100 flex items-center justify-center'>
             <div className='max-w-7xl py-7 px-5'>
               <div>
                 <div className=''>
-                  <h1 className='text-4xl font-semibold leading-7 text-gray-900 py-5'>Ticket</h1>
+                  <h1 className='text-4xl font-semibold leading-7 text-gray-900 py-1'>Ticket</h1>
                   <p className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'>
                     Warning : Please check carefully full information of user before update anymore
                   </p>
@@ -207,7 +219,16 @@ export default function SingleRequestById() {
                         <input
                           className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                           type='text'
-                          value={data.createdAt}
+                          value={convertDateHourAndMinute(data.createdAt)}
+                          readOnly
+                        />
+                      </div>
+                      <div className='px-3 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
+                        <dt className='text-sm font-medium leading-6 text-gray-900'> Update At : </dt>
+                        <input
+                          className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
+                          type='text'
+                          value={convertDateHourAndMinute(data.updateAt)}
                           readOnly
                         />
                       </div>
@@ -236,13 +257,23 @@ export default function SingleRequestById() {
                               />
                             </div>
                           ) : (
-                            <input
-                              className='mt-1  text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
-                              type='text'
-                              id='assigneeID'
-                              placeholder='N/A - Assignee'
+                            <select
+                              className='w-60 bg-gray-50 border mt-1 border-gray-300 text-gray-900 text-sm rounded block p-2.5 transition delay-500 outline-none'
                               onChange={(e) => setAccountIdAssignees(e.target.value)}
-                            />
+                            >
+                              <option
+                                className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
+                                value=''
+                              >
+                                Select Assignee here
+                              </option>
+                              {allAssignee &&
+                                allAssignee?.data?.data.map((item) => (
+                                  <option key={item.accountId} value={item.accountId} className='hover:bg-slate-400'>
+                                    {item.fullName}
+                                  </option>
+                                ))}
+                            </select>
                           )}
                         </div>
                       </div>

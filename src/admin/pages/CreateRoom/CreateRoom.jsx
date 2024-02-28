@@ -2,13 +2,14 @@ import { getAllDepartment } from '@/admin/apiEndpoints/department.api'
 import React, { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
-import { createRoom, getAllRoomSSFP } from '@/admin/apiEndpoints/room.api'
+import { createRoom, getAllRoomSSFP, changeStatusRoom } from '@/admin/apiEndpoints/room.api'
 import { calculateTotalPages } from '@/utils/calculateTotalPages'
 import { Button, IconButton } from '@material-tailwind/react'
+import { toast } from 'react-toastify'
 
 export default function CreateRoom() {
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(5)
+  const [limit, setLimit] = useState(7)
   const [searchTerm, setSearchTerm] = useState('')
   const [sortDepartment, setSortDepartment] = useState('')
 
@@ -16,8 +17,7 @@ export default function CreateRoom() {
   const [departmentID, setDepartmentId] = useState('')
   const [Number, setRoomNumber] = useState('')
 
-  const [error, setError] = useState(null)
-  const [successMessage, setSuccessMessage] = useState(null)
+  const [reloadThenSubmitSuccess, setReloadThenSubmitSuccess] = useState(null)
 
   const [searchParams, setSearchParams] = useSearchParams()
   const searchParamsObject = Object.fromEntries([...searchParams])
@@ -36,7 +36,6 @@ export default function CreateRoom() {
     } else {
       searchParams.delete('SortDepartmentName')
     }
-
     setSearchParams(searchParams)
   }, [searchTerm, sortDepartment, page, limit])
 
@@ -61,17 +60,33 @@ export default function CreateRoom() {
       departmentId: departmentID,
       roomNumber: Number
     }
-
     if (re.departmentId && re.roomNumber) {
       createRo.mutate(re, {
         onSuccess: (response) => {
           const result = response.data
           if (result.isSuccess) {
-            setSuccessMessage('Create Room successfully')
-            setError(null)
+            setReloadThenSubmitSuccess(new Date())
+            toast.success(`${result.statusMessage}`, {
+              position: 'top-right',
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'colored'
+            })
           } else {
-            setError(result.statusMessage)
-            setSuccessMessage(null)
+            toast.error(`${result.statusMessage}`, {
+              position: 'top-right',
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'colored'
+            })
           }
         },
         onError: (error) => {
@@ -81,6 +96,51 @@ export default function CreateRoom() {
       })
     }
   }
+
+  const submitUpdate = (id, status) => {
+    const updateData = {
+      id: id,
+      status: status
+    }
+    console.log(updateData)
+    if (updateData.id && updateData.status !== undefined) {
+      updateStatusRoom.mutate(updateData, {
+        onSuccess: (response) => {
+          const result = response.data
+          if (result.isSuccess) {
+            setReloadThenSubmitSuccess(new Date())
+            toast.success(`${result.statusMessage}`, {
+              position: 'top-right',
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'colored'
+            })
+          } else {
+            toast.error(`${result.statusMessage}`, {
+              position: 'top-right',
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'colored'
+            })
+          }
+        }
+      })
+    }
+  }
+
+  const updateStatusRoom = useMutation({
+    mutationFn: (body) => {
+      return changeStatusRoom(body)
+    }
+  })
 
   const createRo = useMutation({
     mutationFn: (body) => {
@@ -140,7 +200,7 @@ export default function CreateRoom() {
               </div>
               <div className='col-span-6 sm:col-span-3'>
                 <label htmlFor='product-name' className='text-sm font-medium text-gray-900 block mb-2'>
-                  RoomNumber :
+                  Room Name:
                 </label>
                 <input
                   type='text'
@@ -156,10 +216,6 @@ export default function CreateRoom() {
                 >
                   Create
                 </button>
-                {error && <h2 className='text-l font-medium leading-6 text-red-600'>Error: {error}</h2>}
-                {successMessage && (
-                  <h2 className='text-l font-medium leading-6 text-green-600'>Success: {successMessage}</h2>
-                )}
               </div>
             </div>
           </form>
@@ -213,7 +269,7 @@ export default function CreateRoom() {
           <table className='w-full text-sm text-left border border-gray-700  rtl:text-right text-gray-500'>
             <thead className='text-xs text-gray-700 uppercase bg-gray-200'>
               <tr>
-                <th scope='col' className='px-6 py-3 '>
+                <th scope='col' className='px-6 py-3  '>
                   <span>STT </span>
                 </th>
                 <th scope='col' className='px-6 py-3 '>
@@ -222,7 +278,7 @@ export default function CreateRoom() {
                 <th scope='col' className='px-6 py-3 '>
                   <span>Room </span>
                 </th>
-                <th scope='col' className='px-6 py-3 '>
+                <th scope='col' className='px-6 py-3 text-center'>
                   <span>Status</span>
                 </th>
                 <th scope='col' className='px-6 py-3 '>
@@ -234,23 +290,31 @@ export default function CreateRoom() {
               {allRoom &&
                 allRoom?.data?.data?.items.map((item, index) => (
                   <tr key={item.id} className='hover:bg-gray-50 dark:hover:bg-gray-600'>
-                    <td scope='row' className=' px-6 py-4'>
+                    <td scope='row' className='px-6 py-4 font-bold'>
                       {index + 1}
                     </td>
-                    <td scope='row' className=' px-6 py-4'>
+                    <td scope='row' className='px-6 py-4 font-bold '>
                       {item.departments.departmentName}
                     </td>
-                    <td scope='row' className=' px-6 py-4'>
+                    <td scope='row' className='px-6 py-4 font-bold'>
                       {item.roomNumber}
                     </td>
-                    <td scope='row' className=' px-6 py-4'>
-                      {item.roomStatus ? 'In Use' : 'False'}
+                    <td
+                      scope='row'
+                      className='px-6 py-4 font-bold text-center '
+                      style={{ color: item.roomStatus == 'True' ? 'green' : 'brown' }}
+                    >
+                      {item.roomStatus == 'True' ? 'Active' : 'Inactive'}
                     </td>
+
                     <td className='max-w-[200px] min-w-[150px]'>
                       <div className='flex items-center'>
-                        <Link className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'>
-                          Update
-                        </Link>
+                        <button
+                          onClick={() => submitUpdate(item.id, item.roomStatus)}
+                          className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
+                        >
+                          Change Status
+                        </button>
                       </div>
                     </td>
                   </tr>

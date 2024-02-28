@@ -62,7 +62,7 @@ const getColorClass = (statusName) => {
 
 export default function facilityMain() {
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(3)
+  const [limit, setLimit] = useState(5)
   const [searchTerm, setSearchTerm] = useState('')
   const [sortColumn, setSortColumn] = useState('')
   const [sortOrder, setSortOrder] = useState('')
