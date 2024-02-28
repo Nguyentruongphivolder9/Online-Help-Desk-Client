@@ -40,7 +40,7 @@ export default function ChangePassword() {
       if (!isNewPassword && !isErrorConfirmPassword) {
         try {
           const valueForm = {
-            accountId: state,
+            email: state,
             newPassword: newPassword,
             confirmPassword: confirmPassword
           }
@@ -49,9 +49,28 @@ export default function ChangePassword() {
             onSuccess: (response) => {
               const result = response.data;
               if (result.isSuccess) {
-                navigate('/login')
+                navigate('/login');
+                toast.success(`${result.statusMessage}`, {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "colored"
+                });
               } else {
-
+                toast.error(`${result.statusMessage}`, {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "colored"
+                });
               }
             }
           });
@@ -154,7 +173,7 @@ export default function ChangePassword() {
                   className="border sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
                 />
                 {isNewPassword &&
-                  <div className='flex justify-center mt-3'>
+                  <div className='flex justify-center mt-3 text-white'>
                     <ul className='w-11/12'>
                       <li className='text-xs flex gap-1'>
                         <CheckErrorIcon isError={isErrorLengthPassword} />

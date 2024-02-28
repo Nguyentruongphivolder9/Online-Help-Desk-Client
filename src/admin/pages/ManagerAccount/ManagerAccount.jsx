@@ -226,7 +226,6 @@ export default function ManagerAccount() {
   }
 
   const handleColorStatus = (status) => {
-    console.log(status);
     switch (status) {
       case "Active":
         return "bg-green-400"
@@ -556,7 +555,7 @@ export default function ManagerAccount() {
           <tbody>
             {arrayAccounts &&
               arrayAccounts.map((item) => (
-                <tr key={item.accountId}>
+                <tr key={item.accountId} className='hover:bg-sky-50 hover:cursor-pointer'>
                   <td className='p-4 border-b border-blue-gray-50'>
                     <div className='flex items-center gap-3'>
                       {item.avatarPhoto != null ? (
@@ -615,7 +614,19 @@ export default function ManagerAccount() {
                       {useConvertDate(item.createdAt)}
                     </p>
                   </td>
-                  <td className='p-4 border-b border-blue-gray-50'>
+                  <td className='p-1 border-b border-blue-gray-50'>
+                    <button
+                      className='relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-gray-900 transition-all hover:bg-gray-900/10 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none'
+                      type='button'
+                      onClick={() => navigate(`/admin/accounts/info/members/${item.accountId}`)}
+                    >
+                      <span className='absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2'>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                      </span>
+                    </button>
                     <button
                       className='relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-gray-900 transition-all hover:bg-gray-900/10 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none'
                       type='button'

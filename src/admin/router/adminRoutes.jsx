@@ -17,6 +17,8 @@ import ChatBox from '@/common/components/ChatBox'
 import CenterAssigneesHome from '../pages/CenterAssigneesHome'
 import RequestDetails from '../pages/RequestDetails/RequestDetails'
 import CreateDepartment from '../pages/CreateDepartment'
+import AccountInfo from '../pages/AccountInfo'
+import AccountInfoMembers from '../pages/AccountInfoMembers'
 
 
 const mainAdminLayout = (children) => <MainAdminLayout>{children}</MainAdminLayout>
@@ -74,6 +76,10 @@ const adminRoutes = [
       {
         path: 'messages/:id',
         element: <ChatBox />
+      },
+      {
+        path: 'myProfile/:id',
+        element: <AccountInfo />
       },
       {
         path: '',
@@ -143,6 +149,30 @@ const adminRoutes = [
       <AdminHome>
         <CreateDepartment />
       </AdminHome>
+    )
+  },
+  {
+    path: '/admin/myProfile/:id',
+    element: (
+      <AdminHome>
+        <AccountInfo />
+      </AdminHome>
+    )
+  },
+  {
+    path: '/admin/accounts/info/members/:id',
+    element: (
+      <AdminHome>
+        <AccountInfoMembers />
+      </AdminHome>
+    )
+  },
+  {
+    path: '/admin/facility-header/myProfile/:id',
+    element: (
+      <FacilityHome>
+        <AccountInfo />
+      </FacilityHome>
     )
   },
 ]

@@ -442,7 +442,7 @@ export default function ManagerRequestAssignees() {
             <tbody>
               {requestOfAssignees &&
                 requestOfAssignees?.data?.data.items.map((item) => (
-                  <tr onClick={() => navigate(`/admin/assignees/requests/${item.id}`)} key={item.id} className='hover:bg-yellow-50 hover:cursor-pointer'>
+                  <tr onClick={() => navigate(`/admin/assignees/requests/${item.id}`)} key={item.id} className='hover:bg-sky-50 hover:cursor-pointer'>
                     <td className='p-4 border-b border-blue-gray-50'>
                       <div className='flex items-center gap-3 w-44'>
                         {item.account.avatarPhoto != null ? (
