@@ -3,7 +3,7 @@ import { convertDateHourAndMinute } from '@/utils/convertDateHourAndMinute'
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
-export default function ItemRequest({ dataItem, joinSpecificChatRoom, roleTypes, notifiRemark, setListNotifiRemark, setIsShowResultSearch, setSearchValue }) {
+export default function ItemRequest({ dataItem, joinSpecificChatRoom, roleTypes, notifiRemark, setListNotifiRemark }) {
   const navigate = useNavigate()
 
   // const handleNavigateAndJoinRoom = (dataItem) => {
@@ -29,8 +29,6 @@ export default function ItemRequest({ dataItem, joinSpecificChatRoom, roleTypes,
       onClick={
         roleTypes === 'Assignees'
           ? () => {
-            setSearchValue('')
-            setIsShowResultSearch(false)
             joinSpecificChatRoom(dataItem.id, dataItem.processByAssignees[0].account.fullName, notifiRemark.id)
           }
           : roleTypes === 'Facility-Heads'

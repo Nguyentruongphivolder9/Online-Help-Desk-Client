@@ -8,9 +8,7 @@ export default function LobbyChat({
   joinSpecificChatRoom,
   roleTypes,
   listNotifiRemark,
-  setListNotifiRemark,
-  setIsShowResultSearch,
-  setSearchValue
+  setListNotifiRemark
 }) {
   return (
     <>
@@ -34,8 +32,6 @@ export default function LobbyChat({
               roleTypes={roleTypes}
               notifiRemark={listNotifiRemark.find((noti) => noti.requestId === item.id)}
               setListNotifiRemark={setListNotifiRemark}
-              setIsShowResultSearch={setIsShowResultSearch}
-              setSearchValue={setSearchValue}
             />
           ))}
       </div>
