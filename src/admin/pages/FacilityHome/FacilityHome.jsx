@@ -12,7 +12,7 @@ export default function FacilityHome({ children }) {
   return (
     <>
       {isLoading ? (
-        <LoadingOverlay opacity={1} />
+        <LoadingOverlay opacity={'opacity-100'} />
       ) : (
         <div>
           <HeaderAdmin urlLogo='/admin/assignees' container='container' accountId={accountId} urlProfile={'/admin/facility-header/myProfile/'} />

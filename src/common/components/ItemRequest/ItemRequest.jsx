@@ -1,7 +1,7 @@
 import getColorClas from '@/hooks/useGetColorRequestStatus'
 import { convertDateHourAndMinute } from '@/utils/convertDateHourAndMinute'
 import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 
 export default function ItemRequest({ dataItem, joinSpecificChatRoom, roleTypes, notifiRemark, setListNotifiRemark }) {
   const navigate = useNavigate()
@@ -23,9 +23,9 @@ export default function ItemRequest({ dataItem, joinSpecificChatRoom, roleTypes,
   // }
 
   return (
-    <Link
+    <NavLink
       to={roleTypes === 'Assignees' ? `/admin/assignees/requests/${dataItem.id}` : `/messages/${dataItem.id}`}
-      className={`h-28 w-full p-[10px] flex flex-row border-y border-solid border-gray-300 ${notifiRemark?.unwatchs > 0 ? 'bg-sky-100' : ''}`}
+      className={({ isActive }) => `${isActive ? 'bg-sky-200' : 'bg-white'} h-28 w-full p-[10px] flex flex-row border-y border-solid border-gray-300 hover:bg-sky-100`}
       onClick={
         roleTypes === 'Assignees'
           ? () => {
@@ -84,6 +84,6 @@ export default function ItemRequest({ dataItem, joinSpecificChatRoom, roleTypes,
           )}
         </div>
       </div>
-    </Link>
+    </NavLink>
   )
 }

@@ -6,12 +6,14 @@ const useAuthRedirect = (roleTypeName) => {
   const navigate = useNavigate()
   const [accountId, setAccountId] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [roleTypes, setRoleTypes] = useState(true)
 
   useEffect(() => {
     const objectJWT = useGetInfoFromJWT()
     if (objectJWT.accountId) {
       if (objectJWT.roleTypes == roleTypeName) {
         setAccountId(objectJWT.accountId);
+        setRoleTypes(objectJWT.roleTypes)
         setIsLoading(false);
       } else {
         switch (objectJWT.roleTypes) {
@@ -34,7 +36,7 @@ const useAuthRedirect = (roleTypeName) => {
     }
   }, [])
 
-  return { accountId, isLoading }
+  return { accountId, isLoading, roleTypes }
 }
 
 export default useAuthRedirect
