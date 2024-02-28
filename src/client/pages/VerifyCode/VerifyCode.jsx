@@ -3,12 +3,15 @@ import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { verifyCode } from '@/client/apiEndpoints/verifyCode.api';
+import { toast } from 'react-toastify';
+import LoadingButton from '@/common/components/LoadingButton';
 
 export default function VerifyCode() {
   const [values, setValues] = useState(['', '', '', '', '', '']);
   const [seconds, setSeconds] = useState(60);
   const [isSubmit, setIsSubmit] = useState(true);
   const [isCounting, setIsCounting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const inputRefs = useRef([...Array(7)].map(() => React.createRef()));
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -47,10 +50,9 @@ export default function VerifyCode() {
     }
   });
 
-
   const handleResendMail = (e) => {
     e.preventDefault();
-
+    setIsLoading(true);
     sendMailVerifyCodeMutation.mutate(state, {
       onSuccess: (response) => {
         const result = response.data;
@@ -60,8 +62,30 @@ export default function VerifyCode() {
           setIsCounting(true)
           setIsSubmit(true)
           setValues(['', '', '', '', '', ''])
+          setIsLoading(false);
+          toast.success(`${result.statusMessage}`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored"
+          });
         } else {
-
+          setIsLoading(false);
+          navigate("/users/send-mail");
+          toast.error(`${result.statusMessage}`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored"
+          });
         }
       }
     });
@@ -73,8 +97,9 @@ export default function VerifyCode() {
     const concatenatedValue = values.join('');
     if (isSubmit) {
       if (concatenatedValue.length === 6) {
+        setIsLoading(true)
         const verifyForm = {
-          accountId: state,
+          email: state,
           verifyCode: concatenatedValue
         }
 
@@ -82,11 +107,22 @@ export default function VerifyCode() {
           onSuccess: (response) => {
             const result = response.data;
             if (result.isSuccess) {
+              setIsLoading(false)
               navigate('/users/change-password', {
                 state: state
               })
             } else {
-
+              setIsLoading(false)
+              toast.error(`${result.statusMessage}`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored"
+              });
             }
           }
         });
@@ -150,26 +186,38 @@ export default function VerifyCode() {
                   ))}
                 </div>
                 {!isSubmit ? (
-                  <div className='flex w-full justify-center'>
-                    <button
-                      className=" mt-6 mb-4 w-full py-3 font-medium text-gray-200 bg-blue-500 hover:bg-blue-700 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center"
-                      onClick={handleResendMail}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
-                      </svg>
-                      <span>Resend code</span>
-                    </button>
-                  </div>
+                  isLoading ? (
+                    <div className="gap-y-10px flex items-center md:space-y-0 md:space-x-2 justify-between mx-auto w-full mt-6 mb-4">
+                      <LoadingButton />
+                    </div>
+                  ) : (
+                    <div className='flex w-full justify-center'>
+                      <button
+                        className=" mt-6 mb-4 w-full py-3 font-medium text-gray-200 bg-blue-500 hover:bg-blue-700 rounded-lg border-indigo-500 hover:shadow inline-flex space-x-2 items-center justify-center"
+                        onClick={handleResendMail}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+                        </svg>
+                        <span>Resend code</span>
+                      </button>
+                    </div>
+                  )
                 ) : (
-                  <div className="gap-y-10px flex items-center md:space-y-0 md:space-x-2 justify-between mx-auto w-full mt-6 mb-4">
-                    <button onClick={handleReset} className="bg-white w-60 py-2.5 px-4 font-semibold border border-gray-200 text-sm rounded-lg text-gray-900 hover:border-gray-400 hover:bg-slate-400">
-                      Cancel
-                    </button>
-                    <button onClick={handleSubmit} className="w-60 py-2.5 bg-blue-600 px-4 font-semibold text-gray-50 text-sm rounded-lg hover:bg-blue-800 hover:text-white">
-                      Verify
-                    </button>
-                  </div>
+                  isLoading ? (
+                    <div className="gap-y-10px flex items-center md:space-y-0 md:space-x-2 justify-between mx-auto w-full mt-6 mb-4">
+                      <LoadingButton />
+                    </div>
+                  ) : (
+                    <div className="gap-y-10px flex items-center md:space-y-0 md:space-x-2 justify-between mx-auto w-full mt-6 mb-4">
+                      <button onClick={handleReset} className="bg-white w-60 py-2.5 px-4 font-semibold border border-gray-200 text-sm rounded-lg text-gray-900 hover:border-gray-400 hover:bg-slate-400">
+                        Cancel
+                      </button>
+                      <button onClick={handleSubmit} className="w-60 py-2.5 bg-blue-600 px-4 font-semibold text-gray-50 text-sm rounded-lg hover:bg-blue-800 hover:text-white">
+                        Verify
+                      </button>
+                    </div>
+                  )
                 )}
               </form>
             </div>

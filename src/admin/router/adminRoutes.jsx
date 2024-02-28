@@ -18,6 +18,8 @@ import CenterAssigneesHome from '../pages/CenterAssigneesHome'
 import RequestDetails from '../pages/RequestDetails/RequestDetails'
 import CreateDepartment from '../pages/CreateDepartment'
 import DetailRoom from '../pages/DetailRoom'
+import AccountInfo from '../pages/AccountInfo'
+import AccountInfoMembers from '../pages/AccountInfoMembers'
 
 const mainAdminLayout = (children) => <MainAdminLayout>{children}</MainAdminLayout>
 const adminRoutes = [
@@ -74,6 +76,10 @@ const adminRoutes = [
       {
         path: 'messages/:id',
         element: <ChatBox />
+      },
+      {
+        path: 'myProfile/:id',
+        element: <AccountInfo />
       },
       {
         path: '',
@@ -153,6 +159,29 @@ const adminRoutes = [
       </AdminHome>
     )
   }
+    path: '/admin/myProfile/:id',
+    element: (
+      <AdminHome>
+        <AccountInfo />
+      </AdminHome>
+    )
+  },
+  {
+    path: '/admin/accounts/info/members/:id',
+    element: (
+      <AdminHome>
+        <AccountInfoMembers />
+      </AdminHome>
+    )
+  },
+  {
+    path: '/admin/facility-header/myProfile/:id',
+    element: (
+      <FacilityHome>
+        <AccountInfo />
+      </FacilityHome>
+    )
+  },
 ]
 
 export default adminRoutes

@@ -6,8 +6,13 @@ import { useNavigate } from 'react-router-dom'
 import removeCookie from '@/hooks/removeCookie'
 import addCookie from '@/hooks/addCookie'
 
+const formLogin = {
+  accountId: '',
+  password: ''
+}
+
 export default function Login() {
-  const [loginForm, setLoginForm] = useState({})
+  const [loginForm, setLoginForm] = useState(formLogin || {})
   const [loginError, setLoginError] = useState(null)
   const navigate = useNavigate()
 
@@ -17,10 +22,16 @@ export default function Login() {
     }
   })
 
+  const handleChange = (field) => (e) => {
+    const value = e.target.value.trim();
+
+    setLoginForm((prev) => ({ ...prev, [field]: value }));
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    if (loginForm.accountId === undefined || loginForm.password === undefined) {
+    if (loginForm.accountId == '' || loginForm.password == '') {
       setLoginError('Please enter your account or password')
     } else {
       mutate(loginForm, {
@@ -85,7 +96,8 @@ export default function Login() {
                     id='email'
                     className=' border sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500'
                     placeholder='account code'
-                    onChange={(e) => setLoginForm({ ...loginForm, accountId: e.target.value })}
+                    value={loginForm.accountId}
+                    onChange={handleChange("accountId")}
                     onFocus={() => setLoginError(null)}
                   />
                 </div>
@@ -97,8 +109,9 @@ export default function Login() {
                     type='password'
                     id='password'
                     placeholder='••••••••'
+                    value={loginForm.password}
                     className=' border  sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500'
-                    onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                    onChange={handleChange('password')}
                     onFocus={() => setLoginError(null)}
                   />
                 </div>

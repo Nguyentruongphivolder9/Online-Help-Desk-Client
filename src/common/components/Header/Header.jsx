@@ -1,28 +1,38 @@
 import { getAccountById } from '@/admin/apiEndpoints/account.api'
 import Navbar from '../Navbar'
 import { Link } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
 import useAuthRedirect from '@/hooks/useAuthRedirect'
 import { useEffect, useState } from 'react'
 import useLogout from '@/hooks/useLogout'
-export default function Header({ children }) {
+import useGetInfoFromJWT from '@/hooks/useGetInfoFromJWT'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { getRequestsWithoutSsfp } from '@/client/apiEndpoints/request.api'
+export default function Header() {
   const isLogin = false // vi du ma chua dang nhap thi show cai buuton login ra
   const { accountId, isLoading } = useAuthRedirect('End-Users')
+  const { accountId: accoundIdJWT, roleTypes, userName } = useGetInfoFromJWT()
   const [account, setAccount] = useState(null)
-
+  const [listRequest, setListRequest] = useState([])
   const accountQuery = useQuery({
-    queryKey: ['accounts/getById', accountId],
+    queryKey: ['accounts/getById', accoundIdJWT],
     queryFn: async () => {
-      const data = await getAccountById(accountId)
+      const data = await getAccountById(accoundIdJWT)
       return data
     }
   })
 
+  const requestsQuery = useQuery({
+    queryKey: ['getRequestsWithoutSsfpHeader', accoundIdJWT],
+    queryFn: async () => await getRequestsWithoutSsfp(),
+    placeholderData: keepPreviousData
+  })
+
   useEffect(() => {
     setAccount(accountQuery?.data?.data?.data)
-  }, [accountQuery?.data])
+    setListRequest(requestsQuery?.data?.data?.data)
+  }, [accountQuery?.data, requestsQuery?.data])
 
-  console.log(account)
+  console.log(requestsQuery?.data?.data?.data)
   return (
     <header className='flex fixed top-0 z-10 h-16 w-full bg-gray-50 flex-wrap justify-between items-center mx-auto'>
       <Link to='/' className='flex items-center'>
@@ -32,7 +42,7 @@ export default function Header({ children }) {
           alt='Flowbite Logo'
         />
       </Link>
-      {children}
+      <Navbar listRequest={listRequest}></Navbar>
 
       <div className='flex items-center gap-x-3 mr-[30px]'>
         <span className='text-sm text-gray-700'>{account?.fullName}</span>
@@ -114,8 +124,6 @@ export default function Header({ children }) {
           </div>
         </div>
       </div>
-
-      {/* nếu islogin băng true thì kiếm cái template user bỏ vào */}
     </header>
   )
 }

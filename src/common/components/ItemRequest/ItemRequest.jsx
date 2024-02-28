@@ -1,4 +1,5 @@
 import getColorClas from '@/hooks/useGetColorRequestStatus'
+import { convertDateHourAndMinute } from '@/utils/convertDateHourAndMinute'
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
@@ -27,7 +28,9 @@ export default function ItemRequest({ dataItem, joinSpecificChatRoom, roleTypes,
       className={`h-28 w-full p-[10px] flex flex-row border-y border-solid border-gray-300 ${notifiRemark?.unwatchs > 0 ? 'bg-sky-100' : ''}`}
       onClick={
         roleTypes === 'Assignees'
-          ? () => joinSpecificChatRoom(dataItem.id, dataItem.processByAssignees[0].account.fullName, notifiRemark.id)
+          ? () => {
+            joinSpecificChatRoom(dataItem.id, dataItem.processByAssignees[0].account.fullName, notifiRemark.id)
+          }
           : roleTypes === 'Facility-Heads'
             ? () => joinSpecificChatRoom(dataItem.id, 'Facility-heads')
             : () => joinSpecificChatRoom(dataItem.id, dataItem.account.fullName, notifiRemark.id)
@@ -59,7 +62,7 @@ export default function ItemRequest({ dataItem, joinSpecificChatRoom, roleTypes,
             <span className='text-xs text-gray-600 font-semibold'>Room:&nbsp;</span>
             <span className='text-xs text-gray-900 font-medium'>{dataItem.room.roomNumber}</span>
           </div>
-          <div className='h-1/5 text-xs text-gray-500 truncate'>{dataItem.description}</div>
+          <div className='text-end h-1/5 text-xs text-gray-500 truncate'>{convertDateHourAndMinute(dataItem.createdAt)}</div>
           <div className='h-1/5 w-full flex flex-row justify-end gap-1 items-center'>
             <span className='text-gray-600 text-xs font-semibold'>Status:&nbsp;</span>
             <div className={`h-2 w-2 rounded-box ${getColorClas(dataItem.requestStatus.statusName).background}`}></div>

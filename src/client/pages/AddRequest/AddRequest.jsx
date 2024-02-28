@@ -6,7 +6,7 @@ import useGetInfoFromJWT from '@/hooks/useGetInfoFromJWT'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { jwtDecode } from 'jwt-decode'
 import { useEffect, useState } from 'react'
-import { useMatch, useParams } from 'react-router-dom'
+import { useMatch, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 const initialFormState = {
@@ -27,6 +27,7 @@ export default function AddRequest() {
   const [departmentError, setDepartmentError] = useState('')
   const addMatch = useMatch('/client/request/add')
   const isAddMode = Boolean(addMatch)
+  const navigate = useNavigate()
   const { id } = useParams()
 
   useEffect(() => {
@@ -88,8 +89,10 @@ export default function AddRequest() {
           setFormState(initialFormState)
           setSelectedDepartment('')
           toast.success('Submit request successfully')
+          navigate(`/client/request/${data?.data?.data.id}`)
         } else if (data?.data.validationsErrors && data?.data?.error.code === 'ValidationError') {
-          if (selectedDepartment == '') {
+          console.log(selectedDepartment)
+          if (selectedDepartment == '' || selectedDepartment == undefined || selectedDepartment == null) {
             setDepartmentError('Please select department!')
           }
           setErrorState(data?.data?.validationsErrors)

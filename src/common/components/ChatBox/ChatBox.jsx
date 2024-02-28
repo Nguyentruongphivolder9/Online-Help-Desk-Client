@@ -1,6 +1,6 @@
 import { addRemark, getRemarksByRequestId } from '@/client/apiEndpoints/remark.api'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useOutletContext, useParams } from 'react-router-dom'
 import { useConvertDate } from '@/hooks/useConvertDate'
 import { getRequest } from '@/client/apiEndpoints/request.api'
@@ -8,6 +8,7 @@ import getColorClas from '@/hooks/useGetColorRequestStatus'
 import isObjectEmpty from '@/utils/CheckEmptyObject'
 import useGetInfoFromJWT from '@/hooks/useGetInfoFromJWT'
 import { toast } from 'react-toastify'
+import { convertDateHourAndMinute } from '@/utils/convertDateHourAndMinute'
 
 const initialMessageObjState = {
   accountId: '',
@@ -25,10 +26,11 @@ export default function ChatBox() {
   const [requestIdState, setRequestIdState] = useState(id)
   const [messageObjState, setMessageObjState] = useState(initialMessageObjState)
   const [errorMessageState, setErrorMessageState] = useState()
+  const positionBoxchatRef = useRef()
 
   const listRemarkRequestId = useQuery({
     queryKey: ['remarkByRequestId', requestIdState],
-    queryFn: () => getRemarksByRequestId(requestIdState),
+    queryFn: async () => await getRemarksByRequestId(requestIdState),
     placeholderData: keepPreviousData
   })
 
@@ -52,8 +54,8 @@ export default function ChatBox() {
     if (listRemarkRequestId.isSuccess) {
       setListRemarkState((prev) => [...listRemarkRequestId.data?.data?.data])
     }
-
-    if (isObjectEmpty(infoConnectState)) {
+    console.log('infoConnectState', infoConnectState)
+    if (isObjectEmpty(infoConnectState) && requestbyIdQuery.isSuccess) {
       console.log('Hello- ', infoConnectState)
       if (roleTypes == 'End-Users') {
         joinSpecificChatRoom(requestbyIdQuery?.data?.data?.data.id, requestbyIdQuery?.data?.data?.data.account.fullName)
@@ -64,7 +66,14 @@ export default function ChatBox() {
         )
       }
     }
-  }, [id, listRemarkRequestId.data])
+  }, [id, listRemarkRequestId.data, requestbyIdQuery.data]) // make sure everything fetch before join room(optimized)
+
+  useEffect(() => {
+    if (positionBoxchatRef && positionBoxchatRef.current) {
+      const { scrollHeight, clientHeight } = positionBoxchatRef.current
+      positionBoxchatRef.current.scrollTo({ left: 0, top: scrollHeight - clientHeight, behavior: 'smooth' })
+    }
+  }, [listRemarkState])
 
   const handleChangeInputMessage = (commentInput) => {
     setMessageObjState((prev) => ({ ...prev, accountId: accountId, requestId: id, comment: commentInput }))
@@ -93,23 +102,54 @@ export default function ChatBox() {
   return (
     <div className='h-full w-full p-[10px] flex flex-col relative overflow-hidden border-x border-x-gray-300'>
       <div className='flex-3 '>
-        <h2 className='flex justify-between text-lg py-1 mb-8 border-b-2 border-gray-200'>
+        <div className='flex justify-between items-center text-lg py-1 mb-8 border-b-2 border-gray-200'>
           <p className='font-semibold'>
             {requestbyIdQuery.isSuccess
               ? `Chatting on - Department: ${requestbyIdQuery?.data?.data?.data.room.departments.departmentName} - Room: ${requestbyIdQuery?.data?.data?.data.room.roomNumber}`
               : ''}
           </p>
-          <p
-            className={`text-end border-b-2 
-                        ${getColorClas(requestbyIdQuery?.data?.data?.data.requestStatus.statusName).borderColor}`}
-          >
-            Status ({requestbyIdQuery?.data?.data?.data.requestStatus.statusName})
-          </p>
-        </h2>
+
+          {roleTypes == 'End-Users' ? (
+            <div className='flex flex-row gap-3 items-center'>
+              <div className='flex flex-col text-end'>
+                <div className='text-gray-600 text-[17px]'>
+                  {requestbyIdQuery?.data?.data?.data?.processByAssignees[0]?.account?.fullName ?? 'Admin'}
+                </div>
+              </div>
+              <div>
+                {requestbyIdQuery?.data?.data?.data?.processByAssignees[0]?.account?.avatarPhoto != null ? (
+                  <img
+                    src={`https://storeimageohd.blob.core.windows.net/images/${requestbyIdQuery?.data?.data?.data?.processByAssignees[0]?.account?.avatarPhoto}`}
+                    className='relative inline-block h-10 w-10 !rounded-full object-cover object-center'
+                  />
+                ) : (
+                  <div className='relative flex h-10 w-10 bg-gray-200 rounded-full object-cover object-center shadow justify-center items-center'>
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      strokeWidth={1.5}
+                      stroke='currentColor'
+                      className='w-6 h-6 text-gray-400'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z'
+                      />
+                    </svg>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            ''
+          )}
+        </div>
       </div>
 
       {/* box chat */}
-      <div className='flex-1 messages overflow-auto overflow-y-scroll hide-scrollbar'>
+      <div ref={positionBoxchatRef} className='flex-1 messages overflow-auto overflow-y-scroll hide-scrollbar'>
         {listRemarkState.length > 0 && listRemarkState.length !== undefined ? (
           listRemarkState.map((item) => (
             <div key={item.id} className={`message mb-4 flex ${accountId === item.accountId ? 'text-right' : ''}`}>
@@ -153,7 +193,7 @@ export default function ChatBox() {
                   <span>{item.comment}</span>
                 </div>
                 <div className='pl-4'>
-                  <small className='text-gray-500'>{useConvertDate(item.createAt)}</small>
+                  <small className='text-gray-500'>{convertDateHourAndMinute(item.createAt)}</small>
                 </div>
               </div>
             </div>

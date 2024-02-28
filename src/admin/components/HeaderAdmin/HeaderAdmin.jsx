@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 
 import useLogout from '@/hooks/useLogout'
 import { getAccountById } from '@/admin/apiEndpoints/account.api'
 
-export default function HeaderAdmin({ accountId, urlLogo, container, notification }) {
+export default function HeaderAdmin({ accountId, urlLogo, container, urlProfile }) {
   const [account, setAccount] = useState(null);
+  const navigate = useNavigate();
 
   const { data: accountInfo, isLoading: isLoadingAccountInfo } = useQuery({
     queryKey: ['accounts/getById'],
@@ -54,13 +55,13 @@ export default function HeaderAdmin({ accountId, urlLogo, container, notificatio
               <div tabIndex={0} className="dropdown-content w-44 h-24 px-5 py-3 bg-gray-100 rounded-lg shadow border mt-4">
                 <ul className="space-y-3 text-gray-700">
                   <li className="font-medium">
-                    <button className="flex items-center transform transition-colors duration-200 border-r-4 border-transparent ">
+                    <button onClick={() => navigate(`${urlProfile}${accountId}`)} className="flex items-center transform transition-colors duration-200 border-r-4 border-transparent ">
                       <div className="mr-3">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                         </svg>
                       </div>
-                      Account
+                      My Profile
                     </button>
                   </li>
                   <li className="font-medium ">
