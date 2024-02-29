@@ -181,7 +181,7 @@ export default function VerifyCode() {
                       }}
                       maxLength={1}
                       required
-                      className="w-16 h-16 border rounded-lg p-4 text-center mx-auto hover:border-blue-200 focus:outline-none focus:ring focus:ring-blue-400 placeholder:font-medium font-bold text-xl text-white"
+                      className="w-16 h-16 border rounded-lg p-4 text-center mx-auto hover:border-blue-200 focus:outline-none focus:ring focus:ring-blue-400 placeholder:font-medium font-bold text-xl text-gray-700"
                     />
                   ))}
                 </div>

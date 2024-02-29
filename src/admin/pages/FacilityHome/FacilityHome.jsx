@@ -68,7 +68,7 @@ export default function FacilityHome({ children }) {
                               clipRule='evenodd'
                             />
                           </svg>
-                          <span className='ml-3 flex-1 whitespace-nowrap'>Request Of Assignee</span>
+                          <span className='ml-3 flex-1 whitespace-nowrap'>List Assignees</span>
                         </NavLink>
                       </li>
                       <div className='space-y-2 pt-2 w-full'>

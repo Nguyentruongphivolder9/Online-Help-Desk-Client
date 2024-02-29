@@ -158,7 +158,8 @@ const adminRoutes = [
         <DetailRoom />
       </AdminHome>
     )
-  }
+  },
+  {
     path: '/admin/myProfile/:id',
     element: (
       <AdminHome>

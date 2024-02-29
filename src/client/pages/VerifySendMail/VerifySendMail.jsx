@@ -73,7 +73,7 @@ export default function VerifySendMail() {
                         const value = e.target.value.trim();
                         setAccountIdValue(value)
                       }}
-                      className="w-full py-3 border text-gray-200 border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
+                      className="w-full py-3 border text-gray-700 border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
                       placeholder="Enter your email"
                     />
                   </label>
