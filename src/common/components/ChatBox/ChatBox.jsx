@@ -54,8 +54,11 @@ export default function ChatBox() {
     if (listRemarkRequestId.isSuccess) {
       setListRemarkState((prev) => [...listRemarkRequestId.data?.data?.data])
     }
-    console.log('infoConnectState', infoConnectState)
+
     if (isObjectEmpty(infoConnectState) && requestbyIdQuery.isSuccess) {
+      if (infoConnectState.connect != undefined || infoConnectState.connect != null) {
+        connect.stop()
+      }
       console.log('Hello- ', infoConnectState)
       if (roleTypes == 'End-Users') {
         joinSpecificChatRoom(requestbyIdQuery?.data?.data?.data.id, requestbyIdQuery?.data?.data?.data.account.fullName)
@@ -151,53 +154,55 @@ export default function ChatBox() {
       {/* box chat */}
       <div ref={positionBoxchatRef} className='flex-1 messages overflow-auto overflow-y-scroll hide-scrollbar'>
         {listRemarkState.length > 0 && listRemarkState.length !== undefined ? (
-          listRemarkState.map((item) => (
-            <div key={item.id} className={`message mb-4 flex ${accountId === item.accountId ? 'text-right' : ''}`}>
-              {accountId !== item.accountId ? (
-                <div className='flex-2'>
-                  <div className='w-12 h-12 relative'>
-                    {item?.avatarPhoto != null ? (
-                      <img
-                        src={`https://storeimageohd.blob.core.windows.net/images/${item?.avatarPhoto}`}
-                        alt={item?.fullName}
-                        className='relative inline-block h-9 w-9 !rounded-full object-cover object-center'
-                      />
-                    ) : (
-                      <div className='relative flex h-9 w-9 bg-gray-200 rounded-full object-cover object-center shadow justify-center items-center'>
-                        <svg
-                          xmlns='http://www.w3.org/2000/svg'
-                          fill='none'
-                          viewBox='0 0 24 24'
-                          strokeWidth={1.5}
-                          stroke='currentColor'
-                          className='w-6 h-6 text-gray-400'
-                        >
-                          <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            d='M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z'
-                          />
-                        </svg>
-                      </div>
-                    )}
+          listRemarkState
+            .filter((item, index, array) => array.findIndex((elem) => elem.id === item.id) === index)
+            .map((item) => (
+              <div key={item.id} className={`message mb-4 flex ${accountId === item.accountId ? 'text-right' : ''}`}>
+                {accountId !== item.accountId ? (
+                  <div className='flex-2'>
+                    <div className='w-12 h-12 relative'>
+                      {item?.avatarPhoto != null ? (
+                        <img
+                          src={`https://storeimageohd.blob.core.windows.net/images/${item?.avatarPhoto}`}
+                          alt={item?.fullName}
+                          className='relative inline-block h-9 w-9 !rounded-full object-cover object-center'
+                        />
+                      ) : (
+                        <div className='relative flex h-9 w-9 bg-gray-200 rounded-full object-cover object-center shadow justify-center items-center'>
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            strokeWidth={1.5}
+                            stroke='currentColor'
+                            className='w-6 h-6 text-gray-400'
+                          >
+                            <path
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              d='M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z'
+                            />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+
+                <div className='flex-1 px-2'>
+                  <div
+                    className={`inline-block ${accountId === item.accountId ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700'}  rounded-full p-2 px-6 `}
+                  >
+                    <span>{item.comment}</span>
+                  </div>
+                  <div className='pl-4'>
+                    <small className='text-gray-500'>{convertDateHourAndMinute(item.createAt)}</small>
                   </div>
                 </div>
-              ) : (
-                ''
-              )}
-
-              <div className='flex-1 px-2'>
-                <div
-                  className={`inline-block ${accountId === item.accountId ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700'}  rounded-full p-2 px-6 `}
-                >
-                  <span>{item.comment}</span>
-                </div>
-                <div className='pl-4'>
-                  <small className='text-gray-500'>{convertDateHourAndMinute(item.createAt)}</small>
-                </div>
               </div>
-            </div>
-          ))
+            ))
         ) : (
           <div className='text-2xl absolute top-2/4 left-2/4 transform -translate-x-2/4 -translate-y-2/4'>
             You haven't sent any messages yet
