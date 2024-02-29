@@ -13,6 +13,7 @@ import ChangePassword from '../pages/ChangePassword'
 import ChatLayout from '../pages/ChatLayout'
 import CheckBox from '@/common/components/ChatBox'
 import { Outlet } from 'react-router-dom'
+import MessageSvg from '@/common/components/MessageSvg'
 
 const mainClientLayout = (children) => <MainClientLayout>{children}</MainClientLayout>
 const clientRoutes = [
@@ -64,6 +65,10 @@ const clientRoutes = [
       </MainClientLayout>
     ),
     children: [
+      {
+        path: '',
+        element: <MessageSvg></MessageSvg>
+      },
       {
         path: ':id',
         element: <CheckBox />

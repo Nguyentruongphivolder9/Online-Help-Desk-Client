@@ -11,35 +11,45 @@ import SkeletonLoaderRequest from '@/common/components/SkeletonLoaderRequest'
 import getCookie from '@/hooks/getCookie'
 import useAuthRedirect from '@/hooks/useAuthRedirect'
 import { useConvertDate } from '@/hooks/useConvertDate'
+import useDebounce from '@/hooks/useDebounce'
 import getColorClas from '@/hooks/useGetColorRequestStatus'
 import useGetInfoFromJWT from '@/hooks/useGetInfoFromJWT'
 import { HubConnectionBuilder, LogLevel, HttpTransportType } from '@microsoft/signalr'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, Outlet, Route, Routes } from 'react-router-dom'
 
 export default function ChatLayout() {
-  const { accountId, isLoading } = useAuthRedirect('End-Users')
+  // const { accountId, isLoading } = useAuthRedirect('End-Users')
   const { id: accountUserId, roleTypes } = useGetInfoFromJWT()
   const queryClient = useQueryClient()
   const [connect, setConnection] = useState()
   const [requestsQueryState, setRequestsQueryState] = useState([]) //  purpose for searching
   const [infoConnectState, setInfoConnectState] = useState({}) // info for joinSpecificChatRoom
-  const [searchState, setSearchState] = useState('')
   const [listRemarkState, setListRemarkState] = useState([])
   const [listNotifiRemark, setListNotifiRemark] = useState([])
   const [isShowResultSearch, setIsShowResultSearch] = useState(false)
-
+  const [searchResult, setSearchResult] = useState([])
+  const [searchValue, setSearchValue] = useState('')
+  const inputRef = useRef()
+  const debouncedValue = useDebounce(searchValue, 500)
   const listRemarkByAcountId = useQuery({
     queryKey: ['remarkByAccountId'],
     queryFn: () => getRemarksbyAccountId(), // lay remark moi nhat tren moi request
     placeholderData: keepPreviousData
   })
 
-  const requestsQuery = useQuery({
-    queryKey: ['getRequestsWithoutSsfp'],
-    queryFn: async () => await getRequestsWithoutSsfp(),
+  const requestsQueryRelateToUser = useQuery({
+    queryKey: ['requestsInChatLayout'],
+    queryFn: async () => await getRequests({ page: 1, limit: 10 }),
     placeholderData: keepPreviousData
+  })
+
+  const requestsSearchQuery = useQuery({
+    queryKey: ['requestsInChatLayoutSearch', debouncedValue],
+    queryFn: async () => await getRequests({ searchTerm: debouncedValue, page: 1, limit: 10 }),
+    placeholderData: keepPreviousData,
+    enabled: debouncedValue != ''
   })
 
   const listNotifiRemarkQueries = useQuery({
@@ -93,7 +103,7 @@ export default function ChatLayout() {
         connect.on('ReceiveNotificationRemark', (message) => {
           const parseMessageFromServer = JSON.parse(message)
           const notifiRelateToAccount = parseMessageFromServer.find((item) => {
-            return item.accountId == accountId
+            return item.accountUserId == accountUserId
           })
           setListNotifiRemark((prev) => {
             const existingIndex = prev.findIndex((existingItem) => existingItem.id === notifiRelateToAccount.id)
@@ -109,16 +119,16 @@ export default function ChatLayout() {
         })
 
         await connect.start()
-        await connect.invoke('JoinToMultipleRoom', accountId)
+        await connect.invoke('JoinToMultipleRoom', accountUserId)
       } catch (error) {
         console.log(error)
       }
     }
-    if (accountId) {
+    if (accountUserId) {
       connectHub()
     }
     queryClient.invalidateQueries({ queryKey: ['listNotifiRemarkQueries'] })
-  }, [accountId])
+  }, [accountUserId])
 
   const joinSpecificChatRoom = async (requestId, username, remarkId) => {
     if (connect != undefined || connect != null) {
@@ -146,32 +156,40 @@ export default function ChatLayout() {
       await connect.start()
       await connect.invoke('JoinSpecificChatRoom', requestId, username)
 
-      setInfoConnectState((prev) => ({ ...prev, requestId, username }))
-      setConnection(connect)
+      setInfoConnectState((prev) => ({ ...prev, requestId, username, connect }))
+      setConnection((prev) => connect)
       handleUpdateUnwatchsSeenOnNotifiRemark({ id: remarkId })
     } catch (error) {
       console.log(error)
     }
   }
 
-  const handleSearchChange = (e) => {
-    const value = e.target.value
-    if (value !== null && value !== '') {
-      setIsShowResultSearch(true)
-    } else {
-      setIsShowResultSearch(false)
+  useEffect(() => {
+    if (requestsSearchQuery?.data?.data?.data) {
+      setSearchResult(requestsSearchQuery?.data?.data?.data?.items)
     }
+  }, [debouncedValue, requestsSearchQuery?.data])
+
+  const handleSearchChange = (e) => {
+    let value
+    if (e.target.value.trim().length < 1) {
+      value = e.target.value.trim()
+      setSearchResult([])
+    } else {
+      value = e.target.value.replace(/\s\s+/g, ' ')
+    }
+    setSearchValue(value)
   }
 
-  // console.log(listRemarkState)
-
-  const searching = (searchTerrm) => {
-    setSearchState(searchTerrm)
+  const handleClear = () => {
+    setSearchValue('')
+    setSearchResult([])
+    inputRef.current.focus()
   }
 
   return (
     <>
-      {(requestsQuery && requestsQuery?.data?.data?.data.length) > 0 ? (
+      {(requestsQueryRelateToUser && requestsQueryRelateToUser?.data?.data?.data?.items.length) > 0 ? (
         <div className='flex flex-row w-full h-full fixed justify-center overflow-hidden bg-white pt-[72px]'>
           <div className='flex h-full flex-row w-full border border-x-gray-300'>
             <div className='h-full w-1/5 overflow-hidden'>
@@ -194,12 +212,30 @@ export default function ChatLayout() {
                     </svg>
                   </div>
                   <input
+                    ref={inputRef}
                     className='peer h-full w-full outline-none text-sm text-gray-700 pr-2 bg-slate-200'
                     type='text'
                     id='search'
                     placeholder='Search something..'
                     onChange={handleSearchChange}
+                    onFocus={() => {
+                      setIsShowResultSearch(true)
+                    }}
                   />
+                  {!!searchValue && (
+                    <button className='absolute right-2' onClick={handleClear}>
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='none'
+                        viewBox='0 0 24 24'
+                        strokeWidth={1.5}
+                        stroke='currentColor'
+                        className='w-4 h-4'
+                      >
+                        <path strokeLinecap='round' strokeLinejoin='round' d='M6 18 18 6M6 6l12 12' />
+                      </svg>
+                    </button>
+                  )}
                 </div>
                 <div className='grid place-items-center h-full w-12 text-gray-500'>
                   <svg
@@ -221,32 +257,64 @@ export default function ChatLayout() {
 
               {isShowResultSearch ? (
                 <div className='h-10/12 relative w-full text-sm'>
-                  <div className='flex flex-row w-full p-[15px] items-center border-b gap-2 border-solid text-gray-700'>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      strokeWidth={1.5}
-                      stroke='currentColor'
-                      className='w-5 h-5'
+                  <div className='flex flex-row w-full p-[15px] items-center justify-between border-b gap-2 border-solid text-gray-700'>
+                    <div className='flex flex-row gap-1'>
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='none'
+                        viewBox='0 0 24 24'
+                        strokeWidth={1.5}
+                        stroke='currentColor'
+                        className='w-5 h-5'
+                      >
+                        <path
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                          d='M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm3.75 11.625a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z'
+                        />
+                      </svg>
+                      <div className='p-[10px]text-base font-medium'>Request search results</div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setSearchValue('')
+                        setSearchResult([])
+                        setIsShowResultSearch(false)
+                      }}
+                      className='flex flex-row items-center gap-1 py-1 px-3 border rounded-md border-gray-600 text-xs'
                     >
-                      <path
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        d='M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm3.75 11.625a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z'
-                      />
-                    </svg>
-                    <div className='p-[10px]text-base font-medium'>Request search results</div>
+                      <span>Closed</span>
+                      <span>
+                        <svg
+                          xmlns='http://www.w3.org/2000/svg'
+                          fill='none'
+                          viewBox='0 0 24 24'
+                          strokeWidth={1.5}
+                          stroke='currentColor'
+                          className='w-4 h-4'
+                        >
+                          <path strokeLinecap='round' strokeLinejoin='round' d='M6 18 18 6M6 6l12 12' />
+                        </svg>
+                      </span>
+                    </button>
                   </div>
-
-                  <div className='w-full h-full'>
-                    <SkeletonLoaderRequest />
-                    <SkeletonLoaderRequest />
-                    <SkeletonLoaderRequest />
-                    <SkeletonLoaderRequest />
-                    <SkeletonLoaderRequest />
-                    <SkeletonLoaderRequest />
-                  </div>
+                  {isShowResultSearch && searchResult.length > 0 ? (
+                    <LobbyChat
+                      dataItem={searchResult}
+                      joinSpecificChatRoom={joinSpecificChatRoom}
+                      roleTypes={roleTypes}
+                      listNotifiRemark={listNotifiRemark}
+                      setListNotifiRemark={setListNotifiRemark}
+                    />
+                  ) : (
+                    <div className='w-full h-full'>
+                      <SkeletonLoaderRequest />
+                      <SkeletonLoaderRequest />
+                      <SkeletonLoaderRequest />
+                      <SkeletonLoaderRequest />
+                      <SkeletonLoaderRequest />
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className='h-10/12 relative w-full text-sm'>
@@ -270,8 +338,8 @@ export default function ChatLayout() {
 
                   {/* lobby */}
                   <LobbyChat
-                    dataItem={requestsQuery?.data?.data?.data}
-                    isLoading={requestsQuery.isLoading}
+                    dataItem={requestsQueryRelateToUser?.data?.data?.data?.items}
+                    isLoading={requestsQueryRelateToUser.isLoading}
                     joinSpecificChatRoom={joinSpecificChatRoom}
                     roleTypes={roleTypes}
                     listNotifiRemark={listNotifiRemark}
@@ -295,7 +363,7 @@ export default function ChatLayout() {
           </div>
         </div>
       ) : (
-        <div className='h-[600px] mt-20 flex justify-center items-center mx-auto p-5 my-24 border border-slate-100 shadow-lg bg-white rounded-lg'>
+        <div className='h-[600px] mt-20 flex justify-center items-center mx-auto p-5 border border-slate-100 shadow-lg bg-white rounded-lg'>
           <div className='text-center'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
