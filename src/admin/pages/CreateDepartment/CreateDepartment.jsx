@@ -162,11 +162,11 @@ export default function CreateDepartments() {
                   className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5'
                 />
               </div>
-              <div className='col-span-6 sm:col-span-3'>
+              <div className='h-full flex col-span-6 sm:col-span-3 items-end'>
                 <button
                   type='button'
                   onClick={handleSubmit}
-                  className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
+                  className='inline-flex items-center px-5 py-3 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
                 >
                   Create
                 </button>
