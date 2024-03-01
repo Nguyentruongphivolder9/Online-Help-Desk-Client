@@ -5,6 +5,7 @@ import { calculateTotalPages } from '@/utils/calculateTotalPages'
 import { getAllPendingRequestOfAssignee, getDetailAssignee } from '@/admin/apiEndpoints/dataAssignee.api'
 import { getRequestStatus } from '@/admin/apiEndpoints/dataRequest.api'
 import { Link } from 'react-router-dom'
+import { Button, IconButton } from '@material-tailwind/react'
 
 const getColorClass = (statusName) => {
   switch (statusName) {
@@ -61,7 +62,7 @@ const getColorClass = (statusName) => {
 export default function PendingAssignee() {
   const { id } = useParams()
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(3)
+  const [limit, setLimit] = useState(2)
   const [searchTerm, setSearchTerm] = useState('')
   const [sortColumn, setSortColumn] = useState('')
   const [sortOrder, setSortOrder] = useState('')
@@ -100,7 +101,7 @@ export default function PendingAssignee() {
     setSearchParams(searchParams)
   }, [sortColumn, sortOrder, searchTerm, sortStatus, page, limit])
 
-  const pendingQuery = useQuery({
+  const { data: pendingQuery } = useQuery({
     queryKey: ['assignee/listRequestOfAssignee', searchParamsObject, id],
     queryFn: async () => {
       const data = await getAllPendingRequestOfAssignee(searchParamsObject, id)
@@ -326,7 +327,7 @@ export default function PendingAssignee() {
           </thead>
           <tbody>
             {pendingQuery &&
-              pendingQuery?.data?.data?.data?.items.map((item) => (
+              pendingQuery?.data?.data?.items.map((item) => (
                 <tr
                   key={item.id}
                   className={`border-l-4 ${getColorClass(item?.requestStatus?.statusName).borderColor}  hover:bg-gray-50 dark:hover:bg-gray-600`}
@@ -366,70 +367,68 @@ export default function PendingAssignee() {
           </tbody>
         </table>
         {/* pagination */}
-        <div className='relative shadow-md sm:rounded-lg bg-white my-5'>
-          <div className='flex items-center justify-between p-4 border-t border-blue-gray-50'>
-            <nav
-              className='w-full flex items-center justify-between flex-column flex-wrap md:flex-row pt-4 gap-3'
-              aria-label='Table navigation'
-            >
-              <div className='text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto'>
-                Page
-                <span className='font-semibold text-gray-700 '>
-                  {' '}
-                  {page}/{totalPage}{' '}
-                </span>
-              </div>
-              <div aria-label='Page navigation example'>
-                {totalPage > 1 && (
-                  <div className='flex items-center gap-4'>
-                    <Button
-                      variant='text'
-                      className='flex items-center gap-2'
-                      onClick={previousPage}
-                      disabled={page === 1}
+        <div className='flex items-center justify-between p-4 border-t border-blue-gray-50'>
+          <nav
+            className='w-full flex items-center justify-between flex-column flex-wrap md:flex-row pt-4 gap-3'
+            aria-label='Table navigation'
+          >
+            <div className='text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto'>
+              Page
+              <span className='font-semibold text-gray-700 '>
+                {' '}
+                {page}/{totalPage}{' '}
+              </span>
+            </div>
+            <div aria-label='Page navigation example'>
+              {totalPage > 1 && (
+                <div className='flex items-center gap-4'>
+                  <Button
+                    variant='text'
+                    className='flex items-center gap-2'
+                    onClick={previousPage}
+                    disabled={page === 1}
+                  >
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      strokeWidth={1.5}
+                      stroke='currentColor'
+                      className='w-6 h-6'
                     >
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        fill='none'
-                        viewBox='0 0 24 24'
-                        strokeWidth={1.5}
-                        stroke='currentColor'
-                        className='w-6 h-6'
-                      >
-                        <path strokeLinecap='round' strokeLinejoin='round' d='M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18' />
-                      </svg>
-                      PreviousPage
-                    </Button>
-                    <div className='flex items-center gap-2'>
-                      {totalPageArray.map((page) => (
-                        <IconButton {...getItemProps(page)} className='text-gray-700' key={page}>
-                          {page}
-                        </IconButton>
-                      ))}
-                    </div>
-                    <Button
-                      variant='text'
-                      className='flex items-center gap-2'
-                      onClick={nextPage}
-                      disabled={page === totalPage}
-                    >
-                      NextPage
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        fill='none'
-                        viewBox='0 0 24 24'
-                        strokeWidth={1.5}
-                        stroke='currentColor'
-                        className='w-6 h-6'
-                      >
-                        <path strokeLinecap='round' strokeLinejoin='round' d='M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3' />
-                      </svg>
-                    </Button>
+                      <path strokeLinecap='round' strokeLinejoin='round' d='M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18' />
+                    </svg>
+                    PreviousPage
+                  </Button>
+                  <div className='flex items-center gap-2'>
+                    {totalPageArray.map((page) => (
+                      <IconButton {...getItemProps(page)} className='text-gray-700' key={page}>
+                        {page}
+                      </IconButton>
+                    ))}
                   </div>
-                )}
-              </div>
-            </nav>
-          </div>
+                  <Button
+                    variant='text'
+                    className='flex items-center gap-2'
+                    onClick={nextPage}
+                    disabled={page === totalPage}
+                  >
+                    NextPage
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      strokeWidth={1.5}
+                      stroke='currentColor'
+                      className='w-6 h-6'
+                    >
+                      <path strokeLinecap='round' strokeLinejoin='round' d='M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3' />
+                    </svg>
+                  </Button>
+                </div>
+              )}
+            </div>
+          </nav>
         </div>
       </div>
     </div>

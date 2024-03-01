@@ -63,6 +63,10 @@ const clientRoutes = [
     element: mainClientLayout(<Contact />)
   },
   {
+    path: 'client/contact',
+    element: mainClientLayout(<Contact />)
+  },
+  {
     path: '/messages',
     element: (
       <MainClientLayout>

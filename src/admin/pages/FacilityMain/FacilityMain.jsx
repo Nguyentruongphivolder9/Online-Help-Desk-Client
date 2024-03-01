@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { calculateTotalPages } from '@/utils/calculateTotalPages'
 import { getCountAllRequest, getAllRequest, getRequestStatus } from '@/admin/apiEndpoints/dataRequest.api'
 import { Button, IconButton } from '@material-tailwind/react'
-import { useConvertDate } from '@/hooks/useConvertDate'
+import { convertDateHourAndMinute } from '@/utils/convertDateHourAndMinute'
 
 const getColorClass = (statusName) => {
   switch (statusName) {
@@ -394,7 +394,7 @@ export default function facilityMain() {
                     </div>
                   </td>
                   <td className=' px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis'>
-                    {useConvertDate(item.createdAt)}
+                    {convertDateHourAndMinute(item.createdAt)}
                   </td>
                   <td className=' px-6 py-4 whitespace-nowrap overflow-hidden overflow-ellipsis'>
                     {item.processByAssignees[0]?.account.accountId}
