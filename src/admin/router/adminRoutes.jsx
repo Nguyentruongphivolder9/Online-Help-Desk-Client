@@ -17,7 +17,6 @@ import ChatBox from '@/common/components/ChatBox'
 import CenterAssigneesHome from '../pages/CenterAssigneesHome'
 import RequestDetails from '../pages/RequestDetails/RequestDetails'
 import CreateDepartment from '../pages/CreateDepartment'
-import DetailRoom from '../pages/DetailRoom'
 import AccountInfo from '../pages/AccountInfo'
 import AccountInfoMembers from '../pages/AccountInfoMembers'
 
@@ -152,13 +151,6 @@ const adminRoutes = [
     )
   },
   {
-    path: '/admin/detail-room/:id',
-    element: (
-      <AdminHome>
-        <DetailRoom />
-      </AdminHome>
-    )
-  }
     path: '/admin/myProfile/:id',
     element: (
       <AdminHome>
@@ -181,7 +173,7 @@ const adminRoutes = [
         <AccountInfo />
       </FacilityHome>
     )
-  },
+  }
 ]
 
 export default adminRoutes

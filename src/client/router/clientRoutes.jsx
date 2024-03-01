@@ -13,6 +13,7 @@ import ChangePassword from '../pages/ChangePassword'
 import ChatLayout from '../pages/ChatLayout'
 import CheckBox from '@/common/components/ChatBox'
 import { Outlet } from 'react-router-dom'
+import Contact from '../pages/Contact'
 
 const mainClientLayout = (children) => <MainClientLayout>{children}</MainClientLayout>
 const clientRoutes = [
@@ -55,6 +56,10 @@ const clientRoutes = [
   {
     path: 'client/chatRoom',
     element: mainClientLayout(<ArchivedRequests />)
+  },
+  {
+    path: 'client/contact',
+    element: mainClientLayout(<Contact />)
   },
   {
     path: '/messages',

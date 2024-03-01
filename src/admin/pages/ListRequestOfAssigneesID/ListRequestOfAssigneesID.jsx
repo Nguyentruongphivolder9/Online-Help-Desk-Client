@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { getListRequestOfAssignee, getRequestStatus } from '@/admin/apiEndpoints/dataRequest.api'
 import { calculateTotalPages } from '@/utils/calculateTotalPages'
 import { useConvertDate } from '@/hooks/useConvertDate'
+import { Button, IconButton } from '@material-tailwind/react'
 
 const getColorClass = (statusName) => {
   switch (statusName) {
@@ -62,7 +63,7 @@ const getColorClass = (statusName) => {
 export default function ListRequestOfAssigneesId() {
   const { id } = useParams()
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(3)
+  const [limit, setLimit] = useState(5)
   const [searchTerm, setSearchTerm] = useState('')
   const [sortColumn, setSortColumn] = useState('')
   const [sortOrder, setSortOrder] = useState('')
@@ -101,7 +102,7 @@ export default function ListRequestOfAssigneesId() {
     setSearchParams(searchParams)
   }, [sortColumn, sortOrder, searchTerm, sortStatus, page, limit])
 
-  const requestQuery = useQuery({
+  const { data: requestQuery } = useQuery({
     queryKey: ['assignee/listRequestOfAssignee', searchParamsObject, id],
     queryFn: async () => {
       const data = await getListRequestOfAssignee(searchParamsObject, id)
@@ -260,7 +261,7 @@ export default function ListRequestOfAssigneesId() {
           </thead>
           <tbody>
             {requestQuery &&
-              requestQuery?.data?.data?.data?.items.map((item) => (
+              requestQuery?.data?.data?.items.map((item) => (
                 <tr
                   key={item.id}
                   className={`border-l-4 ${getColorClass(item?.requestStatus?.statusName).borderColor}  hover:bg-gray-50 dark:hover:bg-gray-600`}
