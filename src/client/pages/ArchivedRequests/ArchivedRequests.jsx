@@ -360,7 +360,7 @@ export default function ArchivedRequests() {
         <table className='w-full text-sm text-left mt-12 rtl:text-right text-gray-500'>
           <thead className='text-xs text-gray-700 uppercase bg-gray-50'>
             <tr>
-              <th scope='col' className='px-6 py-3 max-w-[300px] select-none'>
+              <th scope='col' className='px-4 py-4 max-w-[300px] select-none'>
                 <div
                   // to={`/client/request/?sortColumn=department&sortOrder=asc`}
                   onClick={() => addParams([{ sortColumn: 'department' }, { sortOrder: 'asc' }])}
@@ -383,7 +383,7 @@ export default function ArchivedRequests() {
                   </svg>
                 </div>
               </th>
-              <th scope='col' className='px-6 py-3 select-none'>
+              <th scope='col' className='px-4 py-4 select-none'>
                 <div
                   className='flex justify-between cursor-pointer'
                   onClick={() => addParams([{ sortColumn: 'level' }, { sortOrder: 'asc' }])}
@@ -405,7 +405,7 @@ export default function ArchivedRequests() {
                   </svg>
                 </div>
               </th>
-              <th scope='col' className='px-6 py-3 select-none'>
+              <th scope='col' className='px-4 py-4 select-none'>
                 <div
                   className='flex justify-between cursor-pointer'
                   onClick={() => addParams([{ sortColumn: 'description' }, { sortOrder: 'asc' }])}
@@ -427,7 +427,7 @@ export default function ArchivedRequests() {
                   </svg>
                 </div>
               </th>
-              <th scope='col' className='px-6 py-3 select-none'>
+              <th scope='col' className='px-4 py-4 select-none'>
                 <div
                   className='flex justify-between cursor-pointer'
                   onClick={() => addParams([{ sortColumn: 'reason' }, { sortOrder: 'asc' }])}
@@ -449,7 +449,7 @@ export default function ArchivedRequests() {
                   </svg>
                 </div>
               </th>
-              <th scope='col' className='px-6 py-3 select-none'>
+              <th scope='col' className='px-4 py-4 select-none'>
                 <div
                   className='flex justify-between cursor-pointer'
                   onClick={() => addParams([{ sortColumn: 'status' }, { sortOrder: 'asc' }])}
@@ -471,7 +471,7 @@ export default function ArchivedRequests() {
                   </svg>
                 </div>
               </th>
-              <th scope='col' className='px-6 py-3 select-none'>
+              <th scope='col' className='px-4 py-4 select-none'>
                 <span>Action</span>
               </th>
             </tr>
@@ -487,16 +487,16 @@ export default function ArchivedRequests() {
                 >
                   <th
                     scope='row'
-                    className='py-4 font-medium text-gray-900 whitespace-nowrap overflow-hidden overflow-ellipsis uppercase'
+                    className='truncate max-w-60 w-60 min-w-60 py-4 px-4 font-medium text-gray-900 whitespace-nowrap overflow-hidden overflow-ellipsis uppercase'
                   >
                     <span className='ml-6'>
                       {request.room.departments.departmentName} ({request.room.roomNumber})
                     </span>
                   </th>
-                  <td className='py-4'>{request.severalLevel}</td>
-                  <td className='py-4 whitespace-nowrap overflow-hidden overflow-ellipsis'>{request.description}</td>
-                  <td className='py-4 whitespace-nowrap overflow-hidden overflow-ellipsis'>{request.reason}</td>
-                  <td className='py-4'>
+                  <td className='py-4 px-4 truncate max-w-40 w-40 min-w-40'>{request.severalLevel}</td>
+                  <td className='py-4 px-4 truncate max-w-60 w-60 min-w-60'>{request.description}</td>
+                  <td className='py-4 px-4 truncate max-w-40 w-40 min-w-40'>{request.reason}</td>
+                  <td className='py-4 px-4 min-w-[100px] w-[100px] max-w-[100px]'>
                     <span
                       className={`grid items-center max-w-[150px] p-1 justify-center font-sans text-xs font-bold 
                       ${request?.requestStatus?.statusName === 'Assigned' ? 'text-gray-900' : 'text-white'} 
@@ -505,8 +505,8 @@ export default function ArchivedRequests() {
                       {request?.requestStatus?.statusName}
                     </span>
                   </td>
-                  <td className=''>
-                    <div className='flex items-center justify-evenly'>
+                  <td className='min-w-[100px] w-[100px] max-w-[100px]'>
+                    <div className='flex items-center justify-center gap-4'>
                       <Link
                         to={`/client/request/${request.id}`}
                         className='items-center px-5 py-2 text-sm font-medium text-center text-white bg-sky-500 hover:bg-sky-600 rounded-lg focus:ring-4 focus:ring-primary-200'
