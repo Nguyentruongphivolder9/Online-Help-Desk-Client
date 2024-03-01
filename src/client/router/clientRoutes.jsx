@@ -16,6 +16,7 @@ import { Outlet } from 'react-router-dom'
 import MessageSvg from '@/common/components/MessageSvg'
 import Contact from '../pages/Contact'
 import AccountInfo from '@/admin/pages/AccountInfo'
+import Header from '@/common/components/Header'
 
 const mainClientLayout = (children) => <MainClientLayout>{children}</MainClientLayout>
 const clientRoutes = [
@@ -70,9 +71,10 @@ const clientRoutes = [
   {
     path: '/messages',
     element: (
-      <MainClientLayout>
+      <>
+        <Header></Header>
         <ChatLayout></ChatLayout>
-      </MainClientLayout>
+      </>
     ),
     children: [
       {
