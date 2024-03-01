@@ -23,7 +23,7 @@ export default function ManagerAccount() {
   }
 
   if (searchParamsObjectState.limit === undefined) {
-    searchParamsObjectState.limit = 2
+    searchParamsObjectState.limit = 10
   }
 
   const { data: accountResponse } = useQuery({
@@ -295,7 +295,7 @@ export default function ManagerAccount() {
             className={`btn min-h-9 h-9 border border-solid border-gray-300 bg-slate-100 focus:border-gray-800 focus:bg-sky-200 hover:bg-sky-200 text-gray-500 hover:text-gray-700 focus:text-gray-700 `}
           // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
           >
-            Show
+            {searchParamsObjectState.limit} items
             <svg
               xmlns='http://www.w3.org/2000/svg'
               fill='none'
@@ -314,22 +314,33 @@ export default function ManagerAccount() {
           <ul tabIndex={0} className='dropdown-content z-[1] menu p-2 shadow  bg-slate-100 rounded-box w-40 text-black'>
             <li>
               <div
-                className='border border-white focus:border-sky-300 hover:bg-sky-200'
-                onClick={() => addParams([{ limit: 5 }])}
+                className={`border focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.limit == 10 ? 'border-sky-300 bg-sky-200' : 'border-white'}`}
+                onClick={() => addParams([{ limit: 10 }])}
               >
-                5 items
+                10 items
               </div>
             </li>
             <li>
               <div
-                onClick={() => addParams([{ limit: 7 }])}
-                className='focus:border-sky-300 hover:bg-sky-200'
-              >7 items</div>
+                className={`border focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.limit == 15 ? 'border-sky-300 bg-sky-200' : 'border-white'}`}
+                onClick={() => addParams([{ limit: 15 }])}
+              >
+                15 items
+              </div>
+            </li>
+            <li>
+              <div
+                onClick={() => addParams([{ limit: 20 }])}
+                className={`border focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.limit == 20 ? 'border-sky-300 bg-sky-200' : 'border-white'}`}
+              >20 items</div>
             </li>
 
             <li>
-              {/* <div onClick={() => addParams([{ limit: 9 }])}>Show 9</div> */}
-              <div onClick={() => addParams([{ limit: 9 }])} className='focus:border-sky-300 hover:bg-sky-200'>9 items</div>
+              <div
+                onClick={() => addParams([{ limit: 30 }])}
+                className={`border focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.limit == 30 ? 'border-sky-300 bg-sky-200' : 'border-white'}`}>
+                30 items
+              </div>
             </li>
           </ul>
         </div>
