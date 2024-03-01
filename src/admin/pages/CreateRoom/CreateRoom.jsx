@@ -302,7 +302,7 @@ export default function CreateRoom() {
                     <td
                       scope='row'
                       className='px-6 py-4 font-bold text-center '
-                      style={{ color: item.roomStatus == 'True' ? 'green' : 'brown' }}
+                      style={{ color: item.roomStatus == true ? 'green' : 'brown' }}
                     >
                       {item.roomStatus == 'True' ? 'Active' : 'Inactive'}
                     </td>

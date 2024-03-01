@@ -216,7 +216,7 @@ export default function CreateAccount() {
         } else if (value.length > 200) {
           error = 'Does not exceed 200 characters';
         } else if (value.length < 3) {
-          error = 'Does not exceed 200 characters';
+          error = 'Can\'t be less than 3 characters';
         } else {
           error = '';
         }
@@ -340,6 +340,7 @@ export default function CreateAccount() {
             setIsLoading(false);
             const result = response.data
             if (result.isSuccess) {
+              navigate('/admin');
               toast.success(`${result.statusMessage}`, {
                 position: "top-right",
                 autoClose: 3000,
@@ -350,9 +351,6 @@ export default function CreateAccount() {
                 progress: undefined,
                 theme: "colored"
               });
-              setTimeout(() => {
-                navigate('/admin');
-              }, 3000);
             } else {
               toast.error(`${result.statusMessage}`, {
                 position: "top-right",

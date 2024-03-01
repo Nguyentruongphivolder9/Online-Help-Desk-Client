@@ -110,6 +110,10 @@ export default function AddRequest() {
     return errorsForField.map((error) => error.description)
   }
 
+  if (departmentQuery) {
+    console.log(departmentQuery.data?.data?.data);
+  }
+
   return (
     <section className='mt-16'>
       <div className='py-8 px-4 mx-auto max-w-2xl lg:py-16'>
@@ -128,9 +132,11 @@ export default function AddRequest() {
               >
                 <option value=''>Select Department</option>
                 {departmentQuery.data?.data?.data.map((department) => (
-                  <option key={department.id} value={department.id}>
-                    {department.departmentName}
-                  </option>
+                  (department.statusDepartment == true && (
+                    <option key={department.id} value={department.id}>
+                      {department.departmentName}
+                    </option>
+                  ))
                 ))}
               </select>
               <div className='text-red-500 text-sm min-h-5'>{departmentError}</div>
@@ -151,9 +157,11 @@ export default function AddRequest() {
                 <option value=''>Select Room</option>
                 {selectedDepartment &&
                   selectedDepartment.rooms.map((room) => (
-                    <option key={room.id} value={room.id}>
-                      {room.roomNumber}
-                    </option>
+                    (room.roomStatus == true && (
+                      <option key={room.id} value={room.id}>
+                        {room.roomNumber}
+                      </option>
+                    ))
                   ))}
               </select>
               <div className='text-red-500 text-sm'>
