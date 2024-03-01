@@ -57,6 +57,17 @@ export default function CreateDepartments() {
               progress: undefined,
               theme: 'colored'
             })
+          } else if (result.isFailure) {
+            toast.error(`${result.validationsErrors[0].description}`, {
+              position: 'top-right',
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'colored'
+            })
           } else {
             toast.error(`${result.statusMessage}`, {
               position: 'top-right',
@@ -70,6 +81,17 @@ export default function CreateDepartments() {
             })
           }
         }
+      })
+    } else {
+      toast.error(`Department Name can not blank or empty!!`, {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored'
       })
     }
   }
