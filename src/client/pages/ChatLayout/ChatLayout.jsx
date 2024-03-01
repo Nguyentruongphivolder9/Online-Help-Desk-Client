@@ -20,7 +20,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, Outlet, Route, Routes } from 'react-router-dom'
 
 export default function ChatLayout() {
-  // const { accountId, isLoading } = useAuthRedirect('End-Users')
+  const { accountId, isLoading } = useAuthRedirect('End-Users')
   const { id: accountUserId, roleTypes } = useGetInfoFromJWT()
   const queryClient = useQueryClient()
   const [connect, setConnection] = useState()
@@ -41,21 +41,18 @@ export default function ChatLayout() {
 
   const requestsQueryRelateToUser = useQuery({
     queryKey: ['requestsInChatLayout'],
-    queryFn: async () => await getRequests({ page: 1, limit: 10 }),
-    placeholderData: keepPreviousData
+    queryFn: async () => await getRequests({ page: 1, limit: 10 })
   })
 
   const requestsSearchQuery = useQuery({
     queryKey: ['requestsInChatLayoutSearch', debouncedValue],
     queryFn: async () => await getRequests({ searchTerm: debouncedValue, page: 1, limit: 10 }),
-    placeholderData: keepPreviousData,
     enabled: debouncedValue != ''
   })
 
   const listNotifiRemarkQueries = useQuery({
     queryKey: ['listNotifiRemarkQueries'],
-    queryFn: () => getListNotifiRemarkByAccountId(),
-    placeholderData: keepPreviousData
+    queryFn: async () => await getListNotifiRemarkByAccountId()
   })
 
   const UpdateUnwatchsSeenOnNotifiRemarkMutation = useMutation({
@@ -87,8 +84,6 @@ export default function ChatLayout() {
     // }
   }, [connect, listNotifiRemarkQueries.isSuccess, listNotifiRemarkQueries.data])
 
-  // console.log(listNotifiRemark)
-
   useEffect(() => {
     const connectHub = async () => {
       try {
@@ -103,7 +98,7 @@ export default function ChatLayout() {
         connect.on('ReceiveNotificationRemark', (message) => {
           const parseMessageFromServer = JSON.parse(message)
           const notifiRelateToAccount = parseMessageFromServer.find((item) => {
-            return item.accountUserId == accountUserId
+            return item.accountId == accountId
           })
           setListNotifiRemark((prev) => {
             const existingIndex = prev.findIndex((existingItem) => existingItem.id === notifiRelateToAccount.id)
@@ -116,21 +111,22 @@ export default function ChatLayout() {
               return [...prev, notifiRelateToAccount]
             }
           })
+          queryClient.invalidateQueries({ queryKey: ['requestsInChatLayout'] })
         })
 
         await connect.start()
-        await connect.invoke('JoinToMultipleRoom', accountUserId)
+        await connect.invoke('JoinToMultipleRoom', accountId)
       } catch (error) {
         console.log(error)
       }
     }
-    if (accountUserId) {
+    if (accountId) {
       connectHub()
     }
-    queryClient.invalidateQueries({ queryKey: ['listNotifiRemarkQueries'] })
-  }, [accountUserId])
+    // queryClient.invalidateQueries({ queryKey: ['listNotifiRemarkQueries'] })
+  }, [accountId])
 
-  const joinSpecificChatRoom = async (requestId, username, remarkId) => {
+  const joinSpecificChatRoom = async (requestId, username, notiRemarkId) => {
     if (connect != undefined || connect != null) {
       connect.stop()
     }
@@ -158,7 +154,7 @@ export default function ChatLayout() {
 
       setInfoConnectState((prev) => ({ ...prev, requestId, username, connect }))
       setConnection((prev) => connect)
-      handleUpdateUnwatchsSeenOnNotifiRemark({ id: remarkId })
+      handleUpdateUnwatchsSeenOnNotifiRemark({ id: notiRemarkId })
     } catch (error) {
       console.log(error)
     }
@@ -216,6 +212,7 @@ export default function ChatLayout() {
                     className='peer h-full w-full outline-none text-sm text-gray-700 pr-2 bg-slate-200'
                     type='text'
                     id='search'
+                    value={searchValue}
                     placeholder='Search something..'
                     onChange={handleSearchChange}
                     onFocus={() => {

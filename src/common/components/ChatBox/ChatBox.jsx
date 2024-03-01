@@ -30,8 +30,7 @@ export default function ChatBox() {
 
   const listRemarkRequestId = useQuery({
     queryKey: ['remarkByRequestId', requestIdState],
-    queryFn: async () => await getRemarksByRequestId(requestIdState),
-    placeholderData: keepPreviousData
+    queryFn: async () => await getRemarksByRequestId(requestIdState)
   })
 
   const requestbyIdQuery = useQuery({
@@ -58,8 +57,9 @@ export default function ChatBox() {
     if (isObjectEmpty(infoConnectState) && requestbyIdQuery.isSuccess) {
       if (infoConnectState.connect != undefined || infoConnectState.connect != null) {
         connect.stop()
+        console.log('connection stop')
       }
-      console.log('Hello- ', infoConnectState)
+
       if (roleTypes == 'End-Users') {
         joinSpecificChatRoom(requestbyIdQuery?.data?.data?.data.id, requestbyIdQuery?.data?.data?.data.account.fullName)
       } else if (roleTypes == 'Assignees') {
@@ -94,6 +94,8 @@ export default function ChatBox() {
         console.log(data)
         if (!data?.data.validationsErrors && !data?.data?.error) {
           setMessageObjState(initialMessageObjState)
+          queryClient.invalidateQueries({ queryKey: ['requestsInChatLayout'] })
+          queryClient.invalidateQueries({ queryKey: ['getRequestRelatetoAssigneeQuery'] })
         } else if (data?.data.validationsErrors && data?.data?.error.code === 'ValidationError') {
           setErrorMessageState(data?.data?.validationsErrors)
           getErrorForField('Comment').map((error, index) => toast.error(error))
@@ -105,7 +107,7 @@ export default function ChatBox() {
   return (
     <div className='h-full w-full p-[10px] flex flex-col relative overflow-hidden border-x border-x-gray-300'>
       <div className='flex-3 '>
-        <div className='flex justify-between items-center text-lg py-1 mb-8 border-b-2 border-gray-200'>
+        <div className='flex justify-between items-center text-lg pb-[10px] mb-8 border-b-2 border-gray-200'>
           <p className='font-semibold'>
             {requestbyIdQuery.isSuccess
               ? `Chatting on - Department: ${requestbyIdQuery?.data?.data?.data.room.departments.departmentName} - Room: ${requestbyIdQuery?.data?.data?.data.room.roomNumber}`

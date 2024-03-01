@@ -23,22 +23,22 @@ export default function AssigneesHome({ children }) {
   const [infoConnectState, setInfoConnectState] = useState({})
   const [connect, setConnection] = useState()
   const [listNotifiRemark, setListNotifiRemark] = useState([])
-  const [searchResult, setSearchResult] = useState([]);
-  const [searchValue, setSearchValue] = useState('');
-  const inputRef = useRef();
+  const [searchResult, setSearchResult] = useState([])
+  const [searchValue, setSearchValue] = useState('')
+  const inputRef = useRef()
 
-  const debouncedValue = useDebounce(searchValue, 500);
+  const debouncedValue = useDebounce(searchValue, 500)
 
   const handleSearchChange = (e) => {
-    let value;
+    let value
     if (e.target.value.trim().length < 1) {
-      value = e.target.value.trim();
+      value = e.target.value.trim()
       setSearchResult([])
     } else {
-      value = e.target.value.replace(/\s\s+/g, ' ');
+      value = e.target.value.replace(/\s\s+/g, ' ')
     }
 
-    setSearchValue(value);
+    setSearchValue(value)
   }
 
   const getRequestRelatetoAssigneeQuery = useQuery({
@@ -171,7 +171,11 @@ export default function AssigneesHome({ children }) {
   const { data: getSearchRequest } = useQuery({
     queryKey: ['getSearchRequestOfAssignee', debouncedValue],
     queryFn: async () => {
-      const data = await getAllRequestOfAssigneeProcessing(accountId, { searchTerm: debouncedValue, page: 1, limit: 10 })
+      const data = await getAllRequestOfAssigneeProcessing(accountId, {
+        searchTerm: debouncedValue,
+        page: 1,
+        limit: 10
+      })
       return data
     },
     enabled: debouncedValue != ''
@@ -184,9 +188,9 @@ export default function AssigneesHome({ children }) {
   }, [debouncedValue, getSearchRequest])
 
   const handleClear = () => {
-    setSearchValue('');
-    setSearchResult([]);
-    inputRef.current.focus();
+    setSearchValue('')
+    setSearchResult([])
+    inputRef.current.focus()
   }
 
   return (
@@ -195,7 +199,12 @@ export default function AssigneesHome({ children }) {
         <LoadingOverlay />
       ) : (
         <div>
-          <HeaderAdmin urlLogo='/admin/assignees' container='container' accountId={accountId} urlProfile={'/admin/assignees/myProfile/'} />
+          <HeaderAdmin
+            urlLogo='/admin/assignees'
+            container='container'
+            accountId={accountId}
+            urlProfile={'/admin/assignees/myProfile/'}
+          />
           <div className='flex flex-row w-full h-full fixed justify-center overflow-hidden bg-white pt-[72px]'>
             <div className='flex h-full flex-row w-full border border-x-gray-300'>
               <div className='h-full w-1/5 overflow-hidden'>
@@ -229,12 +238,16 @@ export default function AssigneesHome({ children }) {
                       }}
                     />
                     {!!searchValue && (
-                      <button
-                        className='absolute right-2'
-                        onClick={handleClear}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                      <button className='absolute right-2' onClick={handleClear}>
+                        <svg
+                          xmlns='http://www.w3.org/2000/svg'
+                          fill='none'
+                          viewBox='0 0 24 24'
+                          strokeWidth={1.5}
+                          stroke='currentColor'
+                          className='w-4 h-4'
+                        >
+                          <path strokeLinecap='round' strokeLinejoin='round' d='M6 18 18 6M6 6l12 12' />
                         </svg>
                       </button>
                     )}
@@ -279,22 +292,29 @@ export default function AssigneesHome({ children }) {
                       </div>
                       <button
                         onClick={() => {
-                          setSearchValue('');
-                          setSearchResult([]);
+                          setSearchValue('')
+                          setSearchResult([])
                           setIsShowResultSearch(false)
                         }}
                         className='flex flex-row items-center gap-1 py-1 px-3 border rounded-md border-gray-600 text-xs'
                       >
                         <span>Closed</span>
                         <span>
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            strokeWidth={1.5}
+                            stroke='currentColor'
+                            className='w-4 h-4'
+                          >
+                            <path strokeLinecap='round' strokeLinejoin='round' d='M6 18 18 6M6 6l12 12' />
                           </svg>
                         </span>
                       </button>
                     </div>
 
-                    {(isShowResultSearch && searchResult.length > 0) ? (
+                    {isShowResultSearch && searchResult.length > 0 ? (
                       <LobbyChat
                         dataItem={searchResult}
                         joinSpecificChatRoom={joinSpecificChatRoom}
@@ -346,7 +366,7 @@ export default function AssigneesHome({ children }) {
 
               <div
                 id='main-content'
-                className='h-full w-3/5 p-[10px] overflow-y-scroll hide-scrollbar relative border-x border-x-gray-300'
+                className='h-full w-3/5 overflow-y-scroll hide-scrollbar relative border-x border-x-gray-300'
               >
                 <Outlet
                   context={[
@@ -362,63 +382,71 @@ export default function AssigneesHome({ children }) {
 
               <div className='relative text-gray-700 z-20 h-full top-0 flex lg:flex flex-shrink-0 flex-col w-1/5 transition-width duration-75'>
                 <div className='flex flex-col w-full h-full p-[10px] border-y border-solid'>
-                  <div className='p-[10px] border-b border-gray-300 text-lg font-semibold text-gray-600'>Statistics on the number of assigned tickets</div>
+                  <div className='p-[10px] border-b border-gray-300 text-lg font-semibold text-gray-600'>
+                    Statistics on the number of assigned tickets
+                  </div>
                   {getStatisticsRequest?.data?.data && (
                     <div className='w-full px-[5px]'>
-                      <Link to={'/admin/assignees?page=1&requestStatus='} className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-300 p-[10px] mb-[3px]'>
-                        <div className='text-sm w-2/3'>
-                          Total requests:
-                        </div>
+                      <Link
+                        to={'/admin/assignees?page=1&requestStatus='}
+                        className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-300 p-[10px] mb-[3px]'
+                      >
+                        <div className='text-sm w-2/3'>Total requests:</div>
                         <div className='w-1/3'>
                           <div className='bg-[#5a98e4] flex text-sm w-10 h-10 !rounded-full border border-solid items-center justify-center'>
                             {getStatisticsRequest?.data?.data.all}
                           </div>
                         </div>
                       </Link>
-                      <Link to={'/admin/assignees?page=1&requestStatus=Assigned'} className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'>
-                        <div className='text-sm w-2/3'>
-                          Status Assigned:
-                        </div>
+                      <Link
+                        to={'/admin/assignees?page=1&requestStatus=Assigned'}
+                        className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'
+                      >
+                        <div className='text-sm w-2/3'>Status Assigned:</div>
                         <div className='w-1/3'>
                           <div className='bg-[#FFFF00] flex text-sm w-10 h-10 !rounded-full border border-solid items-center justify-center'>
                             {getStatisticsRequest?.data?.data.assigned}
                           </div>
                         </div>
                       </Link>
-                      <Link to={'/admin/assignees?page=1&requestStatus=Work+in+progress'} className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'>
-                        <div className='text-sm w-2/3'>
-                          Status Work In Process:
-                        </div>
+                      <Link
+                        to={'/admin/assignees?page=1&requestStatus=Work+in+progress'}
+                        className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'
+                      >
+                        <div className='text-sm w-2/3'>Status Work In Process:</div>
                         <div className='w-1/3'>
                           <div className='bg-[#FF6600] flex text-sm w-10 h-10 !rounded-full border border-solid items-center justify-center'>
                             {getStatisticsRequest?.data?.data.workInProgress}
                           </div>
                         </div>
                       </Link>
-                      <Link to={'/admin/assignees?page=1&requestStatus=Need+more+info'} className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'>
-                        <div className='text-sm w-2/3'>
-                          Status Need more info:
-                        </div>
+                      <Link
+                        to={'/admin/assignees?page=1&requestStatus=Need+more+info'}
+                        className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'
+                      >
+                        <div className='text-sm w-2/3'>Status Need more info:</div>
                         <div className='w-1/3'>
                           <div className='bg-[#FF0033] flex text-sm w-10 h-10 !rounded-full border border-solid items-center justify-center'>
                             {getStatisticsRequest?.data?.data.needMoreInfo}
                           </div>
                         </div>
                       </Link>
-                      <Link to={'/admin/assignees?page=1&requestStatus=Rejected'} className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'>
-                        <div className='text-sm w-2/3'>
-                          Status Rejected:
-                        </div>
+                      <Link
+                        to={'/admin/assignees?page=1&requestStatus=Rejected'}
+                        className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'
+                      >
+                        <div className='text-sm w-2/3'>Status Rejected:</div>
                         <div className='w-1/3'>
                           <div className='bg-[#FF0000] flex text-sm w-10 h-10 !rounded-full border border-solid items-center justify-center'>
                             {getStatisticsRequest?.data?.data.rejected}
                           </div>
                         </div>
                       </Link>
-                      <Link to={'/admin/assignees?page=1&requestStatus=Completed'} className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'>
-                        <div className='text-sm w-2/3'>
-                          Status Completed:
-                        </div>
+                      <Link
+                        to={'/admin/assignees?page=1&requestStatus=Completed'}
+                        className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'
+                      >
+                        <div className='text-sm w-2/3'>Status Completed:</div>
                         <div className='w-1/3'>
                           <div className='bg-[#33FF33] flex text-sm w-10 h-10 !rounded-full border border-solid items-center justify-center'>
                             {getStatisticsRequest?.data?.data.complete}
@@ -431,9 +459,8 @@ export default function AssigneesHome({ children }) {
               </div>
             </div>
           </div>
-        </div >
-      )
-      }
+        </div>
+      )}
     </>
   )
 }
