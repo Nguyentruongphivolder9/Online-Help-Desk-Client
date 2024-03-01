@@ -76,7 +76,10 @@ export default function Header() {
           <div tabIndex={0} className='dropdown-content w-44 h-24 px-5 py-3 bg-gray-100 rounded-lg shadow border mt-4'>
             <ul className='space-y-3 text-gray-700'>
               <li className='font-medium'>
-                <button className='flex items-center transform transition-colors duration-200 border-r-4 border-transparent '>
+                <Link
+                  to={`/account/info/members/${accoundIdJWT}`}
+                  className='flex items-center transform transition-colors duration-200 border-r-4 border-transparent '
+                >
                   <div className='mr-3'>
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
@@ -94,7 +97,7 @@ export default function Header() {
                     </svg>
                   </div>
                   Account
-                </button>
+                </Link>
               </li>
               <li className='font-medium '>
                 <button

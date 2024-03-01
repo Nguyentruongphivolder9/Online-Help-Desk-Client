@@ -15,7 +15,7 @@ export default function ListRequest() {
   }
 
   if (searchParamsObjectState.limit === undefined) {
-    searchParamsObjectState.limit = 2
+    searchParamsObjectState.limit = 5
   }
   const requestsQuery = useQuery({
     queryKey: ['requests', searchParamsObjectState],

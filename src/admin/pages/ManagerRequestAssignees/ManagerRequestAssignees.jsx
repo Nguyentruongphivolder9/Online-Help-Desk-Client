@@ -8,13 +8,12 @@ import useGetInfoFromJWT from '@/hooks/useGetInfoFromJWT'
 import { calculateTotalPages } from '@/utils/calculateTotalPages'
 import { useConvertDate } from '@/hooks/useConvertDate'
 
-
 export default function ManagerRequestAssignees() {
-  const [rooms, setRooms] = useState([]);
+  const [rooms, setRooms] = useState([])
   const [searchParams, setSearchParams] = useSearchParams()
   const [searchParamsObjectState, setSearchParamsObjectState] = useState(Object.fromEntries([...searchParams]))
-  const { accountId } = useGetInfoFromJWT();
-  const navigate = useNavigate();
+  const { accountId } = useGetInfoFromJWT()
+  const navigate = useNavigate()
 
   if (searchParamsObjectState.page === undefined) {
     searchParamsObjectState.page = 1
@@ -32,10 +31,10 @@ export default function ManagerRequestAssignees() {
   const { data: requestOfAssignees } = useQuery({
     queryKey: ['requestOfAssignees', searchParamsObjectState],
     queryFn: async () => {
-      const data = await getAllRequestOfAssigneeProcessing(accountId, searchParamsObjectState,)
+      const data = await getAllRequestOfAssigneeProcessing(accountId, searchParamsObjectState)
       return data
     }
-  });
+  })
 
   const { data: departmentQuery } = useQuery({
     queryKey: ['departments'],
@@ -43,11 +42,11 @@ export default function ManagerRequestAssignees() {
       const data = await getDepartments()
       return data
     }
-  });
+  })
 
-  const totalRequestCount = Number(requestOfAssignees?.data?.data.totalCount) || 0;
-  const limit = Number(requestOfAssignees?.data?.data.limit);
-  const totalPage = calculateTotalPages(totalRequestCount, limit);
+  const totalRequestCount = Number(requestOfAssignees?.data?.data.totalCount) || 0
+  const limit = Number(requestOfAssignees?.data?.data.limit)
+  const totalPage = calculateTotalPages(totalRequestCount, limit)
 
   const addParams = (arrayObSearchParams) => {
     setSearchParams((searchParams) => {
@@ -97,14 +96,10 @@ export default function ManagerRequestAssignees() {
   }
 
   return (
-    <div className='w-full h-full'>
+    <div className='w-full h-full p-[15px]'>
       <div className=''>
-        <div className='text-xl font-semibold text-gray-800'>
-          Request management
-        </div>
-        <div className='text-sm text-gray-500'>
-          This is a list of assigned requests management board.
-        </div>
+        <div className='text-xl font-semibold text-gray-800'>Request management</div>
+        <div className='text-sm text-gray-500'>This is a list of assigned requests management board.</div>
       </div>
 
       <div className='flex items-center justify-between mt-4'>
@@ -139,14 +134,24 @@ export default function ManagerRequestAssignees() {
               tabIndex={0}
               role='button'
               className={`btn border border-gray-300 min-h-8 h-8 w-44 flex justify-between bg-slate-100 focus:border-sky-300 hover:bg-sky-200 text-gray-500 hover:text-gray-700 `}
-            // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
+              // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
             >
-              {searchParamsObjectState.severalLevel ? searchParamsObjectState.severalLevel : "Several Level"}
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+              {searchParamsObjectState.severalLevel ? searchParamsObjectState.severalLevel : 'Several Level'}
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                fill='none'
+                viewBox='0 0 24 24'
+                strokeWidth={1.5}
+                stroke='currentColor'
+                className='w-4 h-4'
+              >
+                <path strokeLinecap='round' strokeLinejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' />
               </svg>
             </div>
-            <ul tabIndex={0} className='dropdown-content z-[1] menu p-2 shadow  bg-slate-100 rounded-box w-40 text-black'>
+            <ul
+              tabIndex={0}
+              className='dropdown-content z-[1] menu p-2 shadow  bg-slate-100 rounded-box w-40 text-black'
+            >
               <li>
                 <div
                   className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.severalLevel ? '' : 'border-sky-300 bg-sky-200'}`}
@@ -157,7 +162,7 @@ export default function ManagerRequestAssignees() {
               </li>
               <li>
                 <div
-                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.severalLevel === "Normal" ? 'border-sky-300 bg-sky-200' : ''}`}
+                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.severalLevel === 'Normal' ? 'border-sky-300 bg-sky-200' : ''}`}
                   onClick={() => addParams([{ severalLevel: 'Normal' }])}
                 >
                   Normal
@@ -165,7 +170,7 @@ export default function ManagerRequestAssignees() {
               </li>
               <li>
                 <div
-                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.severalLevel === "Important" ? 'border-sky-300 bg-sky-200' : ''}`}
+                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.severalLevel === 'Important' ? 'border-sky-300 bg-sky-200' : ''}`}
                   onClick={() => addParams([{ severalLevel: 'Important' }])}
                 >
                   Important
@@ -173,7 +178,7 @@ export default function ManagerRequestAssignees() {
               </li>
               <li>
                 <div
-                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.severalLevel === "Urgent" ? 'border-sky-300 bg-sky-200' : ''}`}
+                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.severalLevel === 'Urgent' ? 'border-sky-300 bg-sky-200' : ''}`}
                   onClick={() => addParams([{ severalLevel: 'Urgent' }])}
                 >
                   Urgent
@@ -181,7 +186,7 @@ export default function ManagerRequestAssignees() {
               </li>
               <li>
                 <div
-                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.severalLevel === "Flexible" ? 'border-sky-300 bg-sky-200' : ''}`}
+                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.severalLevel === 'Flexible' ? 'border-sky-300 bg-sky-200' : ''}`}
                   onClick={() => addParams([{ severalLevel: 'Flexible' }])}
                 >
                   Flexible
@@ -194,15 +199,25 @@ export default function ManagerRequestAssignees() {
               tabIndex={0}
               role='button'
               className={`btn border border-gray-300 min-h-8 h-8 w-44 flex justify-between bg-slate-100 focus:border-sky-300 hover:bg-sky-200 text-gray-500 hover:text-gray-700 `}
-            // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
+              // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
             >
-              {searchParamsObjectState.requestStatus ? searchParamsObjectState.requestStatus : "Request Status"}
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+              {searchParamsObjectState.requestStatus ? searchParamsObjectState.requestStatus : 'Request Status'}
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                fill='none'
+                viewBox='0 0 24 24'
+                strokeWidth={1.5}
+                stroke='currentColor'
+                className='w-4 h-4'
+              >
+                <path strokeLinecap='round' strokeLinejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' />
               </svg>
             </div>
 
-            <ul tabIndex={0} className='dropdown-content z-[1] menu p-2 shadow  bg-slate-100 rounded-box w-40 text-black'>
+            <ul
+              tabIndex={0}
+              className='dropdown-content z-[1] menu p-2 shadow  bg-slate-100 rounded-box w-40 text-black'
+            >
               <li>
                 <div
                   className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.requestStatus ? '' : 'border-sky-300 bg-sky-200'}`}
@@ -213,7 +228,7 @@ export default function ManagerRequestAssignees() {
               </li>
               <li>
                 <div
-                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.requestStatus === "Assigned" ? 'border-sky-300 bg-sky-200' : ''}`}
+                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.requestStatus === 'Assigned' ? 'border-sky-300 bg-sky-200' : ''}`}
                   onClick={() => addParams([{ requestStatus: 'Assigned' }])}
                 >
                   Assigned
@@ -221,7 +236,7 @@ export default function ManagerRequestAssignees() {
               </li>
               <li>
                 <div
-                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.requestStatus === "Work in progress" ? 'border-sky-300 bg-sky-200' : ''}`}
+                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.requestStatus === 'Work in progress' ? 'border-sky-300 bg-sky-200' : ''}`}
                   onClick={() => addParams([{ requestStatus: 'Work in progress' }])}
                 >
                   Work in progress
@@ -229,7 +244,7 @@ export default function ManagerRequestAssignees() {
               </li>
               <li>
                 <div
-                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.requestStatus === "Need more info" ? 'border-sky-300 bg-sky-200' : ''}`}
+                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.requestStatus === 'Need more info' ? 'border-sky-300 bg-sky-200' : ''}`}
                   onClick={() => addParams([{ requestStatus: 'Need more info' }])}
                 >
                   Need more info
@@ -237,7 +252,7 @@ export default function ManagerRequestAssignees() {
               </li>
               <li>
                 <div
-                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.requestStatus === "Rejected" ? 'border-sky-300 bg-sky-200' : ''}`}
+                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.requestStatus === 'Rejected' ? 'border-sky-300 bg-sky-200' : ''}`}
                   onClick={() => addParams([{ requestStatus: 'Rejected' }])}
                 >
                   Rejected
@@ -245,7 +260,7 @@ export default function ManagerRequestAssignees() {
               </li>
               <li>
                 <div
-                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.requestStatus === "Completed" ? 'border-sky-300 bg-sky-200' : ''}`}
+                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.requestStatus === 'Completed' ? 'border-sky-300 bg-sky-200' : ''}`}
                   onClick={() => addParams([{ requestStatus: 'Completed' }])}
                 >
                   Completed
@@ -253,7 +268,7 @@ export default function ManagerRequestAssignees() {
               </li>
               <li>
                 <div
-                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.requestStatus === "Closed" ? 'border-sky-300 bg-sky-200' : ''}`}
+                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.requestStatus === 'Closed' ? 'border-sky-300 bg-sky-200' : ''}`}
                   onClick={() => addParams([{ requestStatus: 'Closed' }])}
                 >
                   Closed
@@ -262,7 +277,6 @@ export default function ManagerRequestAssignees() {
             </ul>
           </div>
         </div>
-
       </div>
 
       <div className='flex items-center justify-between mt-2'>
@@ -272,7 +286,7 @@ export default function ManagerRequestAssignees() {
               tabIndex={0}
               role='button'
               className={`btn border border-gray-300 min-h-8 h-8 bg-slate-100 focus:border-sky-300 hover:bg-sky-200 text-gray-500 hover:text-gray-700 `}
-            // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
+              // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
             >
               {searchParamsObjectState.limit} items
               <svg
@@ -290,10 +304,13 @@ export default function ManagerRequestAssignees() {
                 />
               </svg>
             </div>
-            <ul tabIndex={0} className='dropdown-content z-[1] menu p-2 shadow  bg-slate-100 rounded-box w-40 text-black'>
+            <ul
+              tabIndex={0}
+              className='dropdown-content z-[1] menu p-2 shadow  bg-slate-100 rounded-box w-40 text-black'
+            >
               <li>
                 <div
-                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.limit == "5" ? 'border-sky-300 bg-sky-200' : ''}`}
+                  className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.limit == '5' ? 'border-sky-300 bg-sky-200' : ''}`}
                   onClick={() => addParams([{ limit: 5 }])}
                 >
                   5 items
@@ -335,14 +352,24 @@ export default function ManagerRequestAssignees() {
               tabIndex={0}
               role='button'
               className={`btn border border-gray-300 min-h-8 h-8 w-44 flex justify-between bg-slate-100 focus:border-sky-300 hover:bg-sky-200 text-gray-500 hover:text-gray-700 `}
-            // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
+              // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
             >
-              {searchParamsObjectState.department ? searchParamsObjectState.department : "Departments"}
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+              {searchParamsObjectState.department ? searchParamsObjectState.department : 'Departments'}
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                fill='none'
+                viewBox='0 0 24 24'
+                strokeWidth={1.5}
+                stroke='currentColor'
+                className='w-4 h-4'
+              >
+                <path strokeLinecap='round' strokeLinejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' />
               </svg>
             </div>
-            <ul tabIndex={0} className='dropdown-content z-[1] menu p-2 shadow  bg-slate-100 rounded-box w-40 text-black'>
+            <ul
+              tabIndex={0}
+              className='dropdown-content z-[1] menu p-2 shadow  bg-slate-100 rounded-box w-40 text-black'
+            >
               <li>
                 <div
                   className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.department ? '' : 'border-sky-300 bg-sky-200'}`}
@@ -371,15 +398,25 @@ export default function ManagerRequestAssignees() {
               tabIndex={0}
               role='button'
               className={`btn border border-gray-300 min-h-8 h-8 w-44 flex justify-between bg-slate-100 focus:border-sky-300 hover:bg-sky-200 text-gray-500 hover:text-gray-700 `}
-            // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
+              // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
             >
-              {searchParamsObjectState.room ? searchParamsObjectState.room : "Rooms"}
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+              {searchParamsObjectState.room ? searchParamsObjectState.room : 'Rooms'}
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                fill='none'
+                viewBox='0 0 24 24'
+                strokeWidth={1.5}
+                stroke='currentColor'
+                className='w-4 h-4'
+              >
+                <path strokeLinecap='round' strokeLinejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' />
               </svg>
             </div>
 
-            <ul tabIndex={0} className='dropdown-content z-[1] menu p-2 shadow  bg-slate-100 rounded-box w-40 text-black'>
+            <ul
+              tabIndex={0}
+              className='dropdown-content z-[1] menu p-2 shadow  bg-slate-100 rounded-box w-40 text-black'
+            >
               {rooms.map((room) => (
                 <li key={room.id}>
                   <div
@@ -393,7 +430,6 @@ export default function ManagerRequestAssignees() {
             </ul>
           </div>
         </div>
-
       </div>
 
       <div>
@@ -441,7 +477,11 @@ export default function ManagerRequestAssignees() {
             <tbody>
               {requestOfAssignees &&
                 requestOfAssignees?.data?.data.items.map((item) => (
-                  <tr onClick={() => navigate(`/admin/assignees/requests/${item.id}`)} key={item.id} className='hover:bg-sky-50 hover:cursor-pointer'>
+                  <tr
+                    onClick={() => navigate(`/admin/assignees/requests/${item.id}`)}
+                    key={item.id}
+                    className='hover:bg-sky-50 hover:cursor-pointer'
+                  >
                     <td className='p-4 border-b border-blue-gray-50'>
                       <div className='flex items-center gap-3 w-44'>
                         {item.account.avatarPhoto != null ? (
@@ -451,9 +491,20 @@ export default function ManagerRequestAssignees() {
                             className='relative inline-block h-9 w-9 !rounded-full object-cover object-center'
                           />
                         ) : (
-                          <div className="relative flex h-9 w-9 bg-gray-200 rounded-full object-cover object-center shadow justify-center items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-gray-400">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                          <div className='relative flex h-9 w-9 bg-gray-200 rounded-full object-cover object-center shadow justify-center items-center'>
+                            <svg
+                              xmlns='http://www.w3.org/2000/svg'
+                              fill='none'
+                              viewBox='0 0 24 24'
+                              strokeWidth={1.5}
+                              stroke='currentColor'
+                              className='w-6 h-6 text-gray-400'
+                            >
+                              <path
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                d='M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z'
+                              />
                             </svg>
                           </div>
                         )}
@@ -484,7 +535,9 @@ export default function ManagerRequestAssignees() {
                     </td>
                     <td className='p-4 border-b border-blue-gray-50'>
                       <div className='w-max'>
-                        <div className={`relative grid items-center px-2 py-1 font-sans text-xs font-bold text-green-900 uppercase rounded-md select-none whitespace-nowrap bg-[${item.requestStatus.colorCode}]`}>
+                        <div
+                          className={`relative grid items-center px-2 py-1 font-sans text-xs font-bold text-green-900 uppercase rounded-md select-none whitespace-nowrap bg-[${item.requestStatus.colorCode}]`}
+                        >
                           <span className=''>{item.requestStatus.statusName}</span>
                         </div>
                       </div>
@@ -507,7 +560,8 @@ export default function ManagerRequestAssignees() {
             <div className='text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto'>
               Page
               <span className='font-semibold text-gray-700 '>
-                {' '}{searchParamsObjectState.page}/{totalPage}{' '}
+                {' '}
+                {searchParamsObjectState.page}/{totalPage}{' '}
               </span>
             </div>
             <div aria-label='Page navigation example'>
@@ -519,8 +573,19 @@ export default function ManagerRequestAssignees() {
                     onClick={() => addParams([{ page: 1 }])}
                     disabled={searchParamsObjectState.page == 1}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5" />
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      strokeWidth={1.5}
+                      stroke='currentColor'
+                      className='w-4 h-4'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5'
+                      />
                     </svg>
                   </Button>
                   <Button
@@ -565,10 +630,20 @@ export default function ManagerRequestAssignees() {
                     onClick={() => addParams([{ page: totalPage }])}
                     disabled={searchParamsObjectState.page == totalPage}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      strokeWidth={1.5}
+                      stroke='currentColor'
+                      className='w-4 h-4'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5'
+                      />
                     </svg>
-
                   </Button>
                 </div>
               )}

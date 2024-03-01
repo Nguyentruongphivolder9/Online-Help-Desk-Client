@@ -15,6 +15,7 @@ import CheckBox from '@/common/components/ChatBox'
 import { Outlet } from 'react-router-dom'
 import MessageSvg from '@/common/components/MessageSvg'
 import Contact from '../pages/Contact'
+import AccountInfo from '@/admin/pages/AccountInfo'
 
 const mainClientLayout = (children) => <MainClientLayout>{children}</MainClientLayout>
 const clientRoutes = [
@@ -87,6 +88,10 @@ const clientRoutes = [
   {
     path: '*',
     element: mainClientLayout(<NotFound />)
+  },
+  {
+    path: '/account/info/members/:id',
+    element: mainClientLayout(<AccountInfo isUser={true} />)
   }
 ]
 
