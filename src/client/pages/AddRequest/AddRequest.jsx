@@ -111,7 +111,7 @@ export default function AddRequest() {
   }
 
   if (departmentQuery) {
-    console.log(departmentQuery.data?.data?.data);
+    console.log(departmentQuery.data?.data?.data)
   }
 
   return (
@@ -131,13 +131,14 @@ export default function AddRequest() {
                 value={selectedDepartment ? selectedDepartment.id : ''}
               >
                 <option value=''>Select Department</option>
-                {departmentQuery.data?.data?.data.map((department) => (
-                  (department.statusDepartment == true && (
-                    <option key={department.id} value={department.id}>
-                      {department.departmentName}
-                    </option>
-                  ))
-                ))}
+                {departmentQuery.data?.data?.data.map(
+                  (department) =>
+                    department.statusDepartment == true && (
+                      <option key={department.id} value={department.id}>
+                        {department.departmentName}
+                      </option>
+                    )
+                )}
               </select>
               <div className='text-red-500 text-sm min-h-5'>{departmentError}</div>
             </div>
@@ -156,13 +157,14 @@ export default function AddRequest() {
               >
                 <option value=''>Select Room</option>
                 {selectedDepartment &&
-                  selectedDepartment.rooms.map((room) => (
-                    (room.roomStatus == true && (
-                      <option key={room.id} value={room.id}>
-                        {room.roomNumber}
-                      </option>
-                    ))
-                  ))}
+                  selectedDepartment.rooms.map(
+                    (room) =>
+                      room.roomStatus == true && (
+                        <option key={room.id} value={room.id}>
+                          {room.roomNumber}
+                        </option>
+                      )
+                  )}
               </select>
               <div className='text-red-500 text-sm'>
                 {errorState &&
