@@ -7,22 +7,6 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 export default function ItemRequest({ dataItem, joinSpecificChatRoom, roleTypes, notifiRemark, setListNotifiRemark }) {
   const navigate = useNavigate()
 
-  // const handleNavigateAndJoinRoom = (dataItem) => {
-  //   if (roleTypes == 'Assignees') {
-  //     joinSpecificChatRoom(dataItem.id, dataItem.processByAssignees[0].account.fullName)
-  //     handleUpdateUnwatchsSeenOnNotifiRemark({ id: notifiRemark.id })
-  //     navigate(`/admin/assignees/messages/${dataItem.id}`)
-  //   } else if (roleTypes == 'Facility-Heads') {
-  //     joinSpecificChatRoom(dataItem.id, 'Facility-heads')
-  //     handleUpdateUnwatchsSeenOnNotifiRemark({ id: notifiRemark.id })
-  //     navigate(`/admin/facility/messages/${dataItem.id}`)
-  //   } else {
-  //     joinSpecificChatRoom(dataItem.id, dataItem.account.fullName)
-  //     handleUpdateUnwatchsSeenOnNotifiRemark({ id: notifiRemark.id })
-  //     navigate(`/messages/${dataItem.id}`)
-  //   }
-  // }
-  console.log(notifiRemark)
   return (
     <NavLink
       to={roleTypes === 'Assignees' ? `/admin/assignees/requests/${dataItem.id}` : `/messages/${dataItem.id}`}
