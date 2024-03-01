@@ -11,11 +11,11 @@ export default function AdminHome({ children }) {
   return (
     <>
       {isLoading ? (
-        <LoadingOverlay opacity={1} />
+        <LoadingOverlay opacity={'opacity-100'} />
       ) : (
         <div>
           <HeaderAdmin urlLogo='/admin' accountId={accountId} urlProfile={'/admin/myProfile/'} />
-          <div className='flex overflow-hidden bg-white'>
+          <div className='flex overflow-hidden bg-white opa'>
             <aside
               id='sidebar'
               className='fixed z-20 h-full top-0 left-0 pt-16 flex lg:flex flex-shrink-0 flex-col w-64 transition-width duration-75'

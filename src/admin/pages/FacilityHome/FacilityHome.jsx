@@ -12,7 +12,7 @@ export default function FacilityHome({ children }) {
   return (
     <>
       {isLoading ? (
-        <LoadingOverlay opacity={1} />
+        <LoadingOverlay opacity={'opacity-100'} />
       ) : (
         <div>
           <HeaderAdmin urlLogo='/admin/assignees' container='container' accountId={accountId} urlProfile={'/admin/facility-header/myProfile/'} />
@@ -68,7 +68,7 @@ export default function FacilityHome({ children }) {
                               clipRule='evenodd'
                             />
                           </svg>
-                          <span className='ml-3 flex-1 whitespace-nowrap'>Request Of Assignee</span>
+                          <span className='ml-3 flex-1 whitespace-nowrap'>List Assignees</span>
                         </NavLink>
                       </li>
                       <div className='space-y-2 pt-2 w-full'>

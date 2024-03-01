@@ -6,46 +6,43 @@ import LobbyChat from '@/common/components/LobbyChat/LobbyChat'
 import SkeletonLoaderRequest from '@/common/components/SkeletonLoaderRequest'
 import { HubConnectionBuilder, LogLevel, HttpTransportType } from '@microsoft/signalr'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import useGetInfoFromJWT from '@/hooks/useGetInfoFromJWT'
-import { Outlet, useParams } from 'react-router-dom'
+// import useGetInfoFromJWT from '@/hooks/useGetInfoFromJWT'
+import { Link, Outlet, useParams } from 'react-router-dom'
 import { getAllRequestOfAssigneeProcessing } from '@/admin/apiEndpoints/dataRequest.api'
 import { UpdateUnwatchsSeenOnNotifiRemark, getListNotifiRemarkByAccountId } from '@/client/apiEndpoints/remark.api'
 import useDebounce from '@/hooks/useDebounce'
+import { getTotalRequestByAssignee } from '@/admin/apiEndpoints/dataAssignee.api'
 
 export default function AssigneesHome({ children }) {
   const queryClient = useQueryClient()
-  const { accountId, isLoading } = useAuthRedirect('Assignees')
-  const { id: accountAssigneeId, roleTypes } = useGetInfoFromJWT()
-  const [accountdIdState, setAccountdIdState] = useState(useAuthRedirect('Assignees'))
+  const { accountId, isLoading, roleTypes } = useAuthRedirect('Assignees')
+  // const { id: accountAssigneeId, roleTypes } = useGetInfoFromJWT()
   const { id } = useParams() //requestId
-  const [requestIdState, setRequestIdState] = useState(id)
-  const [showLobby, setShowLobby] = useState('Request')
   const [isShowResultSearch, setIsShowResultSearch] = useState(false)
   const [listRemarkState, setListRemarkState] = useState([])
   const [infoConnectState, setInfoConnectState] = useState({})
   const [connect, setConnection] = useState()
   const [listNotifiRemark, setListNotifiRemark] = useState([])
-  const [dateSearchState, setDateSearchState] = useState(null)
-  const [searchResult, setSearchResult] = useState([]);
-  const [searchValue, setSearchValue] = useState('');
-  const inputRef = useRef();
+  const [searchResult, setSearchResult] = useState([])
+  const [searchValue, setSearchValue] = useState('')
+  const inputRef = useRef()
 
-  const debouncedValue = useDebounce(searchValue, 500);
+  const debouncedValue = useDebounce(searchValue, 500)
 
   const handleSearchChange = (e) => {
-    let value;
+    let value
     if (e.target.value.trim().length < 1) {
-      value = e.target.value.trim();
+      value = e.target.value.trim()
       setSearchResult([])
     } else {
-      value = e.target.value.replace(/\s\s+/g, ' ');
+      value = e.target.value.replace(/\s\s+/g, ' ')
     }
 
-    setSearchValue(value);
+    setSearchValue(value)
   }
 
   const getRequestRelatetoAssigneeQuery = useQuery({
-    queryKey: ['getRequestRelatetoAssigneeQuery'],
+    queryKey: ['getRequestRelatetoAssigneeQuery', accountId],
     queryFn: async () => {
       const data = await getAllRequestOfAssigneeProcessing(accountId, { page: 1, limit: 10 })
       return data
@@ -56,6 +53,14 @@ export default function AssigneesHome({ children }) {
     queryKey: ['listNotifiRemarkQueries'],
     queryFn: () => getListNotifiRemarkByAccountId(),
     placeholderData: keepPreviousData
+  })
+
+  const { data: getStatisticsRequest } = useQuery({
+    queryKey: ['request/getTotalRequestAssignee', accountId],
+    queryFn: async () => {
+      const data = await getTotalRequestByAssignee(accountId)
+      return data
+    }
   })
 
   const UpdateUnwatchsSeenOnNotifiRemarkMutation = useMutation({
@@ -166,7 +171,11 @@ export default function AssigneesHome({ children }) {
   const { data: getSearchRequest } = useQuery({
     queryKey: ['getSearchRequestOfAssignee', debouncedValue],
     queryFn: async () => {
-      const data = await getAllRequestOfAssigneeProcessing(accountId, { searchTerm: debouncedValue, page: 1, limit: 10 })
+      const data = await getAllRequestOfAssigneeProcessing(accountId, {
+        searchTerm: debouncedValue,
+        page: 1,
+        limit: 10
+      })
       return data
     },
     enabled: debouncedValue != ''
@@ -179,9 +188,9 @@ export default function AssigneesHome({ children }) {
   }, [debouncedValue, getSearchRequest])
 
   const handleClear = () => {
-    setSearchValue('');
-    setSearchResult([]);
-    inputRef.current.focus();
+    setSearchValue('')
+    setSearchResult([])
+    inputRef.current.focus()
   }
 
   return (
@@ -190,7 +199,12 @@ export default function AssigneesHome({ children }) {
         <LoadingOverlay />
       ) : (
         <div>
-          <HeaderAdmin urlLogo='/admin/assignees' container='container' accountId={accountId} urlProfile={'/admin/assignees/myProfile/'} />
+          <HeaderAdmin
+            urlLogo='/admin/assignees'
+            container='container'
+            accountId={accountId}
+            urlProfile={'/admin/assignees/myProfile/'}
+          />
           <div className='flex flex-row w-full h-full fixed justify-center overflow-hidden bg-white pt-[72px]'>
             <div className='flex h-full flex-row w-full border border-x-gray-300'>
               <div className='h-full w-1/5 overflow-hidden'>
@@ -224,12 +238,16 @@ export default function AssigneesHome({ children }) {
                       }}
                     />
                     {!!searchValue && (
-                      <button
-                        className='absolute right-2'
-                        onClick={handleClear}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                      <button className='absolute right-2' onClick={handleClear}>
+                        <svg
+                          xmlns='http://www.w3.org/2000/svg'
+                          fill='none'
+                          viewBox='0 0 24 24'
+                          strokeWidth={1.5}
+                          stroke='currentColor'
+                          className='w-4 h-4'
+                        >
+                          <path strokeLinecap='round' strokeLinejoin='round' d='M6 18 18 6M6 6l12 12' />
                         </svg>
                       </button>
                     )}
@@ -274,22 +292,29 @@ export default function AssigneesHome({ children }) {
                       </div>
                       <button
                         onClick={() => {
-                          setSearchValue('');
-                          setSearchResult([]);
+                          setSearchValue('')
+                          setSearchResult([])
                           setIsShowResultSearch(false)
                         }}
                         className='flex flex-row items-center gap-1 py-1 px-3 border rounded-md border-gray-600 text-xs'
                       >
                         <span>Closed</span>
                         <span>
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            strokeWidth={1.5}
+                            stroke='currentColor'
+                            className='w-4 h-4'
+                          >
+                            <path strokeLinecap='round' strokeLinejoin='round' d='M6 18 18 6M6 6l12 12' />
                           </svg>
                         </span>
                       </button>
                     </div>
 
-                    {(isShowResultSearch && searchResult.length > 0) ? (
+                    {isShowResultSearch && searchResult.length > 0 ? (
                       <LobbyChat
                         dataItem={searchResult}
                         joinSpecificChatRoom={joinSpecificChatRoom}
@@ -341,7 +366,7 @@ export default function AssigneesHome({ children }) {
 
               <div
                 id='main-content'
-                className='h-full w-3/5 p-[10px] overflow-y-scroll hide-scrollbar relative border-x border-x-gray-300'
+                className='h-full w-3/5 overflow-y-scroll hide-scrollbar relative border-x border-x-gray-300'
               >
                 <Outlet
                   context={[
@@ -356,112 +381,80 @@ export default function AssigneesHome({ children }) {
               </div>
 
               <div className='relative text-gray-700 z-20 h-full top-0 flex lg:flex flex-shrink-0 flex-col w-1/5 transition-width duration-75'>
-                <div className='w-full h-1/2 pt-[10px] border-y border-solid'>
-                  <div className='h-7 px-[10px] text-lg font-semibold text-gray-600'>Notification</div>
-                  <div className='relative w-full px-[5px] h-64 overflow-y-scroll hide-scrollbar'>
-                    <div className='w-full flex flex-row gap-2 border border-solid rounded-lg border-gray-300 p-[10px] mb-[3px]'>
-                      <div className='w-2/12'>
-                        <img
-                          src='https://storeimageohd.blob.core.windows.net/images/233f7ba3-6819-4ef1-9176-91710437b880.png'
-                          alt='John Michael'
-                          className='relative inline-block h-9 w-9 !rounded-full object-cover object-center'
-                        />
-                      </div>
-                      <div className='h-full w-10/12'>
-                        <div className='flex h-1/2 w-full'>
-                          <div className='w-4/5 text-sm font-semibold text-gray-700 truncate'>Nguyen Truong Phi</div>
-                          <div className='w-1/5 text-xs italic text-gray-500 text-center'>5m</div>
+                <div className='flex flex-col w-full h-full p-[10px] border-y border-solid'>
+                  <div className='p-[10px] border-b border-gray-300 text-lg font-semibold text-gray-600'>
+                    Statistics on the number of assigned tickets
+                  </div>
+                  {getStatisticsRequest?.data?.data && (
+                    <div className='w-full px-[5px]'>
+                      <Link
+                        to={'/admin/assignees?page=1&requestStatus='}
+                        className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-300 p-[10px] mb-[3px]'
+                      >
+                        <div className='text-sm w-2/3'>Total requests:</div>
+                        <div className='w-1/3'>
+                          <div className='bg-[#5a98e4] flex text-sm w-10 h-10 !rounded-full border border-solid items-center justify-center'>
+                            {getStatisticsRequest?.data?.data.all}
+                          </div>
                         </div>
-                        <div className='h-1/2 w-full text-gray-500 text-xs truncate'>
-                          da thay doi trang thaidfsd sdgsdfs sdfsdfsfgdfgd sdfsdfs
+                      </Link>
+                      <Link
+                        to={'/admin/assignees?page=1&requestStatus=Assigned'}
+                        className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'
+                      >
+                        <div className='text-sm w-2/3'>Status Assigned:</div>
+                        <div className='w-1/3'>
+                          <div className='bg-[#FFFF00] flex text-sm w-10 h-10 !rounded-full border border-solid items-center justify-center'>
+                            {getStatisticsRequest?.data?.data.assigned}
+                          </div>
                         </div>
-                      </div>
+                      </Link>
+                      <Link
+                        to={'/admin/assignees?page=1&requestStatus=Work+in+progress'}
+                        className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'
+                      >
+                        <div className='text-sm w-2/3'>Status Work In Process:</div>
+                        <div className='w-1/3'>
+                          <div className='bg-[#FF6600] flex text-sm w-10 h-10 !rounded-full border border-solid items-center justify-center'>
+                            {getStatisticsRequest?.data?.data.workInProgress}
+                          </div>
+                        </div>
+                      </Link>
+                      <Link
+                        to={'/admin/assignees?page=1&requestStatus=Need+more+info'}
+                        className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'
+                      >
+                        <div className='text-sm w-2/3'>Status Need more info:</div>
+                        <div className='w-1/3'>
+                          <div className='bg-[#FF0033] flex text-sm w-10 h-10 !rounded-full border border-solid items-center justify-center'>
+                            {getStatisticsRequest?.data?.data.needMoreInfo}
+                          </div>
+                        </div>
+                      </Link>
+                      <Link
+                        to={'/admin/assignees?page=1&requestStatus=Rejected'}
+                        className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'
+                      >
+                        <div className='text-sm w-2/3'>Status Rejected:</div>
+                        <div className='w-1/3'>
+                          <div className='bg-[#FF0000] flex text-sm w-10 h-10 !rounded-full border border-solid items-center justify-center'>
+                            {getStatisticsRequest?.data?.data.rejected}
+                          </div>
+                        </div>
+                      </Link>
+                      <Link
+                        to={'/admin/assignees?page=1&requestStatus=Completed'}
+                        className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'
+                      >
+                        <div className='text-sm w-2/3'>Status Completed:</div>
+                        <div className='w-1/3'>
+                          <div className='bg-[#33FF33] flex text-sm w-10 h-10 !rounded-full border border-solid items-center justify-center'>
+                            {getStatisticsRequest?.data?.data.complete}
+                          </div>
+                        </div>
+                      </Link>
                     </div>
-                  </div>
-                  <div className='text-blue-600 h-8 text-sm flex flex-row justify-center items-center'>
-                    <button className='hover:decoration-sky-500 hover:underline '>See also</button>
-                  </div>
-                </div>
-
-                <div className='w-full h-1/2 p-[10px] border-y border-solid overflow-y-scroll hide-scrollbar'>
-                  <div className='h-7 px-[10px] text-lg font-semibold text-gray-600'>Statistics</div>
-                  <div className='relative w-full px-[5px] h-64 overflow-y-scroll hide-scrollbar'>
-                    <div className='w-full flex flex-row border border-solid rounded-lg border-gray-300 p-[10px] mb-[3px]'>
-                      <div className=''>
-                        <img
-                          src='https://storeimageohd.blob.core.windows.net/images/233f7ba3-6819-4ef1-9176-91710437b880.png'
-                          alt='John Michael'
-                          className='relative inline-block h-10 w-10 !rounded-full object-cover object-center'
-                        />
-                      </div>
-                    </div>
-                    <div className='w-full flex flex-row border border-solid rounded-lg border-gray-300 p-[10px] mb-[3px]'>
-                      <div className=''>
-                        <img
-                          src='https://storeimageohd.blob.core.windows.net/images/233f7ba3-6819-4ef1-9176-91710437b880.png'
-                          alt='John Michael'
-                          className='relative inline-block h-10 w-10 !rounded-full object-cover object-center'
-                        />
-                      </div>
-                    </div>
-                    <div className='w-full flex flex-row border border-solid rounded-lg border-gray-300 p-[10px] mb-[3px]'>
-                      <div className=''>
-                        <img
-                          src='https://storeimageohd.blob.core.windows.net/images/233f7ba3-6819-4ef1-9176-91710437b880.png'
-                          alt='John Michael'
-                          className='relative inline-block h-10 w-10 !rounded-full object-cover object-center'
-                        />
-                      </div>
-                    </div>
-                    <div className='w-full flex flex-row border border-solid rounded-lg border-gray-300 p-[10px] mb-[3px]'>
-                      <div className=''>
-                        <img
-                          src='https://storeimageohd.blob.core.windows.net/images/233f7ba3-6819-4ef1-9176-91710437b880.png'
-                          alt='John Michael'
-                          className='relative inline-block h-10 w-10 !rounded-full object-cover object-center'
-                        />
-                      </div>
-                    </div>
-                    <div className='w-full flex flex-row border border-solid rounded-lg border-gray-300 p-[10px] mb-[3px]'>
-                      <div className=''>
-                        <img
-                          src='https://storeimageohd.blob.core.windows.net/images/233f7ba3-6819-4ef1-9176-91710437b880.png'
-                          alt='John Michael'
-                          className='relative inline-block h-10 w-10 !rounded-full object-cover object-center'
-                        />
-                      </div>
-                    </div>
-                    <div className='w-full flex flex-row border border-solid rounded-lg border-gray-300 p-[10px] mb-[3px]'>
-                      <div className=''>
-                        <img
-                          src='https://storeimageohd.blob.core.windows.net/images/233f7ba3-6819-4ef1-9176-91710437b880.png'
-                          alt='John Michael'
-                          className='relative inline-block h-10 w-10 !rounded-full object-cover object-center'
-                        />
-                      </div>
-                    </div>
-                    <div className='w-full flex flex-row border border-solid rounded-lg border-gray-300 p-[10px] mb-[3px]'>
-                      <div className=''>
-                        <img
-                          src='https://storeimageohd.blob.core.windows.net/images/233f7ba3-6819-4ef1-9176-91710437b880.png'
-                          alt='John Michael'
-                          className='relative inline-block h-10 w-10 !rounded-full object-cover object-center'
-                        />
-                      </div>
-                    </div>
-                    <div className='w-full flex flex-row border border-solid rounded-lg border-gray-300 p-[10px] mb-[3px]'>
-                      <div className=''>
-                        <img
-                          src='https://storeimageohd.blob.core.windows.net/images/233f7ba3-6819-4ef1-9176-91710437b880.png'
-                          alt='John Michael'
-                          className='relative inline-block h-10 w-10 !rounded-full object-cover object-center'
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className='text-blue-600 h-8 text-sm flex flex-row justify-center items-center'>
-                    <button className='hover:decoration-sky-500 hover:underline '>Detail</button>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>

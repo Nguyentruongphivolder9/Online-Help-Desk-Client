@@ -30,8 +30,7 @@ export default function ChatBox() {
 
   const listRemarkRequestId = useQuery({
     queryKey: ['remarkByRequestId', requestIdState],
-    queryFn: async () => await getRemarksByRequestId(requestIdState),
-    placeholderData: keepPreviousData
+    queryFn: async () => await getRemarksByRequestId(requestIdState)
   })
 
   const requestbyIdQuery = useQuery({
@@ -54,9 +53,13 @@ export default function ChatBox() {
     if (listRemarkRequestId.isSuccess) {
       setListRemarkState((prev) => [...listRemarkRequestId.data?.data?.data])
     }
-    console.log('infoConnectState', infoConnectState)
+
     if (isObjectEmpty(infoConnectState) && requestbyIdQuery.isSuccess) {
-      console.log('Hello- ', infoConnectState)
+      if (infoConnectState.connect != undefined || infoConnectState.connect != null) {
+        connect.stop()
+        console.log('connection stop')
+      }
+
       if (roleTypes == 'End-Users') {
         joinSpecificChatRoom(requestbyIdQuery?.data?.data?.data.id, requestbyIdQuery?.data?.data?.data.account.fullName)
       } else if (roleTypes == 'Assignees') {
@@ -91,6 +94,8 @@ export default function ChatBox() {
         console.log(data)
         if (!data?.data.validationsErrors && !data?.data?.error) {
           setMessageObjState(initialMessageObjState)
+          queryClient.invalidateQueries({ queryKey: ['requestsInChatLayout'] })
+          queryClient.invalidateQueries({ queryKey: ['getRequestRelatetoAssigneeQuery'] })
         } else if (data?.data.validationsErrors && data?.data?.error.code === 'ValidationError') {
           setErrorMessageState(data?.data?.validationsErrors)
           getErrorForField('Comment').map((error, index) => toast.error(error))
@@ -102,7 +107,7 @@ export default function ChatBox() {
   return (
     <div className='h-full w-full p-[10px] flex flex-col relative overflow-hidden border-x border-x-gray-300'>
       <div className='flex-3 '>
-        <div className='flex justify-between items-center text-lg py-1 mb-8 border-b-2 border-gray-200'>
+        <div className='flex justify-between items-center text-lg pb-[10px] mb-8 border-b-2 border-gray-200'>
           <p className='font-semibold'>
             {requestbyIdQuery.isSuccess
               ? `Chatting on - Department: ${requestbyIdQuery?.data?.data?.data.room.departments.departmentName} - Room: ${requestbyIdQuery?.data?.data?.data.room.roomNumber}`
@@ -151,53 +156,55 @@ export default function ChatBox() {
       {/* box chat */}
       <div ref={positionBoxchatRef} className='flex-1 messages overflow-auto overflow-y-scroll hide-scrollbar'>
         {listRemarkState.length > 0 && listRemarkState.length !== undefined ? (
-          listRemarkState.map((item) => (
-            <div key={item.id} className={`message mb-4 flex ${accountId === item.accountId ? 'text-right' : ''}`}>
-              {accountId !== item.accountId ? (
-                <div className='flex-2'>
-                  <div className='w-12 h-12 relative'>
-                    {item?.avatarPhoto != null ? (
-                      <img
-                        src={`https://storeimageohd.blob.core.windows.net/images/${item?.avatarPhoto}`}
-                        alt={item?.fullName}
-                        className='relative inline-block h-9 w-9 !rounded-full object-cover object-center'
-                      />
-                    ) : (
-                      <div className='relative flex h-9 w-9 bg-gray-200 rounded-full object-cover object-center shadow justify-center items-center'>
-                        <svg
-                          xmlns='http://www.w3.org/2000/svg'
-                          fill='none'
-                          viewBox='0 0 24 24'
-                          strokeWidth={1.5}
-                          stroke='currentColor'
-                          className='w-6 h-6 text-gray-400'
-                        >
-                          <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            d='M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z'
-                          />
-                        </svg>
-                      </div>
-                    )}
+          listRemarkState
+            .filter((item, index, array) => array.findIndex((elem) => elem.id === item.id) === index)
+            .map((item) => (
+              <div key={item.id} className={`message mb-4 flex ${accountId === item.accountId ? 'text-right' : ''}`}>
+                {accountId !== item.accountId ? (
+                  <div className='flex-2'>
+                    <div className='w-12 h-12 relative'>
+                      {item?.avatarPhoto != null ? (
+                        <img
+                          src={`https://storeimageohd.blob.core.windows.net/images/${item?.avatarPhoto}`}
+                          alt={item?.fullName}
+                          className='relative inline-block h-9 w-9 !rounded-full object-cover object-center'
+                        />
+                      ) : (
+                        <div className='relative flex h-9 w-9 bg-gray-200 rounded-full object-cover object-center shadow justify-center items-center'>
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            strokeWidth={1.5}
+                            stroke='currentColor'
+                            className='w-6 h-6 text-gray-400'
+                          >
+                            <path
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              d='M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z'
+                            />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+
+                <div className='flex-1 px-2'>
+                  <div
+                    className={`inline-block ${accountId === item.accountId ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700'}  rounded-full p-2 px-6 `}
+                  >
+                    <span>{item.comment}</span>
+                  </div>
+                  <div className='pl-4'>
+                    <small className='text-gray-500'>{convertDateHourAndMinute(item.createAt)}</small>
                   </div>
                 </div>
-              ) : (
-                ''
-              )}
-
-              <div className='flex-1 px-2'>
-                <div
-                  className={`inline-block ${accountId === item.accountId ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700'}  rounded-full p-2 px-6 `}
-                >
-                  <span>{item.comment}</span>
-                </div>
-                <div className='pl-4'>
-                  <small className='text-gray-500'>{convertDateHourAndMinute(item.createAt)}</small>
-                </div>
               </div>
-            </div>
-          ))
+            ))
         ) : (
           <div className='text-2xl absolute top-2/4 left-2/4 transform -translate-x-2/4 -translate-y-2/4'>
             You haven't sent any messages yet

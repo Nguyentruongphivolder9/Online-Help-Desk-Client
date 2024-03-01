@@ -62,7 +62,7 @@ export default function Login() {
               }
             } else {
               navigate('/users/change-password', {
-                state: result?.data.accountId
+                state: result?.data.email
               })
             }
           }

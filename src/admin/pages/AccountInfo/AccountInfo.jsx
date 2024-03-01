@@ -20,6 +20,19 @@ export default function AccountInfo() {
     setDataMyProfile(myProfileAccount?.data?.data);
   }, [myProfileAccount])
 
+  const handleColorStatus = (status) => {
+    switch (status) {
+      case "Active":
+        return "bg-green-400"
+      case "Banned":
+        return "bg-orange-400"
+      case "Verifying":
+        return "bg-blue-400"
+      default:
+        return;
+    }
+  }
+
   return (
     <>
       {dataMyProfile && (
@@ -94,6 +107,17 @@ export default function AccountInfo() {
                 </div>
                 <div className='w-7/12'>
                   {dataMyProfile.role.roleName}
+                </div>
+              </div>
+              <div className='flex flex-row py-2 border-b border-solid'>
+                <div className='w-5/12 flex justify-between'>
+                  <span>Account status</span>
+                  <span className='mr-6'>:</span>
+                </div>
+                <div className='w-7/12'>
+                  <div className={`w-28 rounded-md py-1 px-2 text-center ${handleColorStatus(dataMyProfile.statusAccount)}`}>
+                    {dataMyProfile.statusAccount}
+                  </div>
                 </div>
               </div>
               <div className='flex flex-row py-2 border-b border-solid'>

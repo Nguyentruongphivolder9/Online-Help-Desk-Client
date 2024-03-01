@@ -34,7 +34,7 @@ export default function Header() {
 
   console.log(requestsQuery?.data?.data?.data)
   return (
-    <header className='flex fixed top-0 z-10 h-16 w-full bg-gray-50 flex-wrap justify-between items-center mx-auto'>
+    <header className='flex fixed top-0 z-[5000] h-16 w-full bg-gray-50 flex-wrap justify-between items-center mx-auto '>
       <Link to='/' className='flex items-center'>
         <img
           src='https://www.shorttermprograms.com/images/cache/600_by_314/uploads/institution-logos/harvard-university.png'

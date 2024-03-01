@@ -1,6 +1,6 @@
 import { getAllRequestStatus, updateRequestStatus } from '@/admin/apiEndpoints/dataRequest.api'
 import React, { useEffect, useState } from 'react'
-import { useQuery, useMutation, keepPreviousData } from '@tanstack/react-query'
+import { useQuery, useMutation, keepPreviousData, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify';
 import { useOutletContext } from 'react-router-dom'
 import { convertDateHourAndMinute } from '@/utils/convertDateHourAndMinute'
@@ -16,8 +16,12 @@ export default function RequestDetails() {
     requestObjectById,
     setReloadRequest
   ] = useOutletContext();
+  const queryClient = useQueryClient();
   const [requestStatusArray, setRequestStatusArray] = useState(null);
   const [updateStatusRequest, setUpdateStatusRequest] = useState(null);
+  const [isShowReason, setIsShowReason] = useState(false);
+  const [reasonValue, setReasonValue] = useState('');
+  const [errorReason, setErrorReason] = useState(null);
 
   const { data: requestStatusResponse } = useQuery({
     queryKey: ['getAllRequestStatus'],
@@ -68,39 +72,61 @@ export default function RequestDetails() {
   }, [requestStatusResponse, requestObjectById]);
 
   const handleSubmitUpdateStatus = () => {
-    const object = {
-      id: requestObjectById.id,
-      requestStatusId: updateStatusRequest
-    }
-    updateRequest.mutate(object, {
-      onSuccess: (response) => {
-        const result = response.data
-        if (result.isSuccess) {
-          toast.success(`${result.statusMessage}`, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored"
-          });
-          setReloadRequest(Math.floor(Math.random() * (100000 - 999999 + 1)) + 100000);
-        } else {
-          toast.error(`${result.statusMessage}`, {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored"
-          });
+    let object = null;
+
+    if (updateStatusRequest == 5) {
+      if (reasonValue == '' || reasonValue == null) {
+        setErrorReason("Please enter the reason for the rejection");
+      } else {
+        object = {
+          id: requestObjectById.id,
+          requestStatusId: updateStatusRequest,
+          reason: reasonValue
         }
       }
-    });
+    } else {
+      object = {
+        id: requestObjectById.id,
+        requestStatusId: updateStatusRequest
+      }
+    }
+
+    if (object) {
+      updateRequest.mutate(object, {
+        onSuccess: (response) => {
+          setIsShowReason(false);
+          setErrorReason('');
+          setReasonValue('');
+          const result = response.data
+          queryClient.invalidateQueries({ queryKey: ['getRequestRelatetoAssigneeQuery'] });
+          queryClient.invalidateQueries({ queryKey: ['request/getTotalRequestAssignee'] });
+          if (result.isSuccess) {
+            toast.success(`${result.statusMessage}`, {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored"
+            });
+            setReloadRequest(Math.floor(Math.random() * (100000 - 999999 + 1)) + 100000);
+          } else {
+            toast.error(`${result.statusMessage}`, {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored"
+            });
+          }
+        }
+      });
+    }
   }
 
   return (
@@ -179,7 +205,17 @@ export default function RequestDetails() {
                     id='role'
                     className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-36 px-2 transition delay-500 outline-none'
                     value={updateStatusRequest ? updateStatusRequest : ''}
-                    onChange={(e) => setUpdateStatusRequest(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value == 5) {
+                        setIsShowReason(true);
+                      } else {
+                        setReasonValue('');
+                        setErrorReason('');
+                        setIsShowReason(false);
+                      }
+                      setUpdateStatusRequest(e.target.value)
+                    }}
                   >
                     {requestStatusArray &&
                       requestStatusArray.map((status) => (
@@ -195,6 +231,38 @@ export default function RequestDetails() {
               )}
             </div>
           </div>
+          {isShowReason && (
+            <div className='flex flex-row py-2 border-y border-solid'>
+              <div className='text-gray-600 w-2/6 px-3'>
+                Reason:
+              </div>
+              <div className='w-4/6'>
+                <textarea
+                  id='description'
+                  rows={4}
+                  className={`block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border transition delay-100 outline-none ${errorReason ? 'border-red-500' : 'border-gray-300'} border-gray-300 focus:border-blue-300`}
+                  placeholder='Your description here'
+                  value={reasonValue}
+                  onChange={(e) => {
+                    let value;
+                    if (e.target.value.trim().length < 1) {
+                      value = e.target.value.trim();
+                      setErrorReason("Don't start with spaces");
+                    } else {
+                      setErrorReason('');
+                      value = e.target.value.replace(/\s\s+/g, ' ');
+                    }
+                    setReasonValue(value)
+                  }}
+                />
+                {errorReason && (
+                  <div className='text-red-400 text-xs'>
+                    {errorReason}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
           <div className='flex flex-row py-2 border-y border-solid'>
             <div className='text-gray-600 w-2/6 px-3'>
               Create Request:

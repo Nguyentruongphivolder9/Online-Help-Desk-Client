@@ -9,6 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import LoadingOverlay from '@/common/components/LoadingOverlay';
 
 const formRequest = {
   roleId: '',
@@ -41,6 +42,7 @@ export default function CreateAccount() {
   const [formAccountState, setFormAccountState] = useState(formRequest || {});
   const [fileUpdate, setFileUpdate] = useState(null);
   const [errorObject, setErrorObject] = useState(errorsField || {});
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { id: accountId } = useParams();
 
@@ -63,7 +65,7 @@ export default function CreateAccount() {
     "December",
   ];
 
-  const { data: accountEdit, isLoading: isLoadingAccountEdit } = useQuery({
+  const { data: accountEdit } = useQuery({
     queryKey: ['account/get-by-id', accountId],
     queryFn: async () => {
       const data = await getAccountById(accountId);
@@ -72,7 +74,7 @@ export default function CreateAccount() {
     enabled: accountId != null || accountId != undefined
   });
 
-  const { data: roleTypeResponse, isLoading: isLoadingRoleType } = useQuery({
+  const { data: roleTypeResponse } = useQuery({
     queryKey: ['roles/get-all'],
     queryFn: async () => {
       const data = await getRole();
@@ -331,9 +333,11 @@ export default function CreateAccount() {
     }
 
     if (isSubmit) {
+      setIsLoading(true);
       if (accountId) {
         updateAccountApi.mutate(formAccountState, {
           onSuccess: (response) => {
+            setIsLoading(false);
             const result = response.data
             if (result.isSuccess) {
               toast.success(`${result.statusMessage}`, {
@@ -366,6 +370,7 @@ export default function CreateAccount() {
       } else {
         createAccountApi.mutate(formAccountState, {
           onSuccess: (response) => {
+            setIsLoading(false);
             const result = response.data
             if (result.isSuccess) {
               setFormAccountState(formRequest);
@@ -631,6 +636,9 @@ export default function CreateAccount() {
           </div>
         </div>
       </div>
+      {isLoading && (
+        <LoadingOverlay opacity={'opacity-75'} />
+      )}
     </div >
   )
 }
