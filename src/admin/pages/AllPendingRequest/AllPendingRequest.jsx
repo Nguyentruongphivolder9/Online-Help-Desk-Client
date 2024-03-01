@@ -153,6 +153,10 @@ export default function PendingRequest() {
     setSortStatus(e.target.value)
   }
 
+  if (getAllPending) {
+    console.log(getAllPending);
+  }
+
   return (
     <div className='container mt-6 relative flex flex-col w-full h-auto text-gray-700 bg-white shadow-md rounded-xl bg-clip-border'>
       <h2 className='text-4xl font-extrabold tracking-tight text-red-600 sm:text-4xl px-80 py-8'>
