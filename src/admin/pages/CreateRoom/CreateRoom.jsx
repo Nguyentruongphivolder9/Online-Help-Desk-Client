@@ -76,6 +76,17 @@ export default function CreateRoom() {
               progress: undefined,
               theme: 'colored'
             })
+          } else if (result.isFailure) {
+            toast.error(`${result.validationsErrors[0].description}`, {
+              position: 'top-right',
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'colored'
+            })
           } else {
             toast.error(`${result.statusMessage}`, {
               position: 'top-right',
@@ -93,6 +104,17 @@ export default function CreateRoom() {
           setError('An error occurred while updating the process.')
           setSuccessMessage(null)
         }
+      })
+    } else {
+      toast.error(`Some field are blank or empty!!`, {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored'
       })
     }
   }
