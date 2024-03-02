@@ -536,11 +536,10 @@ export default function ListRequest() {
                       </Link>
                       <div
                         className={`tooltip tooltip-right before:translate-y-[-80%] after:translate-y-[-120%] cursor-pointer
-                        ${
-                          ['Completed', 'Rejected', 'Closed'].includes(request?.requestStatus?.statusName)
+                        ${['Completed', 'Rejected', 'Closed'].includes(request?.requestStatus?.statusName)
                             ? 'visible'
                             : 'invisible'
-                        }`}
+                          }`}
                         data-tip='Archive'
                         onClick={() =>
                           handleUpdateRequest({
