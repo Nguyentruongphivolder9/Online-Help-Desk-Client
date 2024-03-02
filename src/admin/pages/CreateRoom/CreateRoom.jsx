@@ -1,13 +1,14 @@
 import { getAllDepartment } from '@/admin/apiEndpoints/department.api'
 import React, { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createRoom, getAllRoomSSFP, changeStatusRoom } from '@/admin/apiEndpoints/room.api'
 import { calculateTotalPages } from '@/utils/calculateTotalPages'
 import { Button, IconButton } from '@material-tailwind/react'
 import { toast } from 'react-toastify'
 
 export default function CreateRoom() {
+  const queryClient = useQueryClient();
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(7)
   const [searchTerm, setSearchTerm] = useState('')
@@ -66,6 +67,7 @@ export default function CreateRoom() {
           const result = response.data
           if (result.isSuccess) {
             setReloadThenSubmitSuccess(new Date())
+            queryClient.invalidateQueries({ queryKey: ['rooms/getAllSSFP'] });
             toast.success(`${result.statusMessage}`, {
               position: 'top-right',
               autoClose: 5000,
@@ -76,28 +78,30 @@ export default function CreateRoom() {
               progress: undefined,
               theme: 'colored'
             })
-          } else if (result.isFailure) {
-            toast.error(`${result.validationsErrors[0].description}`, {
-              position: 'top-right',
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: 'colored'
-            })
           } else {
-            toast.error(`${result.statusMessage}`, {
-              position: 'top-right',
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: 'colored'
-            })
+            if (result.validationsErrors && result.error.code === "ValidationsError") {
+              toast.error(`${result.validationsErrors[0].description}`, {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'colored'
+              })
+            } else {
+              toast.error(`${result.statusMessage}`, {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'colored'
+              })
+            }
           }
         },
         onError: (error) => {
@@ -131,6 +135,7 @@ export default function CreateRoom() {
           const result = response.data
           if (result.isSuccess) {
             setReloadThenSubmitSuccess(new Date())
+            queryClient.invalidateQueries({ queryKey: ['rooms/getAllSSFP'] });
             toast.success(`${result.statusMessage}`, {
               position: 'top-right',
               autoClose: 5000,
@@ -326,7 +331,7 @@ export default function CreateRoom() {
                       className='px-6 py-4 font-bold text-center '
                       style={{ color: item.roomStatus == true ? 'green' : 'brown' }}
                     >
-                      {item.roomStatus == 'True' ? 'Active' : 'Inactive'}
+                      {item.roomStatus == true ? 'Active' : 'Inactive'}
                     </td>
 
                     <td className='max-w-[200px] min-w-[150px]'>

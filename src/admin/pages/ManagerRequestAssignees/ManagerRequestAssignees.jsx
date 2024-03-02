@@ -134,7 +134,7 @@ export default function ManagerRequestAssignees() {
               tabIndex={0}
               role='button'
               className={`btn border border-gray-300 min-h-8 h-8 w-44 flex justify-between bg-slate-100 focus:border-sky-300 hover:bg-sky-200 text-gray-500 hover:text-gray-700 `}
-              // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
+            // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
             >
               {searchParamsObjectState.severalLevel ? searchParamsObjectState.severalLevel : 'Several Level'}
               <svg
@@ -199,7 +199,7 @@ export default function ManagerRequestAssignees() {
               tabIndex={0}
               role='button'
               className={`btn border border-gray-300 min-h-8 h-8 w-44 flex justify-between bg-slate-100 focus:border-sky-300 hover:bg-sky-200 text-gray-500 hover:text-gray-700 `}
-              // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
+            // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
             >
               {searchParamsObjectState.requestStatus ? searchParamsObjectState.requestStatus : 'Request Status'}
               <svg
@@ -286,7 +286,7 @@ export default function ManagerRequestAssignees() {
               tabIndex={0}
               role='button'
               className={`btn border border-gray-300 min-h-8 h-8 bg-slate-100 focus:border-sky-300 hover:bg-sky-200 text-gray-500 hover:text-gray-700 `}
-              // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
+            // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
             >
               {searchParamsObjectState.limit} items
               <svg
@@ -350,25 +350,28 @@ export default function ManagerRequestAssignees() {
           <div className='dropdown'>
             <div
               tabIndex={0}
-              role='button'
-              className={`btn border border-gray-300 min-h-8 h-8 w-44 flex justify-between bg-slate-100 focus:border-sky-300 hover:bg-sky-200 text-gray-500 hover:text-gray-700 `}
-              // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
+              className={`text-md rounded-lg border px-1 items-center border-gray-300 min-h-8 h-8 w-44 flex flex-row justify-between bg-slate-100 focus:border-sky-300 hover:bg-sky-200 text-gray-500 hover:text-gray-700 `}
             >
-              {searchParamsObjectState.department ? searchParamsObjectState.department : 'Departments'}
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 24 24'
-                strokeWidth={1.5}
-                stroke='currentColor'
-                className='w-4 h-4'
-              >
-                <path strokeLinecap='round' strokeLinejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' />
-              </svg>
+              <div className='h-full w-5/6 font-semibold truncate px-1 '>
+
+                {searchParamsObjectState.department ? searchParamsObjectState.department : 'Departments'}
+              </div>
+              <div className='w-1/6'>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth={1.5}
+                  stroke='currentColor'
+                  className='w-4 h-4'
+                >
+                  <path strokeLinecap='round' strokeLinejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' />
+                </svg>
+              </div>
             </div>
             <ul
               tabIndex={0}
-              className='dropdown-content z-[1] menu p-2 shadow  bg-slate-100 rounded-box w-40 text-black'
+              className='dropdown-content z-[1] menu p-2 shadow bg-slate-100 rounded-box w-40 text-black flex-nowrap h-[200px] overflow-y-scroll hide-scrollbar'
             >
               <li>
                 <div
@@ -398,7 +401,7 @@ export default function ManagerRequestAssignees() {
               tabIndex={0}
               role='button'
               className={`btn border border-gray-300 min-h-8 h-8 w-44 flex justify-between bg-slate-100 focus:border-sky-300 hover:bg-sky-200 text-gray-500 hover:text-gray-700 `}
-              // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
+            // ${searchParamsObjectState.limit ? 'bg-sky-500 text-white' : ''}`}
             >
               {searchParamsObjectState.room ? searchParamsObjectState.room : 'Rooms'}
               <svg

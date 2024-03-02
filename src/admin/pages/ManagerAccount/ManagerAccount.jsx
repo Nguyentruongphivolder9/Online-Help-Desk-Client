@@ -567,7 +567,7 @@ export default function ManagerAccount() {
             {arrayAccounts &&
               arrayAccounts.map((item) => (
                 <tr key={item.accountId} className='hover:bg-sky-50 hover:cursor-pointer'>
-                  <td className='p-4 border-b border-blue-gray-50'>
+                  <td className='p-4 border-b border-blue-gray-50 max-w-[300px] w-[100px] min-w-[300px]'>
                     <div className='flex items-center gap-3'>
                       {item.avatarPhoto != null ? (
                         <img
@@ -593,12 +593,12 @@ export default function ManagerAccount() {
                           </svg>
                         </div>
                       )}
-                      <div className='flex flex-col'>
-                        <p className='block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900'>
+                      <div className='flex flex-col w-[180px]'>
+                        <p className='block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900 truncate'>
                           {item.fullName}
                         </p>
-                        <p className='block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900 opacity-70'>
-                          {item.email}
+                        <p className='block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900 opacity-70 truncate'>
+                          {item.email}dfsdfsdf dfsdfsdf sdfsdfs
                         </p>
                       </div>
                     </div>
