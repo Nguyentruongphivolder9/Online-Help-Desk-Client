@@ -1,6 +1,7 @@
 import { getRequest, upateRequest } from '@/client/apiEndpoints/request.api'
 import { useConvertDate } from '@/hooks/useConvertDate'
 import getColorClas from '@/hooks/useGetColorRequestStatus'
+import { convertDateHourAndMinute } from '@/utils/convertDateHourAndMinute'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -112,10 +113,11 @@ export default function UpdateRequest() {
               </div>
               <div className='px-3 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                 <dt className='text-sm font-medium leading-6 text-gray-900'>Description</dt>
-                <input
+                <textarea
                   className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'
                   type='text'
                   value={dataSate.description}
+                  rows='2'
                   readOnly
                 />
               </div>
@@ -143,7 +145,7 @@ export default function UpdateRequest() {
                 <input
                   className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'
                   type='text'
-                  value={useConvertDate(dataSate.createAt)}
+                  value={convertDateHourAndMinute(dataSate.createAt)}
                   readOnly
                 />
               </div>
