@@ -62,7 +62,7 @@ const getColorClass = (statusName) => {
 export default function PendingAssignee() {
   const { id } = useParams()
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(2)
+  const [limit, setLimit] = useState(4)
   const [searchTerm, setSearchTerm] = useState('')
   const [sortColumn, setSortColumn] = useState('')
   const [sortOrder, setSortOrder] = useState('')

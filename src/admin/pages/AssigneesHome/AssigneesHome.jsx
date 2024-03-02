@@ -388,7 +388,7 @@ export default function AssigneesHome({ children }) {
                   {getStatisticsRequest?.data?.data && (
                     <div className='w-full px-[5px]'>
                       <Link
-                        to={'/admin/assignees?page=1&requestStatus='}
+                        to={'/admin/assignees?page=1&requestStatus=&department=&room=&severalLevel='}
                         className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-300 p-[10px] mb-[3px]'
                       >
                         <div className='text-sm w-2/3'>Total requests:</div>
@@ -399,7 +399,7 @@ export default function AssigneesHome({ children }) {
                         </div>
                       </Link>
                       <Link
-                        to={'/admin/assignees?page=1&requestStatus=Assigned'}
+                        to={'/admin/assignees?page=1&requestStatus=Assigned&department=&room=&severalLevel='}
                         className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'
                       >
                         <div className='text-sm w-2/3'>Status Assigned:</div>
@@ -410,7 +410,7 @@ export default function AssigneesHome({ children }) {
                         </div>
                       </Link>
                       <Link
-                        to={'/admin/assignees?page=1&requestStatus=Work+in+progress'}
+                        to={'/admin/assignees?page=1&requestStatus=Work+in+progress&department=&room=&severalLevel='}
                         className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'
                       >
                         <div className='text-sm w-2/3'>Status Work In Process:</div>
@@ -421,7 +421,7 @@ export default function AssigneesHome({ children }) {
                         </div>
                       </Link>
                       <Link
-                        to={'/admin/assignees?page=1&requestStatus=Need+more+info'}
+                        to={'/admin/assignees?page=1&requestStatus=Need+more+info&department=&room=&severalLevel='}
                         className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'
                       >
                         <div className='text-sm w-2/3'>Status Need more info:</div>
@@ -432,7 +432,7 @@ export default function AssigneesHome({ children }) {
                         </div>
                       </Link>
                       <Link
-                        to={'/admin/assignees?page=1&requestStatus=Rejected'}
+                        to={'/admin/assignees?page=1&requestStatus=Rejected&department=&room=&severalLevel='}
                         className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'
                       >
                         <div className='text-sm w-2/3'>Status Rejected:</div>
@@ -443,7 +443,7 @@ export default function AssigneesHome({ children }) {
                         </div>
                       </Link>
                       <Link
-                        to={'/admin/assignees?page=1&requestStatus=Completed'}
+                        to={'/admin/assignees?page=1&requestStatus=Completed&department=&room=&severalLevel='}
                         className='hover:bg-sky-100 w-full h-20 flex flex-row border-b items-center border-solid border-gray-400 p-[10px] mb-[3px]'
                       >
                         <div className='text-sm w-2/3'>Status Completed:</div>

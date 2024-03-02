@@ -1,12 +1,13 @@
 import { getAllDepartmentSSFP, createDepartment, changeStatusDepartment } from '@/admin/apiEndpoints/department.api'
 import React, { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { calculateTotalPages } from '@/utils/calculateTotalPages'
 import { Button, IconButton } from '@material-tailwind/react'
 import { toast } from 'react-toastify'
 
 export default function CreateDepartments() {
+  const queryClient = useQueryClient();
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(8)
   const [searchTerm, setSearchTerm] = useState('')
@@ -47,6 +48,7 @@ export default function CreateDepartments() {
           const result = response.data
           if (result.isSuccess) {
             setReloadThenSubmitSuccess(new Date())
+            queryClient.invalidateQueries({ queryKey: ['department/getAllSSFP'] });
             toast.success(`${result.statusMessage}`, {
               position: 'top-right',
               autoClose: 5000,
@@ -113,6 +115,7 @@ export default function CreateDepartments() {
           const result = response.data
           if (result.isSuccess) {
             setReloadThenSubmitSuccess(new Date())
+            queryClient.invalidateQueries({ queryKey: ['department/getAllSSFP'] });
             toast.success(`${result.statusMessage}`, {
               position: 'top-right',
               autoClose: 5000,
