@@ -59,7 +59,7 @@ export default function CreateDepartments() {
               progress: undefined,
               theme: 'colored'
             })
-          } else if (result.isFailure) {
+          } else if (!result.isSuccess) {
             toast.error(`${result.validationsErrors[0].description}`, {
               position: 'top-right',
               autoClose: 5000,

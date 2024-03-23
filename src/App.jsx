@@ -21,7 +21,6 @@ function App() {
             skipNegotiation: true,
             transport: HttpTransportType.WebSockets
           })
-          .configureLogging(LogLevel.Information)
           .build()
 
         connect.on('LogoutAccountWhenBanned', (message) => {
@@ -44,6 +43,7 @@ function App() {
         console.log(error)
       }
     }
+
     if (accountId) {
       connectHub()
     }

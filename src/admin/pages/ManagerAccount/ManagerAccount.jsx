@@ -252,7 +252,7 @@ export default function ManagerAccount() {
           </div>
           <div className=''>
             <Link
-              to={'/admin/create-account'}
+              to={'/admin/accounts/register'}
               className='text-sm rounded-lg py-4 px-5 bg-blue-500 text-white mr-10'
             >
               Add members
@@ -598,7 +598,7 @@ export default function ManagerAccount() {
                           {item.fullName}
                         </p>
                         <p className='block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900 opacity-70 truncate'>
-                          {item.email}dfsdfsdf dfsdfsdf sdfsdfs
+                          {item.email}
                         </p>
                       </div>
                     </div>
@@ -641,7 +641,7 @@ export default function ManagerAccount() {
                     <button
                       className='relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-gray-900 transition-all hover:bg-gray-900/10 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none'
                       type='button'
-                      onClick={() => navigate(`/admin/create-account/${item.accountId}`)}
+                      onClick={() => navigate(`/admin/accounts/edit/${item.accountId}`)}
                     >
                       <span className='absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2'>
                         <svg

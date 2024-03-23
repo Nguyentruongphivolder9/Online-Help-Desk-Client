@@ -95,7 +95,9 @@ export default function ChatBox() {
         if (!data?.data.validationsErrors && !data?.data?.error) {
           setMessageObjState(initialMessageObjState)
           queryClient.invalidateQueries({ queryKey: ['requestsInChatLayout'] })
+          queryClient.invalidateQueries({ queryKey: ['requestsInChatLayoutSearch'] })
           queryClient.invalidateQueries({ queryKey: ['getRequestRelatetoAssigneeQuery'] })
+          queryClient.invalidateQueries({ queryKey: ['getSearchRequestOfAssignee'] })
         } else if (data?.data.validationsErrors && data?.data?.error.code === 'ValidationError') {
           setErrorMessageState(data?.data?.validationsErrors)
           getErrorForField('Comment').map((error, index) => toast.error(error))

@@ -382,17 +382,19 @@ export default function ManagerRequestAssignees() {
                 </div>
               </li>
               {departmentQuery?.data.data.map((department) => (
-                <li key={department.id}>
-                  <div
-                    className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.department === department.departmentName ? 'border-sky-300 bg-sky-200' : ''}`}
-                    onClick={() => {
-                      setRooms(department.rooms)
-                      addParams([{ department: department.departmentName }, { room: '' }])
-                    }}
-                  >
-                    {department.departmentName}
-                  </div>
-                </li>
+                (department.statusDepartment == true && department.rooms.length > 1 && (
+                  <li key={department.id}>
+                    <div
+                      className={`focus:border-sky-300 hover:bg-sky-200 ${searchParamsObjectState.department === department.departmentName ? 'border-sky-300 bg-sky-200' : ''}`}
+                      onClick={() => {
+                        setRooms(department.rooms)
+                        addParams([{ department: department.departmentName }, { room: '' }])
+                      }}
+                    >
+                      {department.departmentName}
+                    </div>
+                  </li>
+                ))
               ))}
             </ul>
           </div>

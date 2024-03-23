@@ -301,7 +301,7 @@ export default function AccountInfoMembers() {
                   </button>
                 </div>
                 <div className='w-32 text-center mr-20 p-3 bg-sky-600 text-white text-sm rounded-md'>
-                  <Link to={`/admin/create-account/${accountId}`}>
+                  <Link to={`/admin/accounts/edit/${accountId}`}>
                     Edit account
                   </Link>
                 </div>

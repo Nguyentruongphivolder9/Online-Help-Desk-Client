@@ -124,7 +124,6 @@ export default function facilityMain() {
       return data
     }
   })
-  console.log(allRequest?.data)
 
   const totalPage = calculateTotalPages(allRequest?.data?.data.totalCount, limit)
   const totalPageArray = Array.from({ length: totalPage }, (_, index) => index + 1)
@@ -375,7 +374,7 @@ export default function facilityMain() {
               allRequest?.data?.data.items.map((item) => (
                 <tr
                   key={item.id}
-                  className={`border-l-4 ${getColorClass(item?.requestStatus?.statusName).borderColor}  hover:bg-gray-50 dark:hover:bg-gray-600`}
+                  className={`border-l-4 ${getColorClass(item?.requestStatus?.statusName).borderColor}  hover:bg-gray-50 dark:hover:bg-gray-600 dark:hover:text-gray-200`}
                 >
                   <th scope='row' className=' px-6 py-4'>
                     {item.room.departments.departmentName}
@@ -403,7 +402,7 @@ export default function facilityMain() {
                     <div className='flex items-center'>
                       <Link
                         className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
-                        to={`/admin/facility-header/${item.id}`}
+                        to={`/admin/facility-header/requests/${item.id}`}
                       >
                         View Detail
                       </Link>

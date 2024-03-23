@@ -123,7 +123,7 @@ export default function List() {
             </thead>
             <tbody>
               {accountResponse?.data?.data?.items.map((assignee, index) => (
-                <tr key={assignee.accountId} className='hover:bg-gray-50 dark:hover:bg-gray-600'>
+                <tr key={assignee.accountId} className='hover:bg-gray-50 dark:hover:bg-gray-600 dark:hover:text-gray-200'>
                   <th scope='row' className=' px-6 py-4'>
                     {' '}
                     {assignee.accountId}

@@ -45,12 +45,12 @@ export default function AccountInfo({ isUser }) {
           </div>
           <div className='bg-gray-100 flex flex-row px-20'>
             <div className='h-full w-60 flex py-10'>
-              <div className='w-60 h-80 rounded-md focus:shadow-outline bg-gray-100 shadow-sm'>
+              <div className='w-60 h-80 rounded-md focus:shadow-outline overflow-hidden bg-gray-100 shadow-sm'>
                 {dataMyProfile.avatarPhoto != null ? (
                   <img
                     src={`https://storeimageohd.blob.core.windows.net/images/${dataMyProfile.avatarPhoto}`}
                     alt={dataMyProfile.fullName}
-                    className='relative inline-block h-9 w-9 !rounded-full object-cover object-center'
+                    className='relative inline-block h-full w-full object-cover object-center'
                   />
                 ) : (
                   <div className='flex w-full h-full bg-gray-300 overflow-hidden relative rounded items-center justify-center'>

@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import removeCookie from '@/hooks/removeCookie'
 import addCookie from '@/hooks/addCookie'
+import LoadingOverlay from '@/common/components/LoadingOverlay'
 
 const formLogin = {
   accountId: '',
@@ -14,6 +15,7 @@ const formLogin = {
 export default function Login() {
   const [loginForm, setLoginForm] = useState(formLogin || {})
   const [loginError, setLoginError] = useState(null)
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate()
 
   const { mutate } = useMutation({
@@ -34,9 +36,11 @@ export default function Login() {
     if (loginForm.accountId == '' || loginForm.password == '') {
       setLoginError('Please enter your account or password')
     } else {
+      setIsLoading(true)
       mutate(loginForm, {
         onSuccess: (response) => {
           const result = response.data
+          setIsLoading(false)
           if (!result.isSuccess) {
             setLoginError(result.statusMessage)
           } else {
@@ -132,6 +136,9 @@ export default function Login() {
           </div>
         </div>
       </section>
+      {isLoading && (
+        <LoadingOverlay opacity={'opacity-75'} />
+      )}
     </div>
   )
 }

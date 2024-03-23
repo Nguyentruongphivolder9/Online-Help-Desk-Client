@@ -45,7 +45,7 @@ export const getArchivedRequests = (searchParamsObject) => {
 export const addRequest = (request) => {
   const token = getCookie('access_token')
 
-  return http.post('/api/request/create_request', request, {
+  return http.post('/api/requests/create', request, {
     headers: {
       Authorization: `Bearer ${token}`
     }
@@ -62,3 +62,12 @@ export const upateRequest = (request) => {
 }
 export const getDepartments = () => http.get('/api/department/getAll')
 export const getRequestStatus = () => http.get('/api/request/requestStatus')
+
+export const getAllProblem = () => {
+  const token = getCookie('access_token')
+  return http.get('/api/problems', {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+}

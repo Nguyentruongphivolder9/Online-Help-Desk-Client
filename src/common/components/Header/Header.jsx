@@ -7,22 +7,21 @@ import useLogout from '@/hooks/useLogout'
 import useGetInfoFromJWT from '@/hooks/useGetInfoFromJWT'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { getRequestsWithoutSsfp } from '@/client/apiEndpoints/request.api'
+import Notification from '../Notification'
 export default function Header() {
-  const isLogin = false // vi du ma chua dang nhap thi show cai buuton login ra
-  const { accountId, isLoading } = useAuthRedirect('End-Users')
-  const { accountId: accoundIdJWT, roleTypes, userName } = useGetInfoFromJWT()
+  const { accountId: accountIdJWT } = useGetInfoFromJWT()
   const [account, setAccount] = useState(null)
   const [listRequest, setListRequest] = useState([])
   const accountQuery = useQuery({
-    queryKey: ['accounts/getById', accoundIdJWT],
+    queryKey: ['accounts/getById', accountIdJWT],
     queryFn: async () => {
-      const data = await getAccountById(accoundIdJWT)
+      const data = await getAccountById(accountIdJWT)
       return data
     }
   })
 
   const requestsQuery = useQuery({
-    queryKey: ['getRequestsWithoutSsfpHeader', accoundIdJWT],
+    queryKey: ['getRequestsWithoutSsfpHeader', accountIdJWT],
     queryFn: async () => await getRequestsWithoutSsfp(),
     placeholderData: keepPreviousData
   })
@@ -32,7 +31,6 @@ export default function Header() {
     setListRequest(requestsQuery?.data?.data?.data)
   }, [accountQuery?.data, requestsQuery?.data])
 
-  console.log(requestsQuery?.data?.data?.data)
   return (
     <header className='flex fixed top-0 z-[5000] h-16 w-full bg-gray-50 flex-wrap justify-between items-center mx-auto '>
       <Link to='/' className='flex items-center'>
@@ -45,6 +43,11 @@ export default function Header() {
       <Navbar listRequest={listRequest}></Navbar>
 
       <div className='flex items-center gap-x-3 mr-[30px]'>
+        <div className='relative'>
+          {account && (
+            <Notification accountData={account} />
+          )}
+        </div>
         <span className='text-sm text-gray-700'>{account?.fullName}</span>
         <div className='avatar dropdown dropdown-bottom dropdown-end'>
           <div className='w-10 rounded-full' tabIndex={0} role='button'>
@@ -77,7 +80,7 @@ export default function Header() {
             <ul className='space-y-3 text-gray-700'>
               <li className='font-medium'>
                 <Link
-                  to={`/account/info/members/${accoundIdJWT}`}
+                  to={`/account/info/members/${accountIdJWT}`}
                   className='flex items-center transform transition-colors duration-200 border-r-4 border-transparent '
                 >
                   <div className='mr-3'>

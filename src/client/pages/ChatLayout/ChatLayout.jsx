@@ -41,12 +41,12 @@ export default function ChatLayout() {
 
   const requestsQueryRelateToUser = useQuery({
     queryKey: ['requestsInChatLayout'],
-    queryFn: async () => await getRequests({ page: 1, limit: 10 })
+    queryFn: async () => await getRequests({ page: 1, limit: 100 })
   })
 
   const requestsSearchQuery = useQuery({
     queryKey: ['requestsInChatLayoutSearch', debouncedValue],
-    queryFn: async () => await getRequests({ searchTerm: debouncedValue, page: 1, limit: 10 }),
+    queryFn: async () => await getRequests({ searchTerm: debouncedValue, page: 1, limit: 100 }),
     enabled: debouncedValue != ''
   })
 

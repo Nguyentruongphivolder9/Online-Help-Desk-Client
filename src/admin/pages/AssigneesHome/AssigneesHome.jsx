@@ -44,7 +44,7 @@ export default function AssigneesHome({ children }) {
   const getRequestRelatetoAssigneeQuery = useQuery({
     queryKey: ['getRequestRelatetoAssigneeQuery', accountId],
     queryFn: async () => {
-      const data = await getAllRequestOfAssigneeProcessing(accountId, { page: 1, limit: 10 })
+      const data = await getAllRequestOfAssigneeProcessing(accountId, { page: 1, limit: 100 })
       return data
     }
   })
@@ -174,7 +174,7 @@ export default function AssigneesHome({ children }) {
       const data = await getAllRequestOfAssigneeProcessing(accountId, {
         searchTerm: debouncedValue,
         page: 1,
-        limit: 10
+        limit: 100
       })
       return data
     },

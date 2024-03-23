@@ -288,7 +288,7 @@ export default function ListRequestOfAssigneesId() {
                     <div className='flex items-center'>
                       <Link
                         className='inline-flex items-center px-5 py-2 ml-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-primary-200'
-                        to={`/admin/facility-header/${item.request.id}`}
+                        to={`/admin/facility-header/requests/${item.request.id}`}
                       >
                         View Detail
                       </Link>
