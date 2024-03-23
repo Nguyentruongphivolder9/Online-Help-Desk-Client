@@ -79,15 +79,15 @@ export default function RequestDetails() {
         setErrorReason("Please enter the reason for the rejection");
       } else {
         object = {
-          id: requestObjectById.id,
-          requestStatusId: updateStatusRequest,
+          requestId: `${requestObjectById.id}`,
+          requestStatusId: `${updateStatusRequest}`,
           reason: reasonValue
         }
       }
     } else {
       object = {
-        id: requestObjectById.id,
-        requestStatusId: updateStatusRequest
+        requestId: `${requestObjectById.id}`,
+        requestStatusId: `${updateStatusRequest}`
       }
     }
 
@@ -175,7 +175,7 @@ export default function RequestDetails() {
               Description:
             </div>
             <div className='w-4/6'>
-              {requestObjectById.description} kjhdfkjdsf kdjhfkjs kjhdkfjbsk  kjdfkjsk dkfjhkjsdfb kdhkfjhsk kdjhfksj kbkdjfkjs
+              {requestObjectById.description}
             </div>
           </div>
           <div className='flex flex-row py-2 border-y border-solid'>

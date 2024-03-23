@@ -9,6 +9,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 const initalState = {
   id: '',
   accountId: '',
+  problemTitle: '',
   departmentName: '',
   roomNumber: '',
   description: '',
@@ -25,13 +26,10 @@ export default function UpdateRequest() {
     queryKey: ['requestupdate', id],
     queryFn: async () => {
       const data = await getRequest(id.toUpperCase())
-      console.log(data)
       return data
     },
     enabled: id !== undefined // có id trên URl thì queryFn mới được gọi
   })
-
-  console.log(requestQuery.data)
 
   useEffect(() => {
     if (requestQuery.data) {
@@ -41,6 +39,7 @@ export default function UpdateRequest() {
         ...prev,
         id: data.id,
         accountId: data.account.accountId,
+        problemTitle: data.problem.title,
         departmentName: data.room.departments.departmentName,
         roomNumber: data.room.roomNumber,
         description: data.description,
@@ -82,20 +81,26 @@ export default function UpdateRequest() {
     }
   }
 
-  console.log(dataSate)
-  // console.log(requestQuery.data?.data?.data)
-
   return (
-    <div className='max-w-7xl mx-auto px-5 mt-24'>
+    <div className='max-w-7xl mx-auto px-5 mt-24 bg-white'>
       <h2 className='font-semibold text-center text-4xl'>Request Details </h2>
       <div className='flex justify-center flex-col'>
         <form action=''>
           <div className='mt-5  border-t border-gray-100'>
             <dl className='divide-y divide-gray-100'>
               <div className='px-3 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
+                <dt className='text-sm font-medium leading-6 text-gray-900'>Problem</dt>
+                <input
+                  className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-white  '
+                  type='text'
+                  value={dataSate.problemTitle}
+                  readOnly
+                />
+              </div>
+              <div className='px-3 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                 <dt className='text-sm font-medium leading-6 text-gray-900'>Department</dt>
                 <input
-                  className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'
+                  className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-white  '
                   type='text'
                   value={dataSate.departmentName}
                   readOnly
@@ -105,7 +110,7 @@ export default function UpdateRequest() {
               <div className='px-3 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                 <dt className='text-sm font-medium leading-6 text-gray-900'>Room of Department</dt>
                 <input
-                  className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'
+                  className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-white'
                   type='text'
                   value={dataSate.roomNumber}
                   readOnly
@@ -114,7 +119,7 @@ export default function UpdateRequest() {
               <div className='px-3 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                 <dt className='text-sm font-medium leading-6 text-gray-900'>Description</dt>
                 <textarea
-                  className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'
+                  className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-white'
                   type='text'
                   value={dataSate.description}
                   rows='2'
@@ -124,7 +129,7 @@ export default function UpdateRequest() {
               <div className='px-3 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                 <dt className='text-sm font-medium leading-6 text-gray-900'>Severity Level</dt>
                 <input
-                  className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'
+                  className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-white'
                   type='text'
                   value={dataSate.severalLevel}
                   readOnly
@@ -133,7 +138,7 @@ export default function UpdateRequest() {
               <div className='px-3 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                 <dt className='text-sm font-medium leading-6 text-gray-900'>Reason</dt>
                 <input
-                  className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'
+                  className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-white'
                   type='text'
                   value={dataSate.reason}
                   readOnly
@@ -143,7 +148,7 @@ export default function UpdateRequest() {
               <div className='px-3 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                 <dt className='text-sm font-medium leading-6 text-gray-900'> CreateAt : </dt>
                 <input
-                  className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'
+                  className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-white'
                   type='text'
                   value={convertDateHourAndMinute(dataSate.createAt)}
                   readOnly

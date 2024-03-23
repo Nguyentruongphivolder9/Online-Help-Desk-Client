@@ -62,7 +62,7 @@ const getColorClass = (statusName) => {
 
 export default function SingleRequestById() {
   const { id } = useParams()
-  const [data, setData] = useState(null)
+  const [requestData, setRequestData] = useState(null)
   const [accountIdAssignees, setAccountIdAssignees] = useState(null)
   const [reloadThenSubmitSuccess, setReloadThenSubmitSuccess] = useState(null)
 
@@ -74,9 +74,7 @@ export default function SingleRequestById() {
     }
   })
 
-  console.log(allAssignee)
-
-  const requestQuery = useQuery({
+  const { data: requestQuery } = useQuery({
     queryKey: ['request', id, reloadThenSubmitSuccess],
     queryFn: async () => {
       const data = await getSingleRequestById(id)
@@ -85,17 +83,16 @@ export default function SingleRequestById() {
   })
 
   useEffect(() => {
-    setData(requestQuery.data?.data?.data)
-  })
+    setRequestData(requestQuery?.data?.data)
+  }, [requestQuery])
 
   const handleSubmit = () => {
-    const re = {
-      requestId: data.id,
-      AccountId: accountIdAssignees,
-      requestStatusId: data.requestStatusId
+    const formRequest = {
+      requestId: requestData.id,
+      AccountId: accountIdAssignees
     }
-    if (re.AccountId) {
-      createAssignee.mutate(re, {
+    if (formRequest.AccountId) {
+      createAssignee.mutate(formRequest, {
         onSuccess: (response) => {
           const result = response.data
           if (result.isSuccess) {
@@ -145,7 +142,7 @@ export default function SingleRequestById() {
   })
   return (
     <>
-      {data && (
+      {requestData && (
         <div className='container mt-1 justify-center relative flex flex-col w-full h-auto text-gray-700 bg-white shadow-md rounded-xl bg-clip-border'>
           <div className='p-6 bg-gray-100 flex items-center justify-center'>
             <div className='max-w-7xl py-7 px-5'>
@@ -160,7 +157,7 @@ export default function SingleRequestById() {
                   <input
                     className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                     type='hidden'
-                    value={data.id}
+                    value={requestData.id}
                     readOnly
                   />
                   <div className='mt-5  border-t border-gray-100'>
@@ -170,7 +167,7 @@ export default function SingleRequestById() {
                         <input
                           className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                           type='text'
-                          value={data.account.fullName}
+                          value={requestData.account.fullName}
                           readOnly
                         />
                       </div>
@@ -180,7 +177,7 @@ export default function SingleRequestById() {
                         <input
                           className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                           type='text'
-                          value={data.account.email}
+                          value={requestData.account.email}
                           readOnly
                         />
                       </div>
@@ -190,7 +187,7 @@ export default function SingleRequestById() {
                         <input
                           className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                           type='text'
-                          value={data.room.departments.departmentName}
+                          value={requestData.room.departments.departmentName}
                           readOnly
                         />
                       </div>
@@ -200,7 +197,7 @@ export default function SingleRequestById() {
                         <input
                           className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                           type='text'
-                          value={data.room.roomNumber}
+                          value={requestData.room.roomNumber}
                           readOnly
                         />
                       </div>
@@ -210,7 +207,7 @@ export default function SingleRequestById() {
                         <input
                           className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                           type='text'
-                          value={data.description}
+                          value={requestData.description}
                           readOnly
                         />
                       </div>
@@ -220,7 +217,7 @@ export default function SingleRequestById() {
                         <input
                           className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                           type='text'
-                          value={data.severalLevel}
+                          value={requestData.severalLevel}
                           readOnly
                         />
                       </div>
@@ -230,7 +227,7 @@ export default function SingleRequestById() {
                         <input
                           className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                           type='text'
-                          value={convertDateHourAndMinute(data.createdAt)}
+                          value={convertDateHourAndMinute(requestData.createdAt)}
                           readOnly
                         />
                       </div>
@@ -239,7 +236,7 @@ export default function SingleRequestById() {
                         <input
                           className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                           type='text'
-                          value={convertDateHourAndMinute(data.updateAt)}
+                          value={convertDateHourAndMinute(requestData.updateAt)}
                           readOnly
                         />
                       </div>
@@ -248,22 +245,22 @@ export default function SingleRequestById() {
                         <dt className='text-sm font-medium leading-6 text-gray-900'> Status Ticket : </dt>
                         <div
                           className={`grid items-center max-w-[150px] p-1 justify-center font-sans text-xs font-bold 
-                      ${data?.requestStatus?.statusName === 'Assigned' ? 'text-gray-900' : 'text-white'} 
-                      ${getColorClass(data?.requestStatus?.statusName).background} uppercase rounded-md select-none whitespace-nowrap `}
+                      ${requestData?.requestStatus?.statusName === 'Assigned' ? 'text-gray-900' : 'text-white'} 
+                      ${getColorClass(requestData?.requestStatus?.statusName).background} uppercase rounded-md select-none whitespace-nowrap `}
                         >
-                          {data.requestStatus.statusName}
+                          {requestData.requestStatus.statusName}
                         </div>
                       </div>
 
                       <div className='px-3 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                         <dt className='text-sm font-medium leading-6 text-gray-900'> Processing By AssigneesID : </dt>
                         <div>
-                          {data.processByAssignees[0]?.account?.accountId != null ? (
+                          {requestData.processByAssignees[0]?.account?.accountId != null ? (
                             <div className='flex items-center'>
                               <input
                                 className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 bg-gray-200 px-3 rounded-md border border-solid'
                                 type='text'
-                                value={data.processByAssignees[0]?.account?.accountId}
+                                value={requestData.processByAssignees[0]?.account?.accountId}
                                 readOnly
                               />
                             </div>
@@ -292,7 +289,7 @@ export default function SingleRequestById() {
                       <div className='px-3 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                         <dt className='text-sm font-medium leading-6 text-gray-900'> </dt>
                         <div>
-                          {data.processByAssignees[0]?.account?.fullName != null ? (
+                          {requestData.processByAssignees[0]?.account?.fullName != null ? (
                             <div className='flex items-center'></div>
                           ) : (
                             <div className='flex items-center'>

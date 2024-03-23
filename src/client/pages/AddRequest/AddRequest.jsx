@@ -1,4 +1,4 @@
-import { addRequest, getDepartments, getRequest } from '@/client/apiEndpoints/request.api'
+import { addRequest, getAllProblem, getDepartments, getRequest } from '@/client/apiEndpoints/request.api'
 import http from '@/client/utils/http'
 import getCookie from '@/hooks/getCookie'
 import useAuthRedirect from '@/hooks/useAuthRedirect'
@@ -12,9 +12,9 @@ import { toast } from 'react-toastify'
 const initialFormState = {
   accountId: '',
   roomId: '',
+  problemId: '',
   description: '',
-  severalLevel: '',
-  enable: true
+  severalLevel: ''
 }
 
 export default function AddRequest() {
@@ -46,10 +46,17 @@ export default function AddRequest() {
     queryKey: ['departments'],
     queryFn: async () => {
       const data = await getDepartments()
-      console.log('department', data)
       return data
     },
     enabled: !Boolean(id) // không có id trên url thì gọi queryFn
+  })
+
+  const problemQuery = useQuery({
+    queryKey: ['getAllProblem'],
+    queryFn: async () => {
+      const data = await getAllProblem()
+      return data
+    }
   })
 
   // console.log('errorState', errorState)
@@ -110,10 +117,6 @@ export default function AddRequest() {
     return errorsForField.map((error) => error.description)
   }
 
-  if (departmentQuery) {
-    console.log(departmentQuery.data?.data?.data)
-  }
-
   return (
     <section className='mt-16'>
       <div className='py-8 px-4 mx-auto max-w-2xl lg:py-16'>
@@ -122,6 +125,34 @@ export default function AddRequest() {
         </h2>
         <form onSubmit={handleSubmit}>
           <div className='grid gap-4 sm:grid-cols-2 sm:gap-4 md:gap-4 lg:gap-4'>
+            <div className='sm:col-span-2'>
+              <label htmlFor='problemId' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
+                Select Problem
+              </label>
+              <select
+                id='problemId'
+                className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 transition delay-100 outline-none focus:border-blue-300'
+                value={formState.problemId}
+                onChange={handleChange('problemId')}
+              >
+                <option value=''>Select Problem</option>
+                {problemQuery.data?.data?.data.map(
+                  (problem) =>
+                    problem.isDisplay == true && (
+                      <option key={problem.id} value={problem.id}>{problem.title}</option>
+                    )
+                )}
+              </select>
+              <div className='min-h-5'>
+                {errorState &&
+                  getErrorForField('ProblemId').map((error, index) => (
+                    <div key={index} className='text-red-500 text-sm mt-1'>
+                      {error}
+                    </div>
+                  ))}
+              </div>
+            </div>
+
             {/* Department */}
             <div>
               <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>Select Department</label>
@@ -133,7 +164,7 @@ export default function AddRequest() {
                 <option value=''>Select Department</option>
                 {departmentQuery.data?.data?.data.map(
                   (department) =>
-                    department.statusDepartment == true && (
+                    department.statusDepartment == true && department.rooms.length > 1 && (
                       <option key={department.id} value={department.id}>
                         {department.departmentName}
                       </option>

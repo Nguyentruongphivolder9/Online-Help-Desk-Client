@@ -542,17 +542,6 @@ export default function CreateAccount() {
                           />
                           <span className="ml-2 text-gray-700">Female</span>
                         </label>
-                        <label className="inline-flex items-center">
-                          <input
-                            name='gender'
-                            type="radio"
-                            value="Other"
-                            className="form-radio h-5 w-5 text-orange-600"
-                            checked={formAccountState.gender === 'Other'}
-                            onChange={handleChange("gender")}
-                          />
-                          <span className="ml-2 text-gray-700">Other</span>
-                        </label>
                       </div>
                       {errorObject.gender &&
                         <label className='text-xs text-red-500'>

@@ -31,7 +31,7 @@ const adminRoutes = [
     )
   },
   {
-    path: '/admin/create-account',
+    path: '/admin/accounts/register',
     element: (
       <AdminHome>
         <CreateAccount />
@@ -39,7 +39,7 @@ const adminRoutes = [
     )
   },
   {
-    path: '/admin/create-account/:id',
+    path: '/admin/accounts/edit/:id',
     element: (
       <AdminHome>
         <CreateAccount />
@@ -47,7 +47,7 @@ const adminRoutes = [
     )
   },
   {
-    path: '/admin/create-room',
+    path: '/admin/rooms/create',
     element: (
       <AdminHome>
         <CreateRoom />
@@ -135,7 +135,7 @@ const adminRoutes = [
     )
   },
   {
-    path: '/admin/facility-header/:id',
+    path: '/admin/facility-header/requests/:id',
     element: (
       <FacilityHome>
         <SingleRequestById />
@@ -143,7 +143,7 @@ const adminRoutes = [
     )
   },
   {
-    path: '/admin/create-department',
+    path: '/admin/departments/create',
     element: (
       <AdminHome>
         <CreateDepartment />

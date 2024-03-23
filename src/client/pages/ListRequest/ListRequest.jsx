@@ -510,11 +510,11 @@ export default function ListRequest() {
               .map((request) => (
                 <tr
                   key={request.id}
-                  className={`border-l-4 ${getColorClass(request?.requestStatus?.statusName).borderColor}  hover:bg-gray-50 dark:hover:bg-gray-600`}
+                  className={`border-l-4 ${getColorClass(request?.requestStatus?.statusName).borderColor}  hover:bg-gray-50 dark:hover:bg-gray-600 dark:hover:text-gray-200`}
                 >
                   <td
                     scope='row'
-                    className='truncate max-w-60 w-60 min-w-60 py-4 px-4 font-medium text-gray-900 whitespace-nowrap overflow-hidden overflow-ellipsis uppercase'
+                    className='truncate max-w-60 w-60 min-w-60 py-4 px-4 font-medium whitespace-nowrap overflow-hidden overflow-ellipsis uppercase'
                   >
                     <span className=''>
                       {request.room.departments.departmentName} ({request.room.roomNumber})
@@ -536,7 +536,7 @@ export default function ListRequest() {
                     <div className='flex items-center justify-center gap-4'>
                       <Link
                         to={`/client/request/${request.id}`}
-                        className='items-center px-5 py-2 text-sm font-medium text-center text-white bg-sky-500 hover:bg-sky-600 rounded-lg focus:ring-4 focus:ring-primary-200'
+                        className='items-center px-5 py-1 text-xs font-sans font-bold text-center text-white bg-sky-500 hover:bg-sky-600 rounded-lg focus:ring-4 focus:ring-primary-200'
                       >
                         View
                       </Link>
@@ -583,8 +583,8 @@ export default function ListRequest() {
         >
           <span className='text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto'>
             Showing{' '}
-            <span className='font-semibold text-gray-900 dark:text-white'>1-{searchParamsObjectState.limit}</span> of{' '}
-            <span className='font-semibold text-gray-900 dark:text-white'>{totalRequestCount}</span>
+            <span className='font-semibold text-gray-900'>1-{searchParamsObjectState.limit}</span> of{' '}
+            <span className='font-semibold text-gray-900'>{totalRequestCount}</span>
           </span>
           <ul className='inline-flex -space-x-px rtl:space-x-reverse text-sm h-8'>
             <li>

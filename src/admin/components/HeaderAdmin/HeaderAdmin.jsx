@@ -4,9 +4,10 @@ import { useQuery } from '@tanstack/react-query'
 
 import useLogout from '@/hooks/useLogout'
 import { getAccountById } from '@/admin/apiEndpoints/account.api'
+import Notification from '@/common/components/Notification';
 
 export default function HeaderAdmin({ accountId, urlLogo, container, urlProfile }) {
-  const [account, setAccount] = useState(null);
+  const [accountData, setAccount] = useState(null);
   const navigate = useNavigate();
 
   const { data: accountInfo, isLoading: isLoadingAccountInfo } = useQuery({
@@ -35,13 +36,21 @@ export default function HeaderAdmin({ accountId, urlLogo, container, urlProfile 
             </Link>
           </div>
           <div className="flex items-center gap-x-3 mr-[30px]">
-            <span className='text-sm text-gray-700'>{account?.fullName}</span>
+
+
+            <div className='relative'>
+              {accountData && (
+                <Notification accountData={accountData} />
+              )}
+            </div>
+
+            <span className='text-sm text-gray-700'>{accountData?.fullName}</span>
             <div className="avatar dropdown dropdown-bottom dropdown-end">
-              <div className="w-10 rounded-full" tabIndex={0} role="button">
-                {account?.avatarPhoto != null ? (
+              <div className="w-9 rounded-full" tabIndex={0} role="button">
+                {accountData?.avatarPhoto != null ? (
                   <img
-                    src={`https://storeimageohd.blob.core.windows.net/images/${account?.avatarPhoto}`}
-                    alt={account?.fullName}
+                    src={`https://storeimageohd.blob.core.windows.net/images/${accountData?.avatarPhoto}`}
+                    alt={accountData?.fullName}
                     className='relative inline-block h-9 w-9 !rounded-full object-cover object-center'
                   />
                 ) : (

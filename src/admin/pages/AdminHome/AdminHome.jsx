@@ -51,7 +51,7 @@ export default function AdminHome({ children }) {
                       </li>
                       <li>
                         <NavLink
-                          to='/admin/create-account'
+                          to='/admin/accounts/register'
                           className={({ isActive }) => `${isActive ? 'text-white bg-sky-500' : 'text-gray-700'} text-base font-normal rounded-lg flex items-center py-2 px-5 hover:bg-blue-100 hover:text-gray-900 group`}
                         >
                           <svg
@@ -72,7 +72,7 @@ export default function AdminHome({ children }) {
                       </li>
                       <li>
                         <NavLink
-                          to='/admin/create-department'
+                          to='/admin/departments/create'
                           className={({ isActive }) => `${isActive ? 'text-white bg-sky-500' : 'text-gray-700'} text-base font-normal rounded-lg flex items-center py-2 px-5 hover:bg-blue-100 hover:text-gray-900 group`}
                         >
                           <svg
@@ -92,7 +92,7 @@ export default function AdminHome({ children }) {
                       </li>
                       <li>
                         <NavLink
-                          to='/admin/create-room'
+                          to='/admin/rooms/create'
                           className={({ isActive }) => `${isActive ? 'text-white bg-sky-500' : 'text-gray-700'} text-base font-normal rounded-lg flex items-center py-2 px-5 hover:bg-blue-100 hover:text-gray-900 group`}
                         >
                           <svg

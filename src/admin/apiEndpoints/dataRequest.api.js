@@ -5,7 +5,6 @@ export const getSingleRequestById = (id) => http.get(`/api/request/${id}`)
 
 export const getAllRequest = (searchParamsObject) => {
   const token = getCookie('access_token')
-  console.log(searchParamsObject)
   return http.get('/api/request/getAll', {
     params: searchParamsObject,
     headers: {
@@ -14,7 +13,14 @@ export const getAllRequest = (searchParamsObject) => {
   })
 }
 
-export const createProcessByAssignees = (request) => http.post('/api/request/CreateProcessForAssignees', request)
+export const createProcessByAssignees = (formRequest) => {
+  const token = getCookie('access_token')
+  return http.post('/api/request/CreateProcessForAssignees', formRequest, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+}
 
 export const getCountAllRequest = () => http.get(`/api/Request/GetTotalRequest`)
 
@@ -55,7 +61,6 @@ export const getAllRequestOfAssigneeProcessing = (accountId, searchParamsObject)
 
 export const updateRequestStatus = (object) => {
   const token = getCookie('access_token')
-  console.log(object);
   return http.put(`/api/request/update-status`, object, {
     headers: {
       Authorization: `Bearer ${token}`
